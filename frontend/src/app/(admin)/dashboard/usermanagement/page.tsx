@@ -1,0 +1,96 @@
+"use client";
+
+import Upper from "../components/Upper";
+import DataTable from "../components/DataTable";
+import Search from "../components/Search";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+
+interface User {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userBranch: string;
+    userPhone: string;
+}
+
+const UserManagement = () => {
+    // const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([
+        { userId: "1", userName: "igun", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
+        { userId: "2", userName: "igun", userEmail: "igunnawan25@gmail.com", userBranch: "Astra Daihatsu Motor - Perum", userPhone: "085959913762" }
+    ]);
+
+    const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+
+    const columns = [
+        { key: "userId", label: "No", alwaysVisible: true },
+        { key: "userName", label: "Nama User", alwaysVisible: true },
+        { key: "userEmail", label: "Email User", alwaysVisible: true },
+        { key: "userBranch", label: "Branch User" },
+        { key: "userPhone", label: "Phone User" },
+    ];
+
+    const handleSearch = (query: string) => {
+        if (!query.trim()) {
+          setFilteredUsers(users);
+          return;
+        }
+    
+        const filtered = users.filter((user) =>
+          user.userName.toLowerCase().includes(query.toLowerCase()) ||
+          user.userEmail.toLowerCase().includes(query.toLowerCase()) ||
+          user.userBranch.toLowerCase().includes(query.toLowerCase()) ||
+          user.userPhone.toLowerCase().includes(query.toLowerCase())
+        );
+    
+        setFilteredUsers(filtered);
+      };
+
+    return (
+        <div className="px-8 py-24 w-full max-h-full">
+            <Upper title="User Management" />
+            <div className="mt-10">
+                <div className="flex justify-end items-end">
+                    <Link href="">
+                        <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
+                            <span className="text-white font-sans font-bold">Create New User</span>
+                        </button>
+                    </Link>
+                </div>
+            </div>
+            <div className="mt-10">
+                <Search
+                    placeholder="Cari Email User/Branch User/Dll"
+                    onSearch={handleSearch} 
+                />
+            </div>
+            <div className="mt-10">
+                <DataTable
+                        columns={columns}
+                        data={filteredUsers}
+                        actions={[
+                            {
+                                label: "View",
+                                href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
+                                className: "bg-blue-600 w-20 py-2 rounded-lg hover:bg-blue-800 text-white text-sm",
+                            },
+                            {
+                                label: "Update",
+                                href: (row) => `/dashboard/usermanagement/update/${row.userId}`,
+                                className: "bg-yellow-400 w-20 py-2 rounded-lg hover:bg-yellow-500 text-white text-sm",
+                            },
+                            {
+                                label: "Delete",
+                                onClick: (row) => console.log("Delete user:", row.userId),
+                                className: "bg-red-600 w-20 py-2 rounded-lg hover:bg-red-700 text-white text-sm",
+                            },
+                        ]}
+                    />
+            </div>
+        </div>
+    );
+}
+
+export default UserManagement;
