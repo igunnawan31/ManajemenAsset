@@ -34,7 +34,7 @@ export default function Home() {
             </div>
             <div className="w-full px-2 flex items-center justify-center">
               <div className="text-center">
-                <Link href="/signin">
+                <Link href="/sign-in">
                   <button className=" bg-[#202B51] hover:border text-white hover:opacity-90 h-10 w-52 p-6 flex items-center justify-center">
                     Lanjutkan Login
                   </button>
