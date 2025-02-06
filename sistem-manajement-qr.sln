@@ -2,7 +2,7 @@
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend", "backend\backend.csproj", "{ACA99403-8314-4FBC-BB9C-A015A8343010}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qrmanagement", "backend\qrmanagement.csproj", "{ACA99403-8314-4FBC-BB9C-A015A8343010}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
