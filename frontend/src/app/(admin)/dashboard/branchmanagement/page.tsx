@@ -16,7 +16,6 @@ interface Branch {
 }
 
 const BranchManagement = () => {
-    // const [branchs, setbranchs] = useState<branch[]>([]);
     const [branches, setbranches] = useState<Branch[]>([
         { branchId: "1", branchName: "Astra Daihatsu Motor", branchEmail: "igunnawan24@gmail.com", branchPhone: "085959913761", branchLocation: "Cimone" },
         { branchId: "2", branchName: "Astra Daihatsu Mobil", branchEmail: "igunnawan25@gmail.com", branchPhone: "085959913762", branchLocation: "Perum" }
@@ -67,7 +66,8 @@ const BranchManagement = () => {
                 />
             </div>
             <div className="mt-5">
-                <DataTable
+                {filteredbranches.length > 0 ? (
+                    <DataTable
                         columns={columns}
                         data={filteredbranches}
                         actions={[
@@ -87,7 +87,10 @@ const BranchManagement = () => {
                                 className: "bg-red-600 w-20 py-2 rounded-lg hover:bg-red-700 text-white text-sm",
                             },
                         ]}
-                    />
+                    />  
+                ) : (
+                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                )}
             </div>
         </div>
     );

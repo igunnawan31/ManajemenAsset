@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, Geist, Geist_Mono } from "next/font/google";
 import { Roboto } from 'next/font/google'
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +20,12 @@ const roboto = Roboto({
   weight: '400',
   subsets: ['latin'],
 })
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins", // Define CSS variable
+});
 
 export default function AdminLayout({
     children,
