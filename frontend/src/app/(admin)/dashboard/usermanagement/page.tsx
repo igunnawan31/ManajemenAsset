@@ -51,23 +51,24 @@ const UserManagement = () => {
     return (
         <div className="px-8 py-24 w-full max-h-full">
             <Upper title="User Management" />
-            <div className="mt-10">
+            <div className="mt-5">
                 <div className="flex justify-end items-end">
-                    <Link href="">
+                    <Link href="dashboard/usermanagement/create">
                         <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
                             <span className="text-white font-sans font-bold">Create New User</span>
                         </button>
                     </Link>
                 </div>
             </div>
-            <div className="mt-10">
+            <div className="mt-5">
                 <Search
                     placeholder="Cari Email User/Branch User/Dll"
                     onSearch={handleSearch} 
                 />
             </div>
-            <div className="mt-10">
-                <DataTable
+            <div className="mt-5">
+                { filteredUsers.length > 0 ? (
+                    <DataTable
                         columns={columns}
                         data={filteredUsers}
                         actions={[
@@ -88,6 +89,9 @@ const UserManagement = () => {
                             },
                         ]}
                     />
+                ) : (
+                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                )}
             </div>
         </div>
     );
