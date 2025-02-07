@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using qrmanagament.backend.Context;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options => {
@@ -10,6 +11,11 @@ builder.Services.AddCors(options => {
                 .AllowCredentials()
     );
 });
+var conString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseSqlServer(conString ?? throw new InvalidOperationException("Connection string 'Default Connection' not found."))
+);
+
 
 builder.Services.AddOpenApi();
 
