@@ -1,7 +1,7 @@
-const HowToScanQR = () => {
+const InboundPage = () => {
     return (
-        <div></div>
+        <div className="">Inbound Pagee</div>
     )
 }
 
-export default HowToScanQR;
+export default InboundPage;
