@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 interface User {
     userId: string;
     userName: string;
+    userRole: string;
     userEmail: string;
     userBranch: string;
     userPhone: string;
@@ -18,8 +19,10 @@ interface User {
 const UserManagement = () => {
     // const [users, setUsers] = useState<User[]>([]);
     const [users, setUsers] = useState<User[]>([
-        { userId: "1", userName: "igun", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
-        { userId: "2", userName: "igun", userEmail: "igunnawan25@gmail.com", userBranch: "Astra Daihatsu Motor - Perum", userPhone: "085959913762" }
+        { userId: "1", userName: "igun", userRole: "Admin Pusat", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
+        { userId: "2", userName: "igun2", userRole: "Admin Cabang", userEmail: "igunnawan25@gmail.com", userBranch: "Astra Daihatsu Motor - Perum", userPhone: "085959913762" },
+        { userId: "3", userName: "igun3", userRole: "Karyawan Pusat", userEmail: "igunnawan26@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913763" },
+        { userId: "4", userName: "igun4", userRole: "Karyawan Cabang", userEmail: "igunnawan27@gmail.com", userBranch: "Astra Daihatsu Motor - Cibinong", userPhone: "085959913764" },
     ]);
 
     const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
@@ -27,6 +30,7 @@ const UserManagement = () => {
     const columns = [
         { key: "userId", label: "No", alwaysVisible: true },
         { key: "userName", label: "Nama User", alwaysVisible: true },
+        { key: "userRole", label: "Role User", alwaysVisible: true },
         { key: "userEmail", label: "Email User", alwaysVisible: true },
         { key: "userBranch", label: "Branch User" },
         { key: "userPhone", label: "Phone User" },

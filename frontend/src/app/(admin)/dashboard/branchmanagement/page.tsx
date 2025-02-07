@@ -45,7 +45,7 @@ const BranchManagement = () => {
         );
     
         setFilteredbranches(filtered);
-      };
+    };
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
@@ -61,7 +61,7 @@ const BranchManagement = () => {
             </div>
             <div className="mt-5">
                 <Search
-                    placeholder="Cari Email branch/Branch branch/Dll"
+                    placeholder="Cari Email branch / Branch branch / ..."
                     onSearch={handleSearch} 
                 />
             </div>
