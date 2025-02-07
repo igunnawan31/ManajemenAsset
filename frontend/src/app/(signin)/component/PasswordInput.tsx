@@ -1,10 +1,8 @@
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { IconButton, InputAdornment, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 
-// Define props type
 interface PasswordInputProps {
   password: string;
   placeholder: string;
@@ -12,7 +10,12 @@ interface PasswordInputProps {
   showCapsLockOnMessage: boolean;
 }
 
-const PasswordInput: React.FC<PasswordInputProps> = ({ password, placeholder, handlePassword, showCapsLockOnMessage }) => {
+const PasswordInput: React.FC<PasswordInputProps> = ({
+  password,
+  placeholder,
+  handlePassword,
+  showCapsLockOnMessage
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [capsLockOnMessage, setCapsLockOnMessage] = useState("");
 
@@ -26,37 +29,35 @@ const PasswordInput: React.FC<PasswordInputProps> = ({ password, placeholder, ha
   };
 
   return (
-    <Stack alignItems="flex-start" spacing={1}>
-      <TextField
-        size="small"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        placeholder={placeholder}
-        onChange={handlePassword}
-        required
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowPassword}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        fullWidth
-        onKeyUp={handleKeyUp}
-      />
-      {showCapsLockOnMessage && !!capsLockOnMessage && (
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <FontAwesomeIcon icon={faCircleInfo} />
-          <p style={{ fontSize: "0.875rem" }}>{capsLockOnMessage}</p>
-        </Stack>
+    <div className="w-full flex flex-col">
+      {/* Input Wrapper */}
+      <div className="relative w-full">
+        <input
+          type={showPassword ? "text" : "password"}
+          value={password}
+          placeholder={placeholder}
+          onChange={handlePassword}
+          onKeyUp={handleKeyUp}
+          className="mt-2 w-full h-12 px-4 border-b-[#202B51] border-b-2 bg-[#F5F9FF] text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#1C2C5B]"
+        />
+        {/* Eye Icon Button */}
+        <button
+          type="button"
+          onClick={handleClickShowPassword}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+        >
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </button>
+      </div>
+
+      {/* Caps Lock Warning */}
+      {showCapsLockOnMessage && capsLockOnMessage && (
+        <div className="flex items-center space-x-2 mt-2 text-gray-700">
+          <FontAwesomeIcon icon={faCircleInfo} className="text-gray-600" />
+          <p className="text-sm">{capsLockOnMessage}</p>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 };
 

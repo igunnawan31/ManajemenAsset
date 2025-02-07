@@ -63,7 +63,7 @@ const CardLogin = () => {
                     <input
                         type="text"
                         placeholder="Enter your email"
-                        className="mt-2 w-full h-12 px-4 border-b-[#202B51] border-b-2 bg-[#F5F9FF] text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#1C2C5B]"
+                        className="mt-2 w-full h-12 px-4 border-b-[#202B51] border-b-2 bg-[#F5F9FF] text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#1C2C5B]"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
