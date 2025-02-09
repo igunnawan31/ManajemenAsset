@@ -8,13 +8,27 @@ import { IoCaretDown } from "react-icons/io5";
 const UserNavbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
+    const [isDropdownMobileOpen, setIsDropdownMobileOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const dropdownMobileRef = useRef(null);
 
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
                 setIsDropdownMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownMobileRef.current && !(dropdownMobileRef.current as HTMLElement).contains(event.target as Node)) {
+                setIsDropdownMobileOpen(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -65,7 +79,7 @@ const UserNavbar = () => {
                         {isDropdownMenuOpen && (
                             <div 
                                 className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg z-50 hidden md:flex">
-                                <ul className="py-2 text-sm text-gray-700">
+                                <ul className="py-2 text-sm text-gray-700 w-full">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
@@ -98,8 +112,8 @@ const UserNavbar = () => {
                     <div className="relative">
                         <div 
                             className="flex items-center space-x-3 cursor-pointer" 
-                            ref={dropdownRef} 
-                            onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}
+                            ref={dropdownMobileRef} 
+                            onClick={() => setIsDropdownMobileOpen(!isDropdownMobileOpen)}
                         >
                             <div className="w-8 h-8 bg-white rounded-full"></div>
                             <div>
@@ -109,7 +123,7 @@ const UserNavbar = () => {
                             <IoCaretDown className="text-white" />
                         </div>
 
-                        {isDropdownMenuOpen && (
+                        {isDropdownMobileOpen && (
                             <div 
                                 className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg z-50">
                                 <ul className="py-2 text-sm text-gray-700">
