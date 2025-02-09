@@ -45,7 +45,7 @@ export default function UserLayout({
                 </div>
             </div>
 
-            <main className="lg:px-80 py-32 bg-gray-100">
+            <main className="2xl:px-80 py-32 bg-gray-100">
                 {children}
             </main>
         </body>

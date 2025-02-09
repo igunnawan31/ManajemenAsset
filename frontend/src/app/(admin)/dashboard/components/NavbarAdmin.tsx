@@ -30,7 +30,6 @@ const NavbarAdmin = () => {
                     <div className="relative" ref={dropdownRef}>
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}>
                             <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
-                                {/* <Image src="/message.png" alt="Profile" width={14} height={14} /> */}
                             </div>
                             <IoCaretDown className="text-white" />
                         </div>

@@ -1,11 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { IoCaretDown } from "react-icons/io5";
 
 const UserNavbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
+                setIsDropdownMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <nav className="w-full p-4 bg-transparent fixed top-0 left-0 z-50">
@@ -32,12 +48,30 @@ const UserNavbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                    <div className="hidden md:flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-white rounded-full"></div>
-                        <div>
-                            <span className="text-sm poppins block">Muhamad Gunawan</span>
-                            <span className="text-sm poppins block text-gray-300">Karyawan - Cabang Perum</span>
+                    <div className="relative">
+                        <div 
+                            className="hidden md:flex items-center space-x-3 cursor-pointer" 
+                            ref={dropdownRef} 
+                            onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}
+                        >
+                            <div className="w-8 h-8 bg-white rounded-full"></div>
+                            <div>
+                                <span className="text-sm poppins block">Muhamad Gunawan</span>
+                                <span className="text-sm poppins block text-gray-300">Karyawan - Cabang Perum</span>
+                            </div>
+                            <IoCaretDown className="text-white" />
                         </div>
+
+                        {isDropdownMenuOpen && (
+                            <div 
+                                className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg z-50 hidden md:flex">
+                                <ul className="py-2 text-sm text-gray-700">
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+                                </ul>
+                            </div>
+                        )}
                     </div>
 
                     <button 
@@ -61,12 +95,30 @@ const UserNavbar = () => {
                         </Link>
                     ))}
 
-                    <div className="mt-6 flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-white rounded-full"></div>
-                        <div>
-                            <span className="text-white text-sm poppins block">Muhamad Gunawan</span>
-                            <span className="text-gray-300 text-sm poppins block">Karyawan - Cabang Perum</span>
+                    <div className="relative">
+                        <div 
+                            className="flex items-center space-x-3 cursor-pointer" 
+                            ref={dropdownRef} 
+                            onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}
+                        >
+                            <div className="w-8 h-8 bg-white rounded-full"></div>
+                            <div>
+                                <span className="text-sm poppins block">Muhamad Gunawan</span>
+                                <span className="text-sm poppins block text-gray-300">Karyawan - Cabang Perum</span>
+                            </div>
+                            <IoCaretDown className="text-white" />
                         </div>
+
+                        {isDropdownMenuOpen && (
+                            <div 
+                                className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg z-50">
+                                <ul className="py-2 text-sm text-gray-700">
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
