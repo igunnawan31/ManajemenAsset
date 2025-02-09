@@ -50,7 +50,7 @@ const UserManagement = () => {
         );
     
         setFilteredUsers(filtered);
-      };
+    };
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
