@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { JSX } from "react";
+import { JSX, ReactNode } from "react";
 
 interface DataTableProps {
     columns: { key: string; label: string; alwaysVisible?: boolean }[];
     data: Record<string, any>[];
     actions?: {
-      label: string;
+      label: ReactNode;
       href?: (row: Record<string, any>) => string;
       onClick?: (row: Record<string, any>) => void;
       className?: string;
@@ -46,7 +46,7 @@ export default function DataTable({ columns, data, actions }: DataTableProps) {
               ))}
               {actions && (
                 <td className="px-4 py-2 border border-gray-300">
-                  <div className="flex gap-2 text-center justify-center items-center">
+                  <div className="gap-2 text-center justify-center items-center">
                     {actions.map((action, actionIndex) => (
                       action.href ? (
                         <Link key={actionIndex} href={action.href(row)}>

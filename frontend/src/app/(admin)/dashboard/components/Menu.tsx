@@ -62,11 +62,11 @@ const menuRequest = [
     title: "Request Main Menu",
     items: [
       {
-        label: "Request Inbound",
+        label: "New Request Inbound",
         href: "/dashboard/requestinbound",
       },
       {
-        label: "Request Outbound",
+        label: "New Request Outbound",
         href: "/dashboard/requestoutbound",
       },
     ],
@@ -118,7 +118,7 @@ const Menu = () => {
   };
 
   return (
-    <div className="text-sm">
+    <div className="text-sm poppins">
       <div className="flex lg:hidden items-center mb-4 justify-center mr-2">
         <button onClick={() => setIsMobileMenuOpen(true)} className="text-gray-500 focus:outline-none">
           <IoMenu className="w-6 h-6" />
@@ -287,7 +287,7 @@ const Menu = () => {
               className="flex justify-between items-center"
               onClick={() => handleMenuClick(menu.title)}
             >
-              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer font-sans font-bold">
+              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer poppins font-bold">
                 {menu.title}
               </span>
               <span
@@ -304,7 +304,7 @@ const Menu = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 font-sans"
+                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
                   >
                     <span className="hidden lg:block">{item.label}</span>
                   </Link>
@@ -320,7 +320,7 @@ const Menu = () => {
               className="flex justify-between items-center"
               onClick={() => handleMenuClick(menu.title)}
             >
-              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer font-sans font-bold">
+              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer poppins font-bold">
                 {menu.title}
               </span>
               <span
@@ -337,7 +337,7 @@ const Menu = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 font-sans"
+                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
                   >
                     <span className="hidden lg:block">{item.label}</span>
                   </Link>
@@ -353,7 +353,7 @@ const Menu = () => {
               className="flex justify-between items-center"
               onClick={() => handleMenuClick(menu.title)}
             >
-              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer font-sans font-bold">
+              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer poppins font-bold">
                 {menu.title}
               </span>
               <span
@@ -370,7 +370,7 @@ const Menu = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 font-sans"
+                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
                   >
                     <span className="hidden lg:block">{item.label}</span>
                   </Link>
@@ -386,7 +386,7 @@ const Menu = () => {
               className="flex justify-between items-center"
               onClick={() => handleMenuClick(menu.title)}
             >
-              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer font-sans font-bold">
+              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer poppins font-bold">
                 {menu.title}
               </span>
               <span
@@ -403,7 +403,7 @@ const Menu = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 font-sans"
+                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
                   >
                     <span className="hidden lg:block">{item.label}</span>
                   </Link>
@@ -419,7 +419,7 @@ const Menu = () => {
               className="flex justify-between items-center"
               onClick={() => handleMenuClick(menu.title)}
             >
-              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer font-sans font-bold">
+              <span className="hidden lg:block text-white my-4 mx-4 cursor-pointer poppins font-bold">
                 {menu.title}
               </span>
               <span
@@ -436,7 +436,7 @@ const Menu = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 font-sans"
+                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
                   >
                     <span className="hidden lg:block">{item.label}</span>
                   </Link>

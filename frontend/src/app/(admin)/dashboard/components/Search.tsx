@@ -18,10 +18,10 @@ const Search: React.FC<SearchProps> = ({ placeholder = "Search...", onSearch }) 
   };
 
   return (
-    <div className="relative flex h-14">
+    <div className="relative flex h-14 poppins">
       <input
         type="text"
-        className="w-full py-2 pl-10 text-sm outline-none rounded-lg border border-[#202B51] font-sans"
+        className="w-full poppins py-2 pl-10 text-sm outline-none rounded-lg border border-[#202B51] font-sans"
         placeholder={placeholder}
         value={query}
         onChange={handleChange}
