@@ -1,8 +1,8 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
-using qrmanagament.backend.Models;
+using qrmanagement.backend.Models;
 
-namespace qrmanagament.backend.Context{
+namespace qrmanagement.backend.Context{
     public class AppDBContext : DbContext{
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
         { }

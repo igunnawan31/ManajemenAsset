@@ -1,11 +1,11 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
-using qrmanagament.backend.Context;
-using qrmanagament.backend.DTO.Asset;
-using qrmanagament.backend.Models;
+using qrmanagement.backend.Context;
+using qrmanagement.backend.DTO.Asset;
+using qrmanagement.backend.Models;
 
-namespace qrmanagament.backend.Repositories{
+namespace qrmanagement.backend.Repositories{
     public class AssetRepository : IAssetRepository{
         private readonly AppDBContext _context;
         private readonly ILogger<AssetRepository> _logger;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace qrmanagament.backend.Models{
+namespace qrmanagement.backend.Models{
     public class Asset {
         [Key]
         [Required]

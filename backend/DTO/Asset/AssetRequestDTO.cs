@@ -1,6 +1,6 @@
-using qrmanagament.backend.Models;
+using qrmanagement.backend.Models;
 
-namespace qrmanagament.backend.DTO.Asset{
+namespace qrmanagement.backend.DTO.Asset{
     public class AssetRequestDTO{
         public required string id {get; set;}
         public required string name {get; set;}
