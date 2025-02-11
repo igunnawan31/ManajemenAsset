@@ -8,8 +8,6 @@ namespace qrmanagament.backend.Models{
         [StringLength(13)]
         public required string ticketNumber {get; set;}
         [Required]
-        public required List<AssetMove> items {get; set;}
-        [Required]
         public required int quantity {get; set;}
         [Required]
         public required int branchOrigin {get; set;}

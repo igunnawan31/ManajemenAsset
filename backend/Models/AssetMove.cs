@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace qrmanagament.backend.Models{
     public class AssetMove{
         [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public required int id {get; set;}
         [Required]

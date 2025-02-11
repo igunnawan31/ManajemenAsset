@@ -15,6 +15,8 @@ namespace qrmanagament.backend.Models{
         public required assetType assetType {get; set;}
         [Required]
         public required managementStatus itemStatus {get; set;}
+        [Required]
+        public required string imagePath {get; set;}
 
         // Relation
         public ICollection<AssetMove> assetMoves {get; set;} = new List<AssetMove>(); 

@@ -7,11 +7,11 @@ namespace qrmanagament.backend.Context{
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
         { }
 
-        DbSet<Asset> Assets {get; set;}
-        DbSet<AssetMove> AssetMoves {get; set;}
-        DbSet<Branch> Branches {get; set;}
-        DbSet<Ticket> Tickets {get; set;}
-        DbSet<User> Users {get; set;}
+        public DbSet<Asset> Assets {get; set;}
+        public DbSet<AssetMove> AssetMoves {get; set;}
+        public DbSet<Branch> Branches {get; set;}
+        public DbSet<Ticket> Tickets {get; set;}
+        public DbSet<User> Users {get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,10 +29,6 @@ namespace qrmanagament.backend.Context{
                 entity.HasOne(a => a.parent)
                     .WithMany(a => a.branches)
                     .HasForeignKey(a => a.parentId);
-                
-                entity.HasMany(a => a.branches)
-                    .WithOne(a => a.parent)
-                    .HasForeignKey(a => a.branchId);
 
                 entity.HasData(
                     new Branch{branchId = 1, branchName = "Astra International", branchEmail = "astraInternational@ai.astra.co.id", branchPhone = "1234567890123", branchLocation = "Jakarta Utara"},
@@ -42,7 +38,11 @@ namespace qrmanagament.backend.Context{
 
             modelBuilder.Entity<Asset>(entity => {
                 entity.HasKey(a => a.id);
-                
+                entity.Property(a => a.assetType)
+                        .HasConversion<string>();
+                entity.Property(a => a.itemStatus)
+                        .HasConversion<string>();
+
                 entity.HasMany(a => a.assetMoves)
                     .WithOne(a => a.asset)
                     .HasForeignKey(a => a.assetNumber);
@@ -52,17 +52,21 @@ namespace qrmanagament.backend.Context{
                     .HasForeignKey(a => a.locationId);
 
                 entity.HasData(
-                    new Asset{id = "AN-001-070225", name = "Samsung_Galaxy", locationId = 2, assetType = assetType.Electronics, itemStatus = managementStatus.Active},
-                    new Asset{id = "AN-002-070225", name = "Samsung_Flip", locationId = 1, assetType = assetType.Electronics, itemStatus = managementStatus.Active}
+                    new Asset{id = "AN-001-070225", name = "Samsung_Galaxy", locationId = 2, assetType = assetType.Electronics, itemStatus = managementStatus.Active, imagePath = ""},
+                    new Asset{id = "AN-002-070225", name = "Samsung_Flip", locationId = 1, assetType = assetType.Electronics, itemStatus = managementStatus.Active, imagePath = ""}
                 );
             });
 
             modelBuilder.Entity<Ticket>(entity => {
                 entity.HasKey(a => a.ticketNumber);
+                entity.Property(a => a.approvalStatus)
+                        .HasConversion<string>();
+                entity.Property(a => a.moveStatus)
+                        .HasConversion<string>();
 
                 entity.HasMany(a => a.assetMoves)
                     .WithOne(a => a.ticket)
-                    .HasForeignKey(a => a.id);
+                    .HasForeignKey(a => a.ticketNumber);
 
                 entity.HasOne(a => a.origin)
                     .WithMany(a => a.outbounds)
@@ -73,13 +77,15 @@ namespace qrmanagament.backend.Context{
                     .HasForeignKey(a => a.branchDestination);
                 
                 entity.HasData(
-                    new Ticket{ticketNumber = "TN-001-070225", items = [], quantity = 1, branchOrigin = 1, branchDestination = 2, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed},
-                    new Ticket{ticketNumber = "TN-002-070225", items = [], quantity = 1, branchOrigin = 2, branchDestination = 1, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed}
+                    new Ticket{ticketNumber = "TN-001-070225", quantity = 1, branchOrigin = 1, branchDestination = 2, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed},
+                    new Ticket{ticketNumber = "TN-002-070225", quantity = 1, branchOrigin = 2, branchDestination = 1, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed}
                 );
             });
 
             modelBuilder.Entity<AssetMove>(entity => {
                 entity.HasKey(a => a.id);
+                entity.Property(a => a.moveStatus)
+                        .HasConversion<string>();
 
                 entity.HasOne(a => a.asset)
                     .WithMany(a => a.assetMoves)
