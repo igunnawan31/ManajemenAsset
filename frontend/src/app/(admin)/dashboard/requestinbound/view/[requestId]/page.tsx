@@ -49,7 +49,6 @@ const ViewRequestInbound = () => {
                 <form className="mt-5 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                         <div>
-                            p
                             <label className="block text-sm font-medium text-gray-700">Asset Name</label>
                             <input
                                 type="text"
