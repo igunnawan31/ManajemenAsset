@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { IoSearch } from "react-icons/io5";
 
-interface SearchProps {
+interface SearchUserProps {
   placeholder?: string;  // Fix: Proper type for placeholder
   onSearch: (query: string) => void;
 }
 
-const Search: React.FC<SearchProps> = ({ placeholder = "Search...", onSearch }) => {
+const SearchUser: React.FC<SearchUserProps> = ({ placeholder = "Search...", onSearch }) => {
   const [query, setQuery] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,10 +18,10 @@ const Search: React.FC<SearchProps> = ({ placeholder = "Search...", onSearch }) 
   };
 
   return (
-    <div className="relative flex h-14 poppins">
+    <div className="relative flex h-14">
       <input
         type="text"
-        className="w-full poppins py-2 pl-10 text-sm outline-none rounded-lg border border-[#202B51] font-sans"
+        className="w-full py-2 pl-10 text-sm outline-none border-2 font-sans"
         placeholder={placeholder}
         value={query}
         onChange={handleChange}
@@ -31,4 +31,4 @@ const Search: React.FC<SearchProps> = ({ placeholder = "Search...", onSearch }) 
   );
 };
 
-export default Search;
+export default SearchUser;

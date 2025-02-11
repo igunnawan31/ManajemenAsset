@@ -7,7 +7,6 @@ import Upper from "../../components/Upper";
 import { useState } from "react";
 import QRCode from "qrcode";
 
-// Define validation schema
 const assetSchema = z.object({
     assetId: z.string().min(1, "Asset id is required"),
     assetName: z.string().min(1, "Asset name is required"),

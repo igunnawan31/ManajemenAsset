@@ -1,5 +1,6 @@
 import { Listbox } from "@headlessui/react";
 import { useState } from "react";
+import { FieldErrors } from "react-hook-form";
 
 const assetTypes = [
     "Electronics",
@@ -11,6 +12,7 @@ const assetTypes = [
 
 interface AssetTypeDropdownProps {
     setValue: (name: string, value: string, options?: any) => void;
+    errors: FieldErrors<{ assetType: string }>;
 }
 
 const AssetTypeDropdown = ({ setValue, errors }: AssetTypeDropdownProps) => {

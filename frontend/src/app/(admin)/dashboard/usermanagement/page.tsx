@@ -5,6 +5,7 @@ import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
 
 interface User {
@@ -50,7 +51,7 @@ const UserManagement = () => {
         );
     
         setFilteredUsers(filtered);
-      };
+    };
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
@@ -77,19 +78,19 @@ const UserManagement = () => {
                         data={filteredUsers}
                         actions={[
                             {
-                                label: "View",
+                                label: <IoEyeSharp className="text-[#202B51]" />,
                                 href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
-                                className: "bg-blue-600 w-20 py-2 rounded-lg hover:bg-blue-800 text-white text-sm",
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
-                                label: "Update",
-                                href: (row) => `/dashboard/usermanagement/update/${row.userId}`,
-                                className: "bg-yellow-400 w-20 py-2 rounded-lg hover:bg-yellow-500 text-white text-sm",
+                                label:  <IoReaderSharp className="text-[#202B51]" />,
+                                href: (row) => `/dashboard/usermanagement/edit/${row.userId}`,
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
-                                label: "Delete",
+                                label: <IoTrash className="text-red-700" />,
                                 onClick: (row) => console.log("Delete user:", row.userId),
-                                className: "bg-red-600 w-20 py-2 rounded-lg hover:bg-red-700 text-white text-sm",
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                         ]}
                     />

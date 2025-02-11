@@ -30,13 +30,12 @@ const NavbarAdmin = () => {
                     <div className="relative" ref={dropdownRef}>
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}>
                             <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
-                                {/* <Image src="/message.png" alt="Profile" width={14} height={14} /> */}
                             </div>
                             <IoCaretDown className="text-white" />
                         </div>
                         {isDropdownMenuOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
-                                <ul className="py-2 text-sm text-gray-700">
+                                <ul className="py-2 text-sm text-gray-700 poppins">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>

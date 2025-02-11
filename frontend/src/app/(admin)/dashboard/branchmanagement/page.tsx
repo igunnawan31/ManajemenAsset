@@ -5,6 +5,7 @@ import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
 
 interface Branch {
@@ -72,19 +73,19 @@ const BranchManagement = () => {
                         data={filteredbranches}
                         actions={[
                             {
-                                label: "View",
-                                href: (row) => `/dashboard/branchmanagement/view/${row.branchId}`,
-                                className: "bg-blue-600 w-20 py-2 rounded-lg hover:bg-blue-800 text-white text-sm",
+                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                href: (row) => `/dashboard/branchmanagement/view/${row.userId}`,
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
-                                label: "Update",
-                                href: (row) => `/dashboard/branchmanagement/update/${row.branchId}`,
-                                className: "bg-yellow-400 w-20 py-2 rounded-lg hover:bg-yellow-500 text-white text-sm",
+                                label:  <IoReaderSharp className="text-[#202B51]" />,
+                                href: (row) => `/dashboard/branchmanagement/edit/${row.userId}`,
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
-                                label: "Delete",
-                                onClick: (row) => console.log("Delete branch:", row.branchId),
-                                className: "bg-red-600 w-20 py-2 rounded-lg hover:bg-red-700 text-white text-sm",
+                                label: <IoTrash className="text-red-700" />,
+                                onClick: (row) => console.log("Delete user:", row.userId),
+                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                         ]}
                     />  
