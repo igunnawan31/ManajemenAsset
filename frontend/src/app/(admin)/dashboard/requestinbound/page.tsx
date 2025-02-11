@@ -7,48 +7,55 @@ import DataTable from "../components/DataTable";
 import Upper from "../components/Upper";
 import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
-interface User {
-    userId: string;
-    userName: string;
-    userRole: string;
-    userEmail: string;
-    userBranch: string;
-    userPhone: string;
+interface Asset {
+    no: string;
+    assetId: string;
+    assetName: string;
+    assetType: string;
+    assetLocation: string;
+    assetStock: string;
+    assetStatusPengelolaan: string;
 }
 
 const RequestInboundPage = () => {
-    const [users, setUsers] = useState<User[]>([
-        { userId: "1", userName: "igun", userRole: "Admin Pusat", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
-        { userId: "2", userName: "igun2", userRole: "Admin Cabang", userEmail: "igunnawan25@gmail.com", userBranch: "Astra Daihatsu Motor - Perum", userPhone: "085959913762" },
-        { userId: "3", userName: "igun3", userRole: "Karyawan Pusat", userEmail: "igunnawan26@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913763" },
-        { userId: "4", userName: "igun4", userRole: "Karyawan Cabang", userEmail: "igunnawan27@gmail.com", userBranch: "Astra Daihatsu Motor - Cibinong", userPhone: "085959913764" },
+    const [assets, setAssets] = useState<Asset[]>([
+        { no: "1", assetId: "AID-001-100225", assetName: "Samsung2", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
+        { no: "2", assetId: "AID-002-100225", assetName: "Samsung1", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
+        { no: "3", assetId: "AID-003-100225", assetName: "Samsung3", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
+        { no: "4", assetId: "AID-004-100225", assetName: "Kursi1", assetType: "Barang", assetLocation: "Astra International - Pusat", assetStock: "2", assetStatusPengelolaan: "Active" },
+        { no: "5", assetId: "AID-005-100225", assetName: "Kursi2", assetType: "Barang", assetLocation: "Astra International - Pusat", assetStock: "2", assetStatusPengelolaan: "Active" },
+        { no: "6", assetId: "AID-006-100225", assetName: "Printer", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "5", assetStatusPengelolaan: "Active" }
     ]);
 
-    const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+    const [asset, setAsset] = useState<Asset | null>(null);
+
+    const [filteredassets, setFilteredassets] = useState<Asset[]>(assets);
 
     const columns = [
-        { key: "userId", label: "No", alwaysVisible: true },
-        { key: "userName", label: "Nama User", alwaysVisible: true },
-        { key: "userRole", label: "Role User", alwaysVisible: true },
-        { key: "userEmail", label: "Email User", alwaysVisible: true },
-        { key: "userBranch", label: "Branch User" },
-        { key: "userPhone", label: "Phone User" },
+        { key: "no", label: "No", alwaysVisible:true },
+        { key: "assetId", label: "Id Asset", alwaysVisible: true },
+        { key: "assetName", label: "Nama Asset", alwaysVisible: true },
+        { key: "assetType", label: "Tipe Asset", alwaysVisible: true },
+        { key: "assetLocation", label: "Lokasi Asset", alwaysVisible: true },
+        { key: "assetStock", label: "Stock Asset" },
+        { key: "assetStatusPengelolaan", label: "Status Asset" },
     ];
 
     const handleSearch = (query: string) => {
         if (!query.trim()) {
-            setFilteredUsers(users);
+            setFilteredassets(assets);
             return;
         }
     
-        const filtered = users.filter((user) =>
-            user.userName.toLowerCase().includes(query.toLowerCase()) ||
-            user.userEmail.toLowerCase().includes(query.toLowerCase()) ||
-            user.userBranch.toLowerCase().includes(query.toLowerCase()) ||
-            user.userPhone.toLowerCase().includes(query.toLowerCase())
+        const filtered = assets.filter((asset) =>
+            asset.assetId.toLowerCase().includes(query.toLowerCase()) ||
+            asset.assetName.toLowerCase().includes(query.toLowerCase()) ||
+            asset.assetType.toLowerCase().includes(query.toLowerCase()) ||
+            asset.assetLocation.toLowerCase().includes(query.toLowerCase()) ||
+            asset.assetStatusPengelolaan.toLowerCase().includes(query.toLowerCase())
         );
     
-        setFilteredUsers(filtered);
+        setFilteredassets(filtered);
     };
 
     return (
@@ -65,29 +72,24 @@ const RequestInboundPage = () => {
             </div>
             <div className="mt-5">
                 <Search
-                    placeholder="Cari Email User/Branch User/Dll"
+                    placeholder="Cari Email asset/Branch asset/Dll"
                     onSearch={handleSearch} 
                 />
             </div>
             <div className="mt-5">
-                { filteredUsers.length > 0 ? (
+                { filteredassets.length > 0 ? (
                     <DataTable
                         columns={columns}
-                        data={filteredUsers}
+                        data={filteredassets}
                         actions={[
                             {
                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/requestinbound/view/${row.userId}`,
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                            {
-                                label:  <IoReaderSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/requestinbound/edit/${row.userId}`,
+                                href: (row) => `/dashboard/requestinbound/view/${row.assetId}`,
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
                                 label: <IoTrash className="text-red-700" />,
-                                onClick: (row) => console.log("Delete user:", row.userId),
+                                onClick: (row) => console.log("Delete asset:", row.assetId),
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                         ]}
