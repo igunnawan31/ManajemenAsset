@@ -24,7 +24,5 @@ namespace qrmanagament.backend.Models{
         public ICollection<Ticket> outbounds {get; set;} = new List<Ticket>();
         public ICollection<User> users {get; set;} = new List<User>();
         public ICollection<Branch> branches {get; set;} = new List<Branch>();
-        [ForeignKey("parentId")]
-        public Branch parent {get; set;} = null!;
     }
 }

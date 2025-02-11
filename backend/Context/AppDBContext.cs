@@ -26,10 +26,6 @@ namespace qrmanagament.backend.Context{
                     .WithOne(a => a.branch)
                     .HasForeignKey(a => a.userBranch);
 
-                entity.HasOne(a => a.parent)
-                    .WithMany(a => a.branches)
-                    .HasForeignKey(a => a.parentId);
-
                 entity.HasData(
                     new Branch{branchId = 1, branchName = "Astra International", branchEmail = "astraInternational@ai.astra.co.id", branchPhone = "1234567890123", branchLocation = "Jakarta Utara"},
                     new Branch{branchId = 2, branchName = "Astragraphia Information Technology", branchEmail = "ag.it@ai.astra.co.id", branchPhone = "1234567890321", branchLocation = "Jakarta Selatan", parentId = 1}

@@ -271,16 +271,19 @@ namespace qrmanagament.backend.Repositories{
                         // Ensure date in the correct format
                         // book.datePublished = DateOnly.TryFormat();
 
-                        string insertBookQuery = @"
-                            INSERT INTO Assets 
+                        string insertAssetQuery = @"
+                            INSERT INTO 
+                                Assets (id, name, locationId, assetType, itemStatus, imagePath)
+                            VALUES
+                                (@id, @name, @locationId, @assetType, @itemStatus, @imagePath) 
                         ";
-                        using (var assetCommand = new SqlCommand(insertBookQuery, connection, transaction)){
-                            assetCommand.Parameters.AddWithValue("@bookId", asset.id);
-                            assetCommand.Parameters.AddWithValue("@title", asset.name);
-                            assetCommand.Parameters.AddWithValue("@datePublished", asset.locationId);
-                            assetCommand.Parameters.AddWithValue("@totalPage", asset.assetType);
-                            assetCommand.Parameters.AddWithValue("@country", asset.itemStatus);
-                            assetCommand.Parameters.AddWithValue("@language", asset.image);
+                        using (var assetCommand = new SqlCommand(insertAssetQuery, connection, transaction)){
+                            assetCommand.Parameters.AddWithValue("@id", asset.id);
+                            assetCommand.Parameters.AddWithValue("@name", asset.name);
+                            assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
+                            assetCommand.Parameters.AddWithValue("@assetType", asset.assetType.ToString());
+                            assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus.ToString());
+                            assetCommand.Parameters.AddWithValue("@imagePath", asset.image);
 
                             rowsAffected = await assetCommand.ExecuteNonQueryAsync();
                         }
