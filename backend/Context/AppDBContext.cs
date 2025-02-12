@@ -99,6 +99,7 @@ namespace qrmanagement.backend.Context{
 
             modelBuilder.Entity<User>(entity => {
                 entity.HasKey(a => a.userId);
+                entity.HasIndex(a => a.userEmail).IsUnique();
 
                 entity.HasOne(a => a.branch)
                     .WithMany(a => a.users)

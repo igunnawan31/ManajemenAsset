@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using qrmanagament.backend.Context;
+using qrmanagement.backend.Context;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options => {
