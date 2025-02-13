@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using qrmanagement.backend.Models;
 
 namespace qrmanagement.backend.Helpers
 {
@@ -34,5 +36,28 @@ namespace qrmanagement.backend.Helpers
 
             return (JwtSecurityToken) validatedToken;
         }
-   } 
+
+        internal object GenerateToken(User user)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secureKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.userEmail),
+                new Claim("role", user.userRole.ToString()),
+                new Claim("subRole", user.userSubRole.ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "http://localhost:5199",
+                audience: "http://localhost:3000",
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(5),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+    } 
 }

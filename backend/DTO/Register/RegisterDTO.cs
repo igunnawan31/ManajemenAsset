@@ -12,6 +12,5 @@ namespace qrmanagement.backend.DTO.register
         public required Role userRole{ get; set; }
         public required SubRole userSubRole{ get; set; }
         public required string password{ get; set; }
-        public required Branch branch { get; set; }
     }
 }

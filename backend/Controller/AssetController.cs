@@ -3,8 +3,8 @@ using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.Repositories;
 
 namespace qrmanagement.backend.Controllers{
-    [ApiController]
     [Route("api/asset")]
+    [ApiController]
     public class AssetController : ControllerBase{
         private readonly IAssetRepository _assetRepo;
         private readonly ILogger<AssetController> _logger;
