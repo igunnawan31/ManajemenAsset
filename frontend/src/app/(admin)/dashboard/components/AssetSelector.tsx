@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import Search from "./Search";
-import FilterDropdown from "@/app/(user)/usercomponent/Filter";
+import FilterDropdown from "@/app/(user)/userdashboard/usercomponent/Filter";
 
 interface Asset {
   no: string;

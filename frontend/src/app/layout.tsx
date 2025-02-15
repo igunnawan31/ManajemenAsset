@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  adjustFontFallback: false
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  adjustFontFallback: false
-});
+import ProtectedRoute from "./component/ProtectedRoute";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,7 +12,18 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-poppins",
-  adjustFontFallback: false
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-geist-mono",
 });
 
 export default function RootLayout({
@@ -32,11 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" className={`${poppins.variable} ${geist.variable} ${geistMono.variable}`}>
+      <body className="antialiased">
+          {children}
       </body>
     </html>
   );

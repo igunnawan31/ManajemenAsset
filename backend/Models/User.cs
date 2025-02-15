@@ -5,9 +5,8 @@ using System.Text.Json.Serialization;
 namespace qrmanagement.backend.Models {
     public class User {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int userId{get; set;}
+        public int userId{get; set;}
         [Required]
         public required string userName{get; set;}
         [Required]

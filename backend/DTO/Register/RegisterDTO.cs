@@ -4,7 +4,6 @@ namespace qrmanagement.backend.DTO.register
 {
     public class RegisterDTO
     {
-        public required int userId{ get; set; }
         public required string userName{ get; set; }
         public required string userEmail{ get; set; }
         public required int userBranch{ get; set; }

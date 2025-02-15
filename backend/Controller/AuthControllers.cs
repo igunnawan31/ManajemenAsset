@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,11 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromForm] RegisterDTO dto)
+        public IActionResult Register([FromBody] RegisterDTO dto)
         {
             try
             {
+                Console.WriteLine($"Received DTO: {JsonSerializer.Serialize(dto)}");
                 if (string.IsNullOrWhiteSpace(dto.userEmail) || !Regex.IsMatch(dto.userEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                     return BadRequest(new { message = "Invalid email format." });
 
@@ -34,7 +36,6 @@ namespace qrmanagement.backend.Controllers{
 
                 var user = new User
                 {
-                    userId = dto.userId,
                     userName = dto.userName,
                     userEmail = dto.userEmail,
                     userBranch = dto.userBranch,
@@ -59,8 +60,23 @@ namespace qrmanagement.backend.Controllers{
             }
         }
 
+        [HttpPost("validate-email")]
+        public IActionResult ValidateEmail([FromBody] EmailDTO dto) {
+            try {
+                var user = _repository.GetByEmail(dto.userEmail);
+                if (user == null)
+                    return BadRequest(new { message = "Account is not registered." });
+
+                return Ok(new { message = "Email exists" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred", error = ex.Message });
+            }
+        }
+
         [HttpPost("login")]
-        public IActionResult Login(LoginDTO dto) {
+        public IActionResult Login([FromBody] LoginDTO dto) {
             try {
                 var user = _repository.GetByEmail(dto.userEmail);
                 if (user == null)
@@ -69,7 +85,7 @@ namespace qrmanagement.backend.Controllers{
                 if (!BCrypt.Net.BCrypt.Verify(dto.password, user.password))
                     return BadRequest(new { message = "Invalid credentials." });
 
-                var jwt = _jwtService.generate(user.userEmail);
+                var jwt = _jwtService.generate(user);
 
                 Response.Cookies.Append("jwt", jwt, new CookieOptions
                 {
@@ -78,7 +94,16 @@ namespace qrmanagement.backend.Controllers{
                     SameSite = SameSiteMode.Strict
                 });
 
-                return Ok(new { message = "Login successful." });
+                Response.Cookies.Append("userSubRole", user.userSubRole.ToString(), new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+                return Ok(new { 
+                    message = "Login successful.", 
+                });
             }
             catch (Exception ex) {
                 return StatusCode(500, new { message = "An error occurred during login.", error = ex.Message });

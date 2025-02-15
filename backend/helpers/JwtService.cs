@@ -10,17 +10,28 @@ namespace qrmanagement.backend.Helpers
    {
         private string secureKey = "qrmanagement is a project for Praktik Kerja Lapangan in Astragraphia";
 
-        public string generate(string userId)
+        public string generate(User user)
         {
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secureKey));
-            var credentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
-            var header = new JwtHeader(credentials);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secureKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
-            var payload = new JwtPayload(userId, null, null, null, DateTime.Today.AddDays(1));
-            var securityToken = new JwtSecurityToken(header, payload);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.userEmail),
+                new Claim("role", user.userRole.ToString()),
+                new Claim("subRole", user.userSubRole.ToString())
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(securityToken);
-        }
+            var token = new JwtSecurityToken(
+                issuer: "http://localhost:5199",
+                audience: "http://localhost:3000",
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(5),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+}
 
         public JwtSecurityToken verify(string jwt)
         {
@@ -31,7 +42,8 @@ namespace qrmanagement.backend.Helpers
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
-                ValidateAudience = false    
+                ValidateAudience = false,
+                ValidateLifetime = true 
             }, out SecurityToken validatedToken);
 
             return (JwtSecurityToken) validatedToken;
