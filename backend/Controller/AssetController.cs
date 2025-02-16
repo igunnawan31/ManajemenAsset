@@ -3,8 +3,8 @@ using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.Repositories;
 
 namespace qrmanagement.backend.Controllers{
-    [ApiController]
     [Route("api/asset")]
+    [ApiController]
     public class AssetController : ControllerBase{
         private readonly IAssetRepository _assetRepo;
         private readonly ILogger<AssetController> _logger;
@@ -19,6 +19,7 @@ namespace qrmanagement.backend.Controllers{
             if(assets == null){
                 return NotFound();
             }
+            _logger.LogDebug("Berhasil");
             return Ok(assets);
         }
 
@@ -50,12 +51,21 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> AddAsset([FromForm] AssetRequestDTO asset){
+        public async Task<IActionResult> AddAsset([FromForm] CreateAssetDTO asset){
             int row = await _assetRepo.AddAsset(asset);
             if(row == 0){
-                return BadRequest("Failed while creating book");
+                return BadRequest("Failed while creating asset");
             }
-            return CreatedAtAction(nameof(asset), new {assetNumber = asset.id});
+            return Ok(new {statusCode = 200, message = "Asset Created Successfully"});
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateAsset([FromForm] UpdateAssetDTO asset){
+            int row = await _assetRepo.UpdateAsset(asset);
+            if(row == 0){
+                return BadRequest("Failed while updating asset");
+            }
+            return Ok( new {StatusCode = 200, message = "Asset Updated Successfully"});
         }
     }
 }

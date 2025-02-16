@@ -33,7 +33,7 @@ namespace qrmanagement.backend.Repositories{
                             name,
                             locationId,
                             assetType,
-                            managementStatus,
+                            itemStatus,
                             imagePath
                         FROM 
                             Assets
@@ -86,7 +86,7 @@ namespace qrmanagement.backend.Repositories{
                             name,
                             locationId,
                             assetType,
-                            managementStatus,
+                            itemStatus,
                             imagePath
                         FROM 
                             Assets
@@ -147,7 +147,7 @@ namespace qrmanagement.backend.Repositories{
                             name,
                             locationId,
                             assetType,
-                            managementStatus,
+                            itemStatus,
                             imagePath
                         FROM 
                             Assets
@@ -204,7 +204,7 @@ namespace qrmanagement.backend.Repositories{
                             name,
                             locationId,
                             assetType,
-                            managementStatus,
+                            itemStatus,
                             imagePath
                         FROM 
                             Assets
@@ -245,7 +245,7 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> AddAsset(AssetRequestDTO asset){
+        public async Task<int> AddAsset(CreateAssetDTO asset){
             _logger.LogDebug("Adding asset to the database.");
             
             int rowsAffected = 0;
@@ -267,9 +267,6 @@ namespace qrmanagement.backend.Repositories{
                         using (var fileStream = new FileStream(filePath, FileMode.Create)){
                             await asset.image.CopyToAsync(fileStream);
                         }
-
-                        // Ensure date in the correct format
-                        // book.datePublished = DateOnly.TryFormat();
 
                         string insertAssetQuery = @"
                             INSERT INTO 
@@ -308,6 +305,61 @@ namespace qrmanagement.backend.Repositories{
 
                 throw new Exception("Internal Server Error");
             }        
+        }
+
+        public async Task<int> UpdateAsset(UpdateAssetDTO asset){
+            _logger.LogDebug("Patching asset data");
+
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        string updateQuery = @"
+                            UPDATE 
+                                Assets
+                            SET
+                                name = @name, 
+                                locationId = @locationId,
+                                assetType = @assetType,
+                                itemStatus = @itemStatus
+                            WHERE
+                                id = @id
+                        ";
+
+                        using (var assetCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            assetCommand.Parameters.AddWithValue("@id", asset.id);
+                            assetCommand.Parameters.AddWithValue("@name", asset.name);
+                            assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
+                            assetCommand.Parameters.AddWithValue("@assetType", asset.assetType.ToString());
+                            assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus.ToString());
+
+                            rowsAffected = await assetCommand.ExecuteNonQueryAsync();
+                        }
+
+                        _logger.LogDebug("Successfuly updated asset");
+                        transaction.Commit();
+                    }
+                }     
+
+                _logger.LogDebug("Asset successfully updated");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while updating asset");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while updating asset.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }    
         }
     }
 }
