@@ -8,6 +8,19 @@ const NavbarAdmin = () => {
     const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    const logout = () => {
+        document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "jwt=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    
+        localStorage.removeItem("token");
+        sessionStorage.clear();
+    
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 500);
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
@@ -38,7 +51,7 @@ const NavbarAdmin = () => {
                                 <ul className="py-2 text-sm text-gray-700 poppins">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout} >Logout</li>
                                 </ul>
                             </div>
                         )}

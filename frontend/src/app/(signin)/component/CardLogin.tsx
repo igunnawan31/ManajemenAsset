@@ -4,41 +4,88 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import PasswordInput from "../component/PasswordInput";
+import { useRouter } from "next/navigation";
 
 const CardLogin = () => {
     const [step, setStep] = useState<"email" | "password">("email");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    const dummyUsers = [
-        { email: "testuser", password: "123456" },
-        { email: "testuser2", password: "1234567" },
-        { email: "testuser3", password: "12345678" },
-    ];
-
-    const handleNext = () => {
-        const userExist = dummyUsers.some(user => user.email === email);
-        if (userExist) {
+    const handleNext = async () => {
+        if (!email) {
+            setError("Please fill in the field");
+            return;
+        }
+    
+        setLoading(true);
+    
+        try {
+            const payload = { userEmail: email, password: password};
+    
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/validate-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(payload),
+            });
+    
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Login failed");
+            }
+    
             setStep("password");
             setError("");
-        } else if (!email) {
-            setError("Please fill in the field");
-        } else {
-            setError("Email not found in our database");
+        } catch (err: any) {
+            setError(err.message || "Login failed");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleLogin = () => {
-        const validUser = dummyUsers.some(user => user.email === email && user.password === password);
-        if (validUser) {
-            alert("Login Successful!");
-        } else if (!password) {
+    const handleLogin = async () => {
+        if (!password) {
             setError("Please fill in the field");
-        } else {
-            setError("Email & Password could be wrong");
+            return;
+        }
+    
+        setLoading(true);
+    
+        try {
+            const payload = { userEmail: email, password: password};
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(payload),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.message || "Login failed");
+            }
+            
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userSubRole", data.subRole);
+    
+            if (data.subRole === "Kepala_Gudang") {
+                console.log("Redirecting to /dashboard");
+                router.push("/dashboard");
+            } else if (data.subRole === "PIC_Gudang") {
+                console.log("Redirecting to /userdashboard");
+                router.push("/userdashboard/inbound");
+            }
+        } catch (err: any) {
+            setError(err.message || "Login failed");
+        } finally {
+            setLoading(false);
         }
     };
+    
 
     return (
         <div className="w-full md:w-[500px] bg-white shadow-lg p-6 border border-gray-200">

@@ -12,6 +12,18 @@ const UserNavbar = () => {
     const dropdownRef = useRef(null);
     const dropdownMobileRef = useRef(null);
 
+    const logout = () => {
+        document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "jwt=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    
+        localStorage.removeItem("token");
+        sessionStorage.clear();
+    
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 500);
+    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -82,7 +94,7 @@ const UserNavbar = () => {
                                 <ul className="py-2 text-sm text-gray-700 w-full">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout}>Logout</li>
                                 </ul>
                             </div>
                         )}
@@ -129,7 +141,7 @@ const UserNavbar = () => {
                                 <ul className="py-2 text-sm text-gray-700">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout}>Logout</li>
                                 </ul>
                             </div>
                         )}
