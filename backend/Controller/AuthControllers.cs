@@ -103,6 +103,8 @@ namespace qrmanagement.backend.Controllers{
 
                 return Ok(new { 
                     message = "Login successful.", 
+                    token = jwt,
+                    SubRole = user.userSubRole.ToString()
                 });
             }
             catch (Exception ex) {

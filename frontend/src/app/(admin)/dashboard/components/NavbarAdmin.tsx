@@ -14,10 +14,12 @@ const NavbarAdmin = () => {
         document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     
         localStorage.removeItem("token");
+        localStorage.removeItem("userSubRole");
+        localStorage.removeItem("ally-supports-cache");
         sessionStorage.clear();
     
         setTimeout(() => {
-            window.location.href = "/";
+            window.location.href = "/logout";
         }, 500);
     };
 
