@@ -361,5 +361,71 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal Server Error");
             }    
         }
+
+        public async Task<int> DeleteAsset(string id){
+            _logger.LogDebug("Deleting asset from the database");
+
+            int rowsAffected = 0;
+            try
+            {
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        string checkMoveQuery = @"
+                            SELECT
+                                am.status
+                            FROM 
+                                AssetMoves am
+                            JOIN
+                                Tickets t ON t.ticketNumber = am.ticketNumber
+                            WHERE
+                                am.AssetNumber = @id
+                            ORDER BY
+                                t.outboundDate DESC
+                        ";
+                        using (var checkMoveCommand = new SqlCommand(checkMoveQuery, connection, transaction)){
+                            using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
+                                checkMoveCommand.Parameters.AddWithValue("@id", id);
+                                if (Enum.Parse<MoveStatus>(reader.GetString(0))==MoveStatus.Incomplete){
+                                    throw new Exception("Asset is currently being transported");
+                                }
+                            }
+                        }
+
+                        string deleteAssetQuery = @"
+                            DELETE FROM
+                                Assets
+                            WHERE
+                                id = @id
+                        ";
+                        using (var assetCommand = new SqlCommand(deleteAssetQuery, connection, transaction)){
+                            assetCommand.Parameters.AddWithValue("@id", id);
+
+                            rowsAffected = await assetCommand.ExecuteNonQueryAsync();
+                        }
+                        _logger.LogDebug("Successfuly deleted Asset");
+                        transaction.Commit();
+                    }
+                }
+
+                _logger.LogDebug("Asset successfully deleted.");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while deleting asset");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while deleting asset.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            } 
+        }
     }
 }

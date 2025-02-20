@@ -67,5 +67,14 @@ namespace qrmanagement.backend.Controllers{
             }
             return Ok( new {StatusCode = 200, message = "Asset Updated Successfully"});
         }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteAsset([FromBody] string id){
+            int row = await _assetRepo.DeleteAsset(id);
+            if(row == 0){
+                return BadRequest("Failed while deleting asset");
+            }
+            return Ok(new {StatusCode = 200, message = "Asset Deleted Successfully"});
+        }
     }
 }

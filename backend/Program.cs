@@ -35,6 +35,7 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<JwtService>();
 
 builder.Logging.ClearProviders();
@@ -62,6 +63,14 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        httpsOptions.AllowAnyClientCertificate();
+    });
+});
+
 var app = builder.Build();
 app.Logger.LogInformation("Adding Routes");
 
@@ -75,7 +84,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Frontend");
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();

@@ -23,6 +23,6 @@ namespace qrmanagement.backend.Models{
     public enum MoveStatus{
         Completed,
         Missing, 
-        UnComplete
+        Incomplete
     }
 }

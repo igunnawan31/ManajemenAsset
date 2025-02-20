@@ -8,5 +8,6 @@ namespace qrmanagement.backend.Repositories{
         Task <IEnumerable<AssetResponseDTO>> GetAssetByTicketNumber(string ticketNumber);
         Task <int> AddAsset(CreateAssetDTO asset);
         Task <int> UpdateAsset(UpdateAssetDTO asset);
+        Task <int> DeleteAsset(string id);
     }
 }
