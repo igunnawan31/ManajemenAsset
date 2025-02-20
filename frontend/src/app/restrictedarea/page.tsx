@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Footer from "../component/Footer";
 
 export default function RestrictedArea() {
-  const router = useRouter(); // Get router instance
+  const router = useRouter();
 
   return (
     <section id="Home" className="relative min-h-screen overflow-hidden">

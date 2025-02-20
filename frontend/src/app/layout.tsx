@@ -34,7 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${geist.variable} ${geistMono.variable}`}>
       <body className="antialiased">
+        {/* <ProtectedRoute> */}
           {children}
+        {/* </ProtectedRoute> */}
       </body>
     </html>
   );

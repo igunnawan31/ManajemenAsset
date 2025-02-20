@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
-  const isAuthenticated = typeof window !== "undefined" && localStorage.getItem("token");
+  const isAuthenticated = localStorage.getItem("token");
 
   useEffect(() => {
     if (!isAuthenticated) {

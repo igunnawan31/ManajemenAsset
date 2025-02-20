@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,10 +19,12 @@ const UserNavbar = () => {
         document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     
         localStorage.removeItem("token");
+        localStorage.removeItem("userSubRole");
+        localStorage.removeItem("ally-supports-cache");
         sessionStorage.clear();
     
         setTimeout(() => {
-            window.location.href = "/";
+            window.location.href = "/logout";
         }, 500);
     };
 
@@ -90,7 +93,7 @@ const UserNavbar = () => {
 
                         {isDropdownMenuOpen && (
                             <div 
-                                className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg z-50 hidden md:flex">
+                                className="absolute w-64 mt-5 bg-white border rounded-md shadow-lg hidden md:flex">
                                 <ul className="py-2 text-sm text-gray-700 w-full">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
