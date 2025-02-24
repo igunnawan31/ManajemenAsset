@@ -8,7 +8,7 @@ export default function middleware(req: NextRequest) {
 
     if (!token) {
         console.log("No token found, redirecting to /sign-in");
-        return NextResponse.redirect(new URL("/", req.url));
+        return NextResponse.redirect(new URL("/sign-in", req.url));
     }
 
     const { pathname } = req.nextUrl;

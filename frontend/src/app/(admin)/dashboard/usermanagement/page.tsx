@@ -11,32 +11,57 @@ import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 interface User {
     userId: string;
     userName: string;
-    userRole: string;
     userEmail: string;
     userBranch: string;
     userPhone: string;
+    userRole: string;
+    userSubRole: string;
 }
 
 const UserManagement = () => {
-    // const [users, setUsers] = useState<User[]>([]);
-    const [users, setUsers] = useState<User[]>([
-        { userId: "1", userName: "igun", userRole: "Admin Pusat", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
-        { userId: "2", userName: "igun2", userRole: "Admin Cabang", userEmail: "igunnawan25@gmail.com", userBranch: "Astra Daihatsu Motor - Perum", userPhone: "085959913762" },
-        { userId: "3", userName: "igun3", userRole: "Karyawan Pusat", userEmail: "igunnawan26@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913763" },
-        { userId: "4", userName: "igun4", userRole: "Karyawan Cabang", userEmail: "igunnawan27@gmail.com", userBranch: "Astra Daihatsu Motor - Cibinong", userPhone: "085959913764" },
-    ]);
-
+    const [users, setUsers] = useState<User[]>([]);
+    const [user, setUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
+    const itemsPerPage = 5;
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`)
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            
+            .then((data) => {
+                setUsers(data);
+                setFilteredUsers(data);
+                setLoading(false);
+            })
+
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setError('Failed to fetch data. Please try again later.');
+                setLoading(false);
+            })
+    })
 
     const columns = [
-        { key: "userId", label: "No", alwaysVisible: true },
-        { key: "userName", label: "Nama User", alwaysVisible: true },
-        { key: "userRole", label: "Role User", alwaysVisible: true },
-        { key: "userEmail", label: "Email User", alwaysVisible: true },
-        { key: "userBranch", label: "Branch User" },
-        { key: "userPhone", label: "Phone User" },
+        { label: "Name", key: "userName", alwaysVisible: true   },
+        { label: "Email", key: "userEmail", alwaysVisible: true  },
+        { label: "Branch", key: "userBranch", alwaysVisible: true  },
+        { label: "Phone", key: "userPhone" },
+        { label: "Role", key: "userRole", alwaysVisible: true  },
+        { label: "Sub Role", key: "userSubRole", alwaysVisible: true  },
     ];
-
+    
     const handleSearch = (query: string) => {
         if (!query.trim()) {
           setFilteredUsers(users);
@@ -47,18 +72,31 @@ const UserManagement = () => {
           user.userName.toLowerCase().includes(query.toLowerCase()) ||
           user.userEmail.toLowerCase().includes(query.toLowerCase()) ||
           user.userBranch.toLowerCase().includes(query.toLowerCase()) ||
-          user.userPhone.toLowerCase().includes(query.toLowerCase())
+          user.userPhone.toLowerCase().includes(query.toLowerCase()) ||
+          user.userRole.toLowerCase().includes(query.toLowerCase()) ||
+          user.userSubRole.toLowerCase().includes(query.toLowerCase())
         );
-    
+        
+        setCurrentPage(1);
         setFilteredUsers(filtered);
+    };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  
+    const handlePageChange = (page: number) => {
+      setCurrentPage(page);
     };
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
             <Upper title="User Management" />
             <div className="mt-5">
-                <div className="flex justify-end items-end">
-                    <Link href="dashboard/usermanagement/create">
+                <div className="flex justify-end">
+                    <Link href="/dashboard/usermanagement/create">
                         <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
                             <span className="text-white font-sans font-bold">Create New User</span>
                         </button>
@@ -66,34 +104,69 @@ const UserManagement = () => {
                 </div>
             </div>
             <div className="mt-5">
-                <Search
-                    placeholder="Cari Email User/Branch User/Dll"
-                    onSearch={handleSearch} 
-                />
+                <Search placeholder="Search by Name, Email, Branch, etc." onSearch={handleSearch} />
             </div>
             <div className="mt-5">
-                { filteredUsers.length > 0 ? (
-                    <DataTable
-                        columns={columns}
-                        data={filteredUsers}
-                        actions={[
-                            {
-                                label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                            {
-                                label:  <IoReaderSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/usermanagement/edit/${row.userId}`,
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                            {
-                                label: <IoTrash className="text-red-700" />,
-                                onClick: (row) => console.log("Delete user:", row.userId),
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                        ]}
-                    />
+                {loading ? (
+                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">Loading...</div>
+                ) : error ? (
+                    <div className="text-center text-red-500 font-poppins text-lg mt-5">{error}</div>
+                ) : filteredUsers.length > 0 ? (
+                    <>
+                        <DataTable
+                            columns={columns}
+                            data={currentUsers}
+                            actions={[
+                                {
+                                    label: <IoEyeSharp className="text-[#202B51]" />,
+                                    href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
+                                    className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                },
+                                {
+                                    label: <IoReaderSharp className="text-[#202B51]" />,
+                                    href: (row) => `/dashboard/usermanagement/edit/${row.userId}`,
+                                    className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                },
+                                {
+                                    label: <IoTrash className="text-red-700" />,
+                                    onClick: (row) => console.log("Delete user:", row.userId),
+                                    className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                },
+                            ]}
+                        />
+                        {/* Pagination Controls */}
+                        <div className="mt-5 flex justify-center items-center">
+                            <button
+                                className={`px-4 py-2 mx-1 rounded ${
+                                    currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                }`}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            >
+                                Previous
+                            </button>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <button
+                                    key={index}
+                                    className={`px-4 py-2 mx-1 rounded ${
+                                        currentPage === index + 1 ? "bg-blue-700 text-white" : "bg-gray-200 hover:bg-gray-400"
+                                    }`}
+                                    onClick={() => handlePageChange(index + 1)}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+                            <button
+                                className={`px-4 py-2 mx-1 rounded ${
+                                    currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                }`}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </>
                 ) : (
                     <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                 )}
