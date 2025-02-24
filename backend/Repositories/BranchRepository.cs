@@ -129,68 +129,7 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal server error");
             }
         }
-
-        public async Task<BranchResponseDTO> GetBranchParent(int id)
-        {
-            try{
-                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                _logger.LogDebug("Connection string retrieved");
-
-                using (SqlConnection connection = new SqlConnection(connectionString)){
-                    await connection.OpenAsync();
-                    _logger.LogDebug("Database connection opened.");
-
-                    string query = @"
-                        SELECT
-                            branchId,
-                            branchName,
-                            branchEmail,
-                            branchPhone,
-                            branchLocation,
-                            parentId
-                        FROM 
-                            Branches
-                        WHERE
-                            parentId = @id
-                    ";
-
-                    _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
-                        command.Parameters.AddWithValue("@id", id);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
-                            _logger.LogDebug("Query executed successfully. Reading data...");
-
-                            if (await reader.ReadAsync()){
-                                BranchResponseDTO branch = new BranchResponseDTO{
-                                    branchId = reader.GetInt32(0),
-                                    branchName = reader.GetString(1),
-                                    branchEmail = reader.GetString(2),
-                                    branchPhone = reader.GetString(3),
-                                    branchLocation = reader.GetString(4),
-                                    parentId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                                };
-                                _logger.LogDebug("Branch fetched successfully");
-                                return branch;
-                            }
-                            else{
-                                _logger.LogWarning("No branch found with the given id: {parentId}", id);
-                                return null!;
-                            }
-                        }
-                    }
-
-                }
-            }
-            catch (SqlException sqlEx){
-                _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while retrieving branch data from the database");
-            }
-            catch (Exception ex){
-                _logger.LogError($"An error occured: {ex.Message}");
-                throw new Exception("Internal server error");
-            }
-        }
-
+        
         public async Task<int> AddBranch(CreateBranchDTO branch)
         {
             _logger.LogDebug("Adding branch to the database.");

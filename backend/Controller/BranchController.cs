@@ -32,15 +32,6 @@ namespace qrmanagement.backend.Controllers{
             return Ok(branch);
         }
 
-        [HttpGet("parent/{id}")]
-        public async Task<ActionResult<BranchResponseDTO>> GetBranchParent(int id){
-            var branch = await _branchRepo.GetBranchParent(id);
-            if(branch == null){
-                return NotFound();
-            }
-            return Ok(branch);
-        }
-
         [HttpPost("create")]
         public async Task<IActionResult> AddBranch([FromForm] CreateBranchDTO branch){
             int row = await _branchRepo.AddBranch(branch);
@@ -59,7 +50,7 @@ namespace qrmanagement.backend.Controllers{
             return Ok( new {StatusCode = 200, message = "Branch Updated Successfully"});
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteBranch([FromBody] int id){
             int row = await _branchRepo.DeleteBranch(id);
             if(row == 0){
