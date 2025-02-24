@@ -109,7 +109,7 @@ namespace qrmanagement.backend.Repositories{
                                     itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
                                     imagePath = reader.GetString(5)
                                 };
-                                _logger.LogDebug("Book fetched successfully");
+                                _logger.LogDebug("Asset fetched successfully");
                                 return asset;
                             }
                             else{
@@ -308,7 +308,7 @@ namespace qrmanagement.backend.Repositories{
         }
 
         public async Task<int> UpdateAsset(UpdateAssetDTO asset){
-            _logger.LogDebug("Patching asset data");
+            _logger.LogDebug("Updating asset data");
 
             int rowsAffected = 0;
             try{
