@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qrmanagement.backend.Context;
 
@@ -11,9 +12,11 @@ using qrmanagement.backend.Context;
 namespace qrmanagement.backend.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250224042214_UpdateColumnBranches")]
+    partial class UpdateColumnBranches
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace qrmanagement.backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("parentId")
+                    b.Property<int>("parentId")
                         .HasColumnType("int");
 
                     b.HasKey("branchId");
@@ -157,7 +160,8 @@ namespace qrmanagement.backend.Migrations
                             branchEmail = "astraInternational@ai.astra.co.id",
                             branchLocation = "Jakarta Utara",
                             branchName = "Astra International",
-                            branchPhone = "1234567890123"
+                            branchPhone = "1234567890123",
+                            parentId = 0
                         },
                         new
                         {

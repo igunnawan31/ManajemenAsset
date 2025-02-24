@@ -1,7 +1,7 @@
 using qrmanagement.backend.Models;
 
 namespace qrmanagement.backend.DTO.Asset{
-    public class AssetResponseDTO{
+    public class AssetResponseDTO {
         public required string id {get; set;}
         public required string name {get; set;}
         public required int locationId {get; set;}

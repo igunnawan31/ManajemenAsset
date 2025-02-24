@@ -17,6 +17,8 @@ namespace qrmanagement.backend.Context{
         {
             modelBuilder.Entity<Branch>(entity => {
                 entity.HasKey(a => a.branchId);
+                entity.Property(a => a.parentId)
+                        .IsRequired(false);
 
                 entity.HasMany(a => a.assets)
                     .WithOne(a => a.branch)
