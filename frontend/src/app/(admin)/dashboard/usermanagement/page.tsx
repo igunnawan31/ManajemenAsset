@@ -54,12 +54,12 @@ const UserManagement = () => {
     })
 
     const columns = [
-        { label: "Name", key: "userName" },
-        { label: "Email", key: "userEmail" },
-        { label: "Branch", key: "userBranch" },
+        { label: "Name", key: "userName", alwaysVisible: true   },
+        { label: "Email", key: "userEmail", alwaysVisible: true  },
+        { label: "Branch", key: "userBranch", alwaysVisible: true  },
         { label: "Phone", key: "userPhone" },
-        { label: "Role", key: "userRole" },
-        { label: "Sub Role", key: "userSubRole" },
+        { label: "Role", key: "userRole", alwaysVisible: true  },
+        { label: "Sub Role", key: "userSubRole", alwaysVisible: true  },
     ];
     
     const handleSearch = (query: string) => {
