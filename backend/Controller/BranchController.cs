@@ -50,7 +50,7 @@ namespace qrmanagement.backend.Controllers{
             return Ok( new {StatusCode = 200, message = "Branch Updated Successfully"});
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete")]
         public async Task<IActionResult> DeleteBranch([FromBody] int id){
             int row = await _branchRepo.DeleteBranch(id);
             if(row == 0){
