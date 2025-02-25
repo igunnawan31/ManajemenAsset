@@ -8,31 +8,57 @@ import { useState, useEffect } from "react";
 import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
 interface Asset {
-    no: string;
-    assetId: string;
-    assetName: string;
-    assetStock: string;
+    id: string;
+    name: string;
+    locationId: string;
+    branchName: string;
     assetType: string;
-    assetStatus: string;
+    itemStatus: string;
 }
 
 const NewAssetManagement = () => {
-    const [assets, setAssets] = useState<Asset[]>([
-        { no: "1", assetId: "AID-001-06022025", assetName: "Samsung_NOTE", assetStock: "4", assetType: "Elektronik", assetStatus: "Active" },
-        { no: "2", assetId: "AID-002-06022025", assetName: "HP_JETINK", assetStock: "5", assetType: "Elektronik", assetStatus: "In-Active" }
-    ]);
-
-    const [filteredAssets, setFilteredAssets] = useState<Asset[]>(assets);
+    const [newAssets, setNewAssets] = useState<Asset[]>([]);
+    const [filteredAssets, setFilteredAssets] = useState<Asset[]>(newAssets);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const itemsPerPage = 5;
     const [statusFilter, setStatusFilter] = useState<string>("All");
     const [searchQuery, setSearchQuery] = useState<string>("");
+    const [branches, setBranches] = useState<Record<string, string>>({});
+
+    const [newAsset, setNewAsset] = useState<Asset | null>(null);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/index`)
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setNewAssets(data);
+                setFilteredAssets(data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setError('Failed to fetch data. Please try again later.');
+                setLoading(false);
+            });
+    }, []);
 
     const columns = [
-        { key: "no", label: "No", alwaysVisible: true },
-        { key: "assetId", label: "Id Asset", alwaysVisible: true },
-        { key: "assetName", label: "Nama Asset", alwaysVisible: true },
-        { key: "assetStock", label: "Stock Asset" },
+        { key: "id", label: "Id Asset", alwaysVisible: true },
+        { key: "name", label: "Nama Asset", alwaysVisible: true },
+        { key: "branchName", label: "Lokasi Saat ini",},
         { key: "assetType", label: "Type Asset", alwaysVisible: true },
-        { key: "assetStatus", label: "Status Asset" },
+        { key: "itemStatus", label: "Status Asset" },
     ];
 
     const handleSearch = (query: string) => {
@@ -44,23 +70,23 @@ const NewAssetManagement = () => {
     };
  
     useEffect(() => {
-        let filtered = assets;
+        let filtered = newAssets;
         if (searchQuery.trim()) {
             filtered = filtered.filter((asset) =>
-                asset.assetId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                asset.assetName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                asset.assetStock.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                asset.locationId.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 asset.assetType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                asset.assetStatus.toLowerCase().includes(searchQuery.toLowerCase())
+                asset.itemStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
         if (statusFilter !== "All") {
-            filtered = filtered.filter((asset) => asset.assetStatus === statusFilter);
+            filtered = filtered.filter((asset) => asset.itemStatus === statusFilter);
         }
 
         setFilteredAssets(filtered);
-    }, [assets, searchQuery, statusFilter]);
+    }, [newAssets, searchQuery, statusFilter]);
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
@@ -98,17 +124,17 @@ const NewAssetManagement = () => {
                         actions={[
                             {
                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/view/${row.userId}`,
+                                href: (row) => `/dashboard/newassetmanagement/view/${row.id}`, // Fix: use row.id
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
                                 label:  <IoReaderSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/edit/${row.userId}`,
+                                href: (row) => `/dashboard/newassetmanagement/edit/${row.Id}`,
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
                                 label: <IoTrash className="text-red-700" />,
-                                onClick: (row) => console.log("Delete user:", row.userId),
+                                onClick: (row) => console.log("Delete user:", row.Id),
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                         ]}

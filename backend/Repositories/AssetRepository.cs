@@ -29,14 +29,17 @@ namespace qrmanagement.backend.Repositories{
 
                     string query = @"
                         SELECT
-                            id,
-                            name,
-                            locationId,
-                            assetType,
-                            itemStatus,
-                            imagePath
+                            a.id,
+                            a.name,
+                            a.locationId,
+                            b.branchName,
+                            a.assetType,
+                            a.itemStatus,
+                            a.imagePath
                         FROM 
-                            Assets
+                            Assets a
+                        JOIN
+                            Branches B ON a.locationId = b.branchId
                     ";
 
                     _logger.LogDebug("Executing query");
@@ -48,10 +51,11 @@ namespace qrmanagement.backend.Repositories{
                                 AssetResponseDTO asset = new AssetResponseDTO{
                                     id = reader.GetString(0),
                                     name = reader.GetString(1),
-                                    locationId = reader.GetInt32(2),
-                                    assetType = Enum.Parse<assetType>(reader.GetString(3)),
-                                    itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
-                                    imagePath = reader.GetString(5)
+                                    locationId = reader.GetInt32(2), 
+                                    branchName = reader.GetString(3),
+                                    assetType = Enum.TryParse<assetType>(reader.GetString(4), out var assetTypeResult) ? assetTypeResult : default,
+                                    itemStatus = Enum.TryParse<managementStatus>(reader.GetString(5), out var statusResult) ? statusResult : default,
+                                    imagePath = reader.GetString(6)
                                 };
                                 assetList.Add(asset);
                             }
