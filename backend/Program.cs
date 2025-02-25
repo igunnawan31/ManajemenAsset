@@ -70,13 +70,13 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ConfigureHttpsDefaults(httpsOptions =>
-    {
-        httpsOptions.AllowAnyClientCertificate();
-    });
-});
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ConfigureHttpsDefaults(httpsOptions =>
+//     {
+//         httpsOptions.AllowAnyClientCertificate();
+//     });
+// });
 
 var app = builder.Build();
 app.Logger.LogInformation("Adding Routes");
@@ -91,7 +91,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Frontend");
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
