@@ -9,5 +9,4 @@ namespace qrmanagement.backend.DTO.Asset{
         public assetType? assetType { get; set; }
         public managementStatus? itemStatus { get; set; }
     }
-
 }
