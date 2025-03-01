@@ -124,12 +124,12 @@ const NewAssetManagement = () => {
                         actions={[
                             {
                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/view/${row.id}`, // Fix: use row.id
+                                href: (row) => `/dashboard/newassetmanagement/view/${row.id}`,
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
                                 label:  <IoReaderSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/edit/${row.Id}`,
+                                href: (row) => `/dashboard/newassetmanagement/edit/${row.id}`,
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {

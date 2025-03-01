@@ -19,6 +19,26 @@ const InboundPage = () => {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
+    
+    
+    const deleteCookie = (name: string) => {
+        document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=None; Secure`;
+    };
+
+    const logout = () => {
+        deleteCookie("token");
+        deleteCookie("jwt");
+        deleteCookie("userSubRole");
+    
+        localStorage.removeItem("token");
+        localStorage.removeItem("userSubRole");
+        localStorage.removeItem("ally-supports-cache");
+        sessionStorage.clear();
+    
+        setTimeout(() => {
+            window.location.replace("/logout"); // Use replace() instead of href
+        }, 500);
+    };
 
     const users: User[] = [
         { userId: "1", userName: "igun", userRole: "Admin Pusat", userEmail: "igunnawan24@gmail.com", userBranch: "Astra International - Pusat", userPhone: "085959913761" },
@@ -80,6 +100,10 @@ const InboundPage = () => {
                         <SearchUser placeholder="Cari Email User/Branch User/Dll" onSearch={handleSearch} />
                     </div>
 
+                    <div onClick={logout}>
+                        logout
+                        </div>
+                    
                     <div className="w-1/2 flex items-center justify-end">
                         <FilterDropdown
                             filters={[

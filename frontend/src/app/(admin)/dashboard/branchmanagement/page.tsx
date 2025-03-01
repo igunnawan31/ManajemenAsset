@@ -118,17 +118,17 @@ const BranchManagement = () => {
                                 actions={[
                                     {
                                         label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
+                                        href: (row) => `/dashboard/branchmanagement/view/${row.branchId}`,
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {
                                         label: <IoReaderSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/usermanagement/edit/${row.userId}`,
+                                        href: (row) => `/dashboard/branchmanagement/edit/${row.branchId}`,
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {
                                         label: <IoTrash className="text-red-700" />,
-                                        onClick: (row) => console.log("Delete user:", row.userId),
+                                        onClick: (row) => console.log("Delete user:", row.branchId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                 ]}

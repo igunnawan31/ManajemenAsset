@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import PasswordInput from "../component/PasswordInput";
 import { useRouter } from "next/navigation";
@@ -87,6 +87,24 @@ const CardLogin = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Enter") {
+                if (step === "email") {
+                    handleNext();
+                } else if (step === "password") {
+                    handleLogin();
+                }
+            }
+        };
+    
+        document.addEventListener("keydown", handleKeyDown);
+        
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [step, email, password]);
     
 
     return (

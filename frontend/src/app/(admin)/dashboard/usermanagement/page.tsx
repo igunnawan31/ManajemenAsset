@@ -32,6 +32,7 @@ const UserManagement = () => {
     const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
     const columns = [
+        { label: "id", key: "userId", alwaysVisible: true   },
         { label: "Name", key: "userName", alwaysVisible: true   },
         { label: "Email", key: "userEmail", alwaysVisible: true  },
         { label: "Branch", key: "userBranch", alwaysVisible: true  },
@@ -41,7 +42,7 @@ const UserManagement = () => {
     ];
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/index`)
             .then((response) => {
                 if (!response.ok) {
                     return response.text().then((text) => {

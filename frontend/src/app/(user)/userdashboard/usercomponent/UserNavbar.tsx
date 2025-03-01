@@ -13,10 +13,14 @@ const UserNavbar = () => {
     const dropdownRef = useRef(null);
     const dropdownMobileRef = useRef(null);
 
+    const deleteCookie = (name: string) => {
+        document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=None; Secure`;
+    };
+    
     const logout = () => {
-        document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "jwt=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        deleteCookie("token");
+        deleteCookie("jwt");
+        deleteCookie("userSubRole");
     
         localStorage.removeItem("token");
         localStorage.removeItem("userSubRole");
@@ -24,7 +28,7 @@ const UserNavbar = () => {
         sessionStorage.clear();
     
         setTimeout(() => {
-            window.location.href = "/logout";
+            window.location.replace("/logout");
         }, 500);
     };
 
