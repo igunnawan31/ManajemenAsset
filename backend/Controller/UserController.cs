@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using qrmanagement.backend.DTO.User;
 using qrmanagement.backend.Repositories;
@@ -42,6 +43,6 @@ namespace qrmanagement.backend.Controllers{
             }
             return Ok(new {statusCode = 200, message = "user Created Successfully"});
         }
-        
+
     }
 }

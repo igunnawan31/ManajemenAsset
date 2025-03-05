@@ -55,7 +55,7 @@ const CardLogin = () => {
         setLoading(true);
     
         try {
-            const payload = { userEmail: email, password: password};
+            const payload = { userEmail: email, password: password };
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -68,11 +68,14 @@ const CardLogin = () => {
             if (!response.ok) {
                 throw new Error(data.message || "Login failed");
             }
-            
+    
             localStorage.setItem("token", data.token);
             localStorage.setItem("userSubRole", data.subRole);
-            console.log(data.subRole);
-            console.log(data.token);
+            localStorage.setItem("userId", data.userId);
+    
+            console.log("Token:", data.token); // Debugging
+            console.log("SubRole:", data.subRole); // Debugging
+            console.log("UserId:", data.userId); // Debugging
     
             if (data.subRole === "Kepala_Gudang") {
                 console.log("Redirecting to /dashboard");

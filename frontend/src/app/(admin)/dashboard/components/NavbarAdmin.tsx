@@ -3,10 +3,12 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { IoCaretDown, IoNotifications } from "react-icons/io5";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 const NavbarAdmin = () => {
     const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const router = useRouter(); // Initialize useRouter
 
     const logout = () => {
         document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -21,6 +23,10 @@ const NavbarAdmin = () => {
         setTimeout(() => {
             window.location.href = "/logout";
         }, 500);
+    };
+
+    const goToProfile = () => {
+        router.push("/dashboard/profile");
     };
 
     useEffect(() => {
@@ -51,9 +57,9 @@ const NavbarAdmin = () => {
                         {isDropdownMenuOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
                                 <ul className="py-2 text-sm text-gray-700 poppins">
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={goToProfile}>Profile</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout} >Logout</li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout}>Logout</li>
                                 </ul>
                             </div>
                         )}

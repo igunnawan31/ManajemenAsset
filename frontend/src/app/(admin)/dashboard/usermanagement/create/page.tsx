@@ -7,7 +7,6 @@ import Upper from "../../components/Upper";
 import { useState, useEffect } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-// Define Role and SubRole enums
 enum Role {
     Cabang = "Cabang",
     Pusat = "Pusat",
@@ -18,19 +17,17 @@ enum SubRole {
     PIC_Gudang = "PIC Gudang",
 }
 
-// Define Type for Branch
 interface Branch {
     branchId: string;
     branchName: string;
 }
 
-// Define the schema using Zod
 const userSchema = z.object({
     userName: z.string().min(1, "Username is required"),
     userEmail: z.string()
         .min(1, "Email is required")
         .email("Invalid email format"),
-    userBranch: z.string().min(1, "Branch is required"), // Will store branchId
+    userBranch: z.string().min(1, "Branch is required"),
     userPhone: z.string().min(1, "Phone is required"),
     userRole: z.string().min(1, "Role is required"),
     userSubRole: z.string().min(1, "SubRole is required"),
