@@ -20,24 +20,29 @@ const InboundPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
     
-    
     const deleteCookie = (name: string) => {
-        document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=None; Secure`;
+        if (typeof window !== "undefined") {
+            document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+        }
     };
 
     const logout = () => {
-        deleteCookie("token");
-        deleteCookie("jwt");
-        deleteCookie("userSubRole");
+        if (typeof window !== "undefined") {
+            deleteCookie("token");
+            deleteCookie("jwt");
+            deleteCookie("userSubRole");
+            deleteCookie("userId");
     
-        localStorage.removeItem("token");
-        localStorage.removeItem("userSubRole");
-        localStorage.removeItem("ally-supports-cache");
-        sessionStorage.clear();
+            localStorage.removeItem("token");
+            localStorage.removeItem("userSubRole");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("ally-supports-cache");
+            sessionStorage.clear();
     
-        setTimeout(() => {
-            window.location.replace("/logout"); // Use replace() instead of href
-        }, 500);
+            setTimeout(() => {
+                window.location.replace("/logout");
+            }, 500);
+        }
     };
 
     const users: User[] = [
