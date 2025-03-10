@@ -32,6 +32,8 @@ namespace qrmanagement.backend.Repositories{
                             branchEmail,
                             branchPhone,
                             branchLocation,
+                            kotaId,
+                            kecamatanId,
                             parentId
                         FROM 
                             Branches
@@ -88,6 +90,8 @@ namespace qrmanagement.backend.Repositories{
                             branchEmail,
                             branchPhone,
                             branchLocation,
+                            kotaId,
+                            kecamatanId,
                             parentId
                         FROM 
                             Branches
@@ -150,17 +154,17 @@ namespace qrmanagement.backend.Repositories{
                         if(branch.parentId != null){
                             insertBranchQuery = @"
                                 INSERT INTO 
-                                    Branches (branchName, branchEmail, branchPhone, branchLocation, parentId)
+                                    Branches (branchName, branchEmail, branchPhone, branchLocation, kotaId, kecamatanId, parentId)
                                 VALUES
-                                    (@branchName, @branchName, @branchPhone, @branchLocation, @parentId) 
+                                    (@branchName, @branchName, @branchPhone, @branchLocation, @kotaId, @kecamatanId, @parentId) 
                             ";
                         }
                         else{
                             insertBranchQuery = @"
                                 INSERT INTO 
-                                    Branches (branchName, branchEmail, branchPhone, branchLocation)
+                                    Branches (branchName, branchEmail, branchPhone, branchLocation, kotaId, kecamatanId)
                                 VALUES
-                                    (@branchName, @branchName, @branchPhone, @branchLocation) 
+                                    (@branchName, @branchName, @branchPhone, @branchLocation,  @kotaId, @kecamatanId) 
                             ";
                         }
                         using (var branchCommand = new SqlCommand(insertBranchQuery, connection, transaction)){
@@ -168,6 +172,8 @@ namespace qrmanagement.backend.Repositories{
                             branchCommand.Parameters.AddWithValue("@branchEmail", branch.branchEmail);
                             branchCommand.Parameters.AddWithValue("@branchPhone", branch.branchPhone);
                             branchCommand.Parameters.AddWithValue("@branchLocation", branch.branchLocation);
+                            branchCommand.Parameters.AddWithValue("@kotaId", branch.branchKota);
+                            branchCommand.Parameters.AddWithValue("@kecamatanId", branch.branchKecamatan);
                             if(branch.parentId != null){
                                 branchCommand.Parameters.AddWithValue("@parentId", branch.parentId);
                             }

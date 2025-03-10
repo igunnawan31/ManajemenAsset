@@ -9,11 +9,11 @@ using qrmanagement.backend.Context;
 
 #nullable disable
 
-namespace qrmanagement.backend.Migrations
+namespace qrmanagement.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250224042214_UpdateColumnBranches")]
-    partial class UpdateColumnBranches
+    [Migration("20250310151737_initTable")]
+    partial class initTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,8 +128,6 @@ namespace qrmanagement.backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("branchId"));
-
                     b.Property<string>("branchEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -146,10 +144,18 @@ namespace qrmanagement.backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("parentId")
+                    b.Property<int>("kecamatanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("kotaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("parentId")
                         .HasColumnType("int");
 
                     b.HasKey("branchId");
+
+                    b.HasIndex("kotaId");
 
                     b.ToTable("Branches");
 
@@ -161,16 +167,84 @@ namespace qrmanagement.backend.Migrations
                             branchLocation = "Jakarta Utara",
                             branchName = "Astra International",
                             branchPhone = "1234567890123",
-                            parentId = 0
+                            kecamatanId = 1,
+                            kotaId = 1
                         },
                         new
                         {
                             branchId = 2,
                             branchEmail = "ag.it@ai.astra.co.id",
-                            branchLocation = "Jakarta Selatan",
+                            branchLocation = "Jakarta Pusat",
                             branchName = "Astragraphia Information Technology",
                             branchPhone = "1234567890321",
+                            kecamatanId = 2,
+                            kotaId = 2,
                             parentId = 1
+                        });
+                });
+
+            modelBuilder.Entity("qrmanagement.backend.Models.Kecamatan", b =>
+                {
+                    b.Property<int>("kecamatanId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("kecamatanId"));
+
+                    b.Property<string>("kecamatanName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("kotaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("kecamatanId");
+
+                    b.HasIndex("kotaId");
+
+                    b.ToTable("Kecamatans");
+
+                    b.HasData(
+                        new
+                        {
+                            kecamatanId = 1,
+                            kecamatanName = "Tanjung Priok",
+                            kotaId = 1
+                        },
+                        new
+                        {
+                            kecamatanId = 2,
+                            kecamatanName = "Senen",
+                            kotaId = 2
+                        });
+                });
+
+            modelBuilder.Entity("qrmanagement.backend.Models.Kota", b =>
+                {
+                    b.Property<int>("kotaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("kotaId"));
+
+                    b.Property<string>("kotaName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("kotaId");
+
+                    b.ToTable("Kotas");
+
+                    b.HasData(
+                        new
+                        {
+                            kotaId = 1,
+                            kotaName = "Jakarta Utara"
+                        },
+                        new
+                        {
+                            kotaId = 2,
+                            kotaName = "Jakarta Pusat"
                         });
                 });
 
@@ -359,18 +433,48 @@ namespace qrmanagement.backend.Migrations
                     b.Navigation("ticket");
                 });
 
+            modelBuilder.Entity("qrmanagement.backend.Models.Branch", b =>
+                {
+                    b.HasOne("qrmanagement.backend.Models.Kecamatan", "branchKecamatan")
+                        .WithMany("Branches")
+                        .HasForeignKey("branchId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("qrmanagement.backend.Models.Kota", "branchKota")
+                        .WithMany("Branches")
+                        .HasForeignKey("kotaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("branchKecamatan");
+
+                    b.Navigation("branchKota");
+                });
+
+            modelBuilder.Entity("qrmanagement.backend.Models.Kecamatan", b =>
+                {
+                    b.HasOne("qrmanagement.backend.Models.Kota", "kecamatanKota")
+                        .WithMany("kecamatans")
+                        .HasForeignKey("kotaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("kecamatanKota");
+                });
+
             modelBuilder.Entity("qrmanagement.backend.Models.Ticket", b =>
                 {
                     b.HasOne("qrmanagement.backend.Models.Branch", "destination")
                         .WithMany("inbounds")
                         .HasForeignKey("branchDestination")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("qrmanagement.backend.Models.Branch", "origin")
                         .WithMany("outbounds")
                         .HasForeignKey("branchOrigin")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("destination");
@@ -403,6 +507,18 @@ namespace qrmanagement.backend.Migrations
                     b.Navigation("outbounds");
 
                     b.Navigation("users");
+                });
+
+            modelBuilder.Entity("qrmanagement.backend.Models.Kecamatan", b =>
+                {
+                    b.Navigation("Branches");
+                });
+
+            modelBuilder.Entity("qrmanagement.backend.Models.Kota", b =>
+                {
+                    b.Navigation("Branches");
+
+                    b.Navigation("kecamatans");
                 });
 
             modelBuilder.Entity("qrmanagement.backend.Models.Ticket", b =>

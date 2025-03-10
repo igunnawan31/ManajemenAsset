@@ -8,5 +8,7 @@ namespace qrmanagement.backend.Models{
         public int kotaId {get; set;}
         [Required]
         public required string kotaName {get; set;}
+        public ICollection<Kecamatan> kecamatans {get;set;} = new List<Kecamatan>();
+        public ICollection<Branch> Branches {get; set;} = new List<Branch>();
     }
 }
