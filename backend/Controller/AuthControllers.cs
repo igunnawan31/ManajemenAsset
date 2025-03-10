@@ -27,12 +27,17 @@ namespace qrmanagement.backend.Controllers{
             try
             {
                 Console.WriteLine($"Received DTO: {JsonSerializer.Serialize(dto)}");
-                if (string.IsNullOrWhiteSpace(dto.userEmail) || !Regex.IsMatch(dto.userEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+
+                if (string.IsNullOrWhiteSpace(dto.userEmail) || 
+                    !Regex.IsMatch(dto.userEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                {
                     return BadRequest(new { message = "Invalid email format." });
+                }
 
                 if (string.IsNullOrWhiteSpace(dto.password) || dto.password.Length < 6)
+                {
                     return BadRequest(new { message = "Password must be at least 6 characters long." });
-
+                }
 
                 var user = new User
                 {
@@ -46,7 +51,6 @@ namespace qrmanagement.backend.Controllers{
                 };
 
                 _repository.Create(user);
-
                 var jwtToken = _jwtService.GenerateToken(user);
 
                 return Created("success", new { 
@@ -59,6 +63,7 @@ namespace qrmanagement.backend.Controllers{
                 return StatusCode(500, new { message = "An error occurred while processing your request.", error = ex.Message });
             }
         }
+
 
         [HttpPost("validate-email")]
         public IActionResult ValidateEmail([FromBody] EmailDTO dto) {
@@ -104,7 +109,8 @@ namespace qrmanagement.backend.Controllers{
                 return Ok(new { 
                     message = "Login successful.", 
                     token = jwt,
-                    SubRole = user.userSubRole.ToString()
+                    subRole = user.userSubRole.ToString(),
+                    userId = user.userId,
                 });
             }
             catch (Exception ex) {

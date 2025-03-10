@@ -20,17 +20,29 @@ interface User {
 
 const UserManagement = () => {
     const [users, setUsers] = useState<User[]>([]);
-    const [user, setUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
     const itemsPerPage = 5;
 
+    // For Deletting 
+    const [user, setUser] = useState<User | null>(null);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
+
+    const columns = [
+        { label: "id", key: "userId", alwaysVisible: true   },
+        { label: "Name", key: "userName", alwaysVisible: true   },
+        { label: "Email", key: "userEmail", alwaysVisible: true  },
+        { label: "Branch", key: "userBranch", alwaysVisible: true  },
+        { label: "Phone", key: "userPhone" },
+        { label: "Role", key: "userRole", alwaysVisible: true  },
+        { label: "Sub Role", key: "userSubRole", alwaysVisible: true  },
+    ];
+
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/index`)
             .then((response) => {
                 if (!response.ok) {
                     return response.text().then((text) => {
@@ -39,44 +51,37 @@ const UserManagement = () => {
                 }
                 return response.json();
             })
-            
             .then((data) => {
                 setUsers(data);
                 setFilteredUsers(data);
                 setLoading(false);
             })
-
             .catch((error) => {
                 console.error('Error fetching data:', error);
                 setError('Failed to fetch data. Please try again later.');
                 setLoading(false);
-            })
-    })
-
-    const columns = [
-        { label: "Name", key: "userName", alwaysVisible: true   },
-        { label: "Email", key: "userEmail", alwaysVisible: true  },
-        { label: "Branch", key: "userBranch", alwaysVisible: true  },
-        { label: "Phone", key: "userPhone" },
-        { label: "Role", key: "userRole", alwaysVisible: true  },
-        { label: "Sub Role", key: "userSubRole", alwaysVisible: true  },
-    ];
+            });
+    }, []);
     
     const handleSearch = (query: string) => {
         if (!query.trim()) {
-          setFilteredUsers(users);
-          return;
+            setFilteredUsers(users);
+            return;
         }
     
-        const filtered = users.filter((user) =>
-          user.userName.toLowerCase().includes(query.toLowerCase()) ||
-          user.userEmail.toLowerCase().includes(query.toLowerCase()) ||
-          user.userBranch.toLowerCase().includes(query.toLowerCase()) ||
-          user.userPhone.toLowerCase().includes(query.toLowerCase()) ||
-          user.userRole.toLowerCase().includes(query.toLowerCase()) ||
-          user.userSubRole.toLowerCase().includes(query.toLowerCase())
-        );
-        
+        const filtered = users.filter((user) => {
+            return [
+                user.userName,
+                user.userEmail,
+                user.userBranch,
+                user.userPhone,
+                user.userRole,
+                user.userSubRole
+            ].some((field) => 
+                typeof field === "string" && field.toLowerCase().includes(query.toLowerCase())
+            );
+        });
+    
         setCurrentPage(1);
         setFilteredUsers(filtered);
     };
@@ -134,7 +139,6 @@ const UserManagement = () => {
                                 },
                             ]}
                         />
-                        {/* Pagination Controls */}
                         <div className="mt-5 flex justify-center items-center">
                             <button
                                 className={`px-4 py-2 mx-1 rounded ${

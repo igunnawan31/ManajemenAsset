@@ -16,9 +16,17 @@ namespace qrmanagement.backend.Models{
         [Required]
         public required string branchPhone {get; set;}
         [Required]
+        public required int kotaId {get; set;}
+        [Required]
+        public required int kecamatanId {get; set;}
+        [Required]
         public required string branchLocation {get; set;}
         [AllowNull]
         public int? parentId {get; set;}
+        [ForeignKey("kotaId")]
+        public Kota branchKota {get; set;} = null!;
+        [ForeignKey("kecamatanId")]
+        public Kecamatan branchKecamatan {get; set;} = null!;
 
         // Relation
         public ICollection<Asset> assets {get; set;} = new List<Asset>();

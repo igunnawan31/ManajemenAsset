@@ -5,35 +5,73 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace qrmanagement.backend.Migrations
+namespace qrmanagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Kotas",
+                columns: table => new
+                {
+                    kotaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    kotaName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kotas", x => x.kotaId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Kecamatans",
+                columns: table => new
+                {
+                    kecamatanId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    kecamatanName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    kotaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kecamatans", x => x.kecamatanId);
+                    table.ForeignKey(
+                        name: "FK_Kecamatans_Kotas_kotaId",
+                        column: x => x.kotaId,
+                        principalTable: "Kotas",
+                        principalColumn: "kotaId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Branches",
                 columns: table => new
                 {
-                    branchId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    branchId = table.Column<int>(type: "int", nullable: false),
                     branchName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    kotaId = table.Column<int>(type: "int", nullable: false),
+                    kecamatanId = table.Column<int>(type: "int", nullable: false),
                     branchLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    parentId = table.Column<int>(type: "int", nullable: false),
-                    branchId1 = table.Column<int>(type: "int", nullable: true)
+                    parentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Branches", x => x.branchId);
                     table.ForeignKey(
-                        name: "FK_Branches_Branches_branchId1",
-                        column: x => x.branchId1,
-                        principalTable: "Branches",
-                        principalColumn: "branchId");
+                        name: "FK_Branches_Kecamatans_branchId",
+                        column: x => x.branchId,
+                        principalTable: "Kecamatans",
+                        principalColumn: "kecamatanId");
+                    table.ForeignKey(
+                        name: "FK_Branches_Kotas_kotaId",
+                        column: x => x.kotaId,
+                        principalTable: "Kotas",
+                        principalColumn: "kotaId");
                 });
 
             migrationBuilder.CreateTable(
@@ -79,14 +117,12 @@ namespace qrmanagement.backend.Migrations
                         name: "FK_Tickets_Branches_branchDestination",
                         column: x => x.branchDestination,
                         principalTable: "Branches",
-                        principalColumn: "branchId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "branchId");
                     table.ForeignKey(
                         name: "FK_Tickets_Branches_branchOrigin",
                         column: x => x.branchOrigin,
                         principalTable: "Branches",
-                        principalColumn: "branchId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "branchId");
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +132,7 @@ namespace qrmanagement.backend.Migrations
                     userId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     userName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    userEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    userEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     userBranch = table.Column<int>(type: "int", nullable: false),
                     userPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     userRole = table.Column<int>(type: "int", nullable: false),
@@ -132,22 +168,40 @@ namespace qrmanagement.backend.Migrations
                         column: x => x.assetNumber,
                         principalTable: "Assets",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AssetMoves_Tickets_ticketNumber",
                         column: x => x.ticketNumber,
                         principalTable: "Tickets",
                         principalColumn: "ticketNumber",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Kotas",
+                columns: new[] { "kotaId", "kotaName" },
+                values: new object[,]
+                {
+                    { 1, "Jakarta Utara" },
+                    { 2, "Jakarta Pusat" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Kecamatans",
+                columns: new[] { "kecamatanId", "kecamatanName", "kotaId" },
+                values: new object[,]
+                {
+                    { 1, "Tanjung Priok", 1 },
+                    { 2, "Senen", 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Branches",
-                columns: new[] { "branchId", "branchEmail", "branchId1", "branchLocation", "branchName", "branchPhone", "parentId" },
+                columns: new[] { "branchId", "branchEmail", "branchLocation", "branchName", "branchPhone", "kecamatanId", "kotaId", "parentId" },
                 values: new object[,]
                 {
-                    { 1, "astraInternational@ai.astra.co.id", null, "Jakarta Utara", "Astra International", "1234567890123", 0 },
-                    { 2, "ag.it@ai.astra.co.id", null, "Jakarta Selatan", "Astragraphia Information Technology", "1234567890321", 1 }
+                    { 1, "astraInternational@ai.astra.co.id", "Jakarta Utara", "Astra International", "1234567890123", 1, 1, null },
+                    { 2, "ag.it@ai.astra.co.id", "Jakarta Pusat", "Astragraphia Information Technology", "1234567890321", 2, 2, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -204,9 +258,14 @@ namespace qrmanagement.backend.Migrations
                 column: "locationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Branches_branchId1",
+                name: "IX_Branches_kotaId",
                 table: "Branches",
-                column: "branchId1");
+                column: "kotaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Kecamatans_kotaId",
+                table: "Kecamatans",
+                column: "kotaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_branchDestination",
@@ -222,6 +281,12 @@ namespace qrmanagement.backend.Migrations
                 name: "IX_Users_userBranch",
                 table: "Users",
                 column: "userBranch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_userEmail",
+                table: "Users",
+                column: "userEmail",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -241,6 +306,12 @@ namespace qrmanagement.backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Branches");
+
+            migrationBuilder.DropTable(
+                name: "Kecamatans");
+
+            migrationBuilder.DropTable(
+                name: "Kotas");
         }
     }
 }

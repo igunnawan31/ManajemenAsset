@@ -13,31 +13,44 @@ const UserNavbar = () => {
     const dropdownRef = useRef(null);
     const dropdownMobileRef = useRef(null);
 
+    const deleteCookie = (name: string) => {
+        if (typeof window !== "undefined") {
+            document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=None; Secure`;
+        }
+    };
+    
+    
     const logout = () => {
-        document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "jwt=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "userSubRole=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        if (typeof window !== "undefined") {
+            deleteCookie("token");
+            deleteCookie("jwt");
+            deleteCookie("userSubRole");
+            deleteCookie("userId");
     
-        localStorage.removeItem("token");
-        localStorage.removeItem("userSubRole");
-        localStorage.removeItem("ally-supports-cache");
-        sessionStorage.clear();
+            localStorage.removeItem("token");
+            localStorage.removeItem("userSubRole");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("ally-supports-cache");
+            sessionStorage.clear();
     
-        setTimeout(() => {
-            window.location.href = "/logout";
-        }, 500);
+            setTimeout(() => {
+                window.location.replace("/logout");
+            }, 500);
+        }
     };
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
-                setIsDropdownMenuOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        if (typeof document !== "undefined") {
+            const handleClickOutside = (event: MouseEvent) => {
+                if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
+                    setIsDropdownMenuOpen(false);
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }
     }, []);
 
     useEffect(() => {
