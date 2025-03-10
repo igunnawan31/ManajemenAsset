@@ -48,8 +48,10 @@ namespace qrmanagement.backend.Repositories{
                                     branchName = reader.GetString(1),
                                     branchEmail = reader.GetString(2),
                                     branchPhone = reader.GetString(3),
-                                    branchLocation = reader.GetString(4),
-                                    parentId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                                    branchKota = reader.GetInt32(4),
+                                    branchKecamatan = reader.GetInt32(5),
+                                    branchLocation = reader.GetString(6),
+                                    parentId = reader.IsDBNull(7) ? null : reader.GetInt32(7),
                                 };
                                 branchList.Add(branch);
                             }
@@ -105,8 +107,10 @@ namespace qrmanagement.backend.Repositories{
                                     branchName = reader.GetString(1),
                                     branchEmail = reader.GetString(2),
                                     branchPhone = reader.GetString(3),
-                                    branchLocation = reader.GetString(4),
-                                    parentId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                                    branchKota = reader.GetInt32(4),
+                                    branchKecamatan = reader.GetInt32(5),
+                                    branchLocation = reader.GetString(6),
+                                    parentId = reader.IsDBNull(7) ? null : reader.GetInt32(7),
                                 };
                                 _logger.LogDebug("Branch fetched successfully");
                                 return branch;

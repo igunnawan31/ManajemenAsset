@@ -15,6 +15,10 @@ namespace qrmanagement.backend.Models{
         [Phone]
         [Required]
         public required string branchPhone {get; set;}
+        [ForeignKey("kotaId")]
+        public required Kota branchKota {get; set;}
+        [ForeignKey("kecamatanId")]
+        public required Kecamatan branchKecamatan {get; set;}
         [Required]
         public required string branchLocation {get; set;}
         [AllowNull]
