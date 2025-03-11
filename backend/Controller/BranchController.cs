@@ -33,7 +33,8 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> AddBranch([FromForm] CreateBranchDTO branch){
+        public async Task<IActionResult> AddBranch([FromBody] CreateBranchDTO branch)
+        {
             int row = await _branchRepo.AddBranch(branch);
             if(row == 0){
                 return BadRequest("Failed while creating branch");

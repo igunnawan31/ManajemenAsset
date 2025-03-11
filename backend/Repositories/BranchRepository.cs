@@ -16,12 +16,14 @@ namespace qrmanagement.backend.Repositories{
 
         public async Task<IEnumerable<BranchResponseDTO>> GetAllBranch()
         {
-            try{
+            try
+            {
                 var branchList = new List<BranchResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                _logger.LogDebug("Connection string retrieved");
+                _logger.LogDebug("Connection string retrieved: {ConnectionString}", connectionString);
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -31,45 +33,68 @@ namespace qrmanagement.backend.Repositories{
                             branchName,
                             branchEmail,
                             branchPhone,
-                            branchLocation,
                             kotaId,
                             kecamatanId,
+                            branchLocation,
                             parentId
                         FROM 
                             Branches
                     ";
 
-                    _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                    _logger.LogDebug("Executing query: {Query}", query);
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                BranchResponseDTO branch = new BranchResponseDTO{
-                                    branchId = reader.GetInt32(0),
-                                    branchName = reader.GetString(1),
-                                    branchEmail = reader.GetString(2),
-                                    branchPhone = reader.GetString(3),
-                                    branchKota = reader.GetInt32(4),
-                                    branchKecamatan = reader.GetInt32(5),
-                                    branchLocation = reader.GetString(6),
-                                    parentId = reader.IsDBNull(7) ? null : reader.GetInt32(7),
-                                };
-                                branchList.Add(branch);
+                            while (await reader.ReadAsync())
+                            {
+                                try
+                                {
+                                    _logger.LogDebug("Reading branchId: {branchId}", reader.GetInt32(0));
+                                    _logger.LogDebug("Reading branchName: {branchName}", reader.GetString(1));
+                                    _logger.LogDebug("Reading branchEmail: {branchEmail}", reader.GetString(2));
+                                    _logger.LogDebug("Reading branchPhone: {branchPhone}", reader.GetString(3));
+                                    _logger.LogDebug("Reading kotaId: {kotaId}", reader.IsDBNull(4) ? "NULL" : reader.GetInt32(4).ToString());
+                                    _logger.LogDebug("Reading kecamatanId: {kecamatanId}", reader.IsDBNull(5) ? "NULL" : reader.GetInt32(5).ToString());
+                                    _logger.LogDebug("Reading branchLocation: {branchLocation}", reader.IsDBNull(6) ? "NULL" : reader.GetString(6));
+                                    _logger.LogDebug("Reading parentId: {parentId}", reader.IsDBNull(7) ? "NULL" : reader.GetInt32(7).ToString());
+
+                                    BranchResponseDTO branch = new BranchResponseDTO
+                                    {
+                                        branchId = reader.GetInt32(0),
+                                        branchName = reader.GetString(1),
+                                        branchEmail = reader.GetString(2),
+                                        branchPhone = reader.GetString(3),
+                                        kotaId = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                                        kecamatanId = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+                                        branchLocation = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                                        parentId = reader.IsDBNull(7) ? null : (int?)reader.GetInt32(7),
+                                    };
+                                    branchList.Add(branch);
+                                }
+                                catch (InvalidCastException ex)
+                                {
+                                    _logger.LogError($"Invalid data in row: {ex.Message}");
+                                    _logger.LogError($"Row data: branchId={reader.GetValue(0)}, branchName={reader.GetValue(1)}, branchEmail={reader.GetValue(2)}, branchPhone={reader.GetValue(3)}, kotaId={reader.GetValue(4)}, kecamatanId={reader.GetValue(5)}, branchLocation={reader.GetValue(6)}, parentId={reader.GetValue(7)}");
+                                    continue; // Skip this row and continue with the next one
+                                }
                             }
                         }
                     }
-
                 }
                 return branchList;
             }
-            catch (SqlException sqlEx){
-                _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while retrieving branches data from the database");
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError($"SQL Error occurred: {sqlEx.Message}");
+                throw new Exception("A database error occurred while retrieving branches data.");
             }
-            catch (Exception ex){
-                _logger.LogError($"An error occured: {ex.Message}");
-                throw new Exception("Internal server error");
+            catch (Exception ex)
+            {
+                _logger.LogError($"An unexpected error occurred: {ex.Message}");
+                throw new Exception("An unexpected error occurred while processing your request.");
             }
         }
 
@@ -89,9 +114,9 @@ namespace qrmanagement.backend.Repositories{
                             branchName,
                             branchEmail,
                             branchPhone,
-                            branchLocation,
                             kotaId,
                             kecamatanId,
+                            branchLocation,
                             parentId
                         FROM 
                             Branches
@@ -111,8 +136,8 @@ namespace qrmanagement.backend.Repositories{
                                     branchName = reader.GetString(1),
                                     branchEmail = reader.GetString(2),
                                     branchPhone = reader.GetString(3),
-                                    branchKota = reader.GetInt32(4),
-                                    branchKecamatan = reader.GetInt32(5),
+                                    kotaId = reader.GetInt32(4),
+                                    kecamatanId = reader.GetInt32(5),
                                     branchLocation = reader.GetString(6),
                                     parentId = reader.IsDBNull(7) ? null : reader.GetInt32(7),
                                 };
@@ -149,31 +174,30 @@ namespace qrmanagement.backend.Repositories{
                     await connection.OpenAsync();
 
                     using (var transaction = connection.BeginTransaction()){
-                        
                         string insertBranchQuery;
                         if(branch.parentId != null){
                             insertBranchQuery = @"
                                 INSERT INTO 
-                                    Branches (branchName, branchEmail, branchPhone, branchLocation, kotaId, kecamatanId, parentId)
+                                    Branches (branchName, branchEmail, branchPhone, kotaId, kecamatanId, branchLocation, parentId)
                                 VALUES
-                                    (@branchName, @branchName, @branchPhone, @branchLocation, @kotaId, @kecamatanId, @parentId) 
+                                    (@branchName, @branchEmail, @branchPhone, @kotaId, @kecamatanId, @branchLocation, @parentId) 
                             ";
                         }
                         else{
                             insertBranchQuery = @"
                                 INSERT INTO 
-                                    Branches (branchName, branchEmail, branchPhone, branchLocation, kotaId, kecamatanId)
+                                    Branches (branchName, branchEmail, branchPhone, kotaId, kecamatanId, branchLocation)
                                 VALUES
-                                    (@branchName, @branchName, @branchPhone, @branchLocation,  @kotaId, @kecamatanId) 
+                                    (@branchName, @branchEmail, @branchPhone, @kotaId, @kecamatanId, @branchLocation) 
                             ";
                         }
                         using (var branchCommand = new SqlCommand(insertBranchQuery, connection, transaction)){
                             branchCommand.Parameters.AddWithValue("@branchName", branch.branchName);
                             branchCommand.Parameters.AddWithValue("@branchEmail", branch.branchEmail);
                             branchCommand.Parameters.AddWithValue("@branchPhone", branch.branchPhone);
+                            branchCommand.Parameters.AddWithValue("@kotaId", branch.kotaId);
+                            branchCommand.Parameters.AddWithValue("@kecamatanId", branch.kecamatanId);
                             branchCommand.Parameters.AddWithValue("@branchLocation", branch.branchLocation);
-                            branchCommand.Parameters.AddWithValue("@kotaId", branch.branchKota);
-                            branchCommand.Parameters.AddWithValue("@kecamatanId", branch.branchKecamatan);
                             if(branch.parentId != null){
                                 branchCommand.Parameters.AddWithValue("@parentId", branch.parentId);
                             }
@@ -188,17 +212,14 @@ namespace qrmanagement.backend.Repositories{
                 return rowsAffected;
             }
             catch (SqlException sqlEx){
-                // transaction.Rollback();
-                _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while creating branch");    
+                _logger.LogError($"SQL Exception: {sqlEx.Number} - {sqlEx.Message}");
+                _logger.LogError($"Stack Trace: {sqlEx.StackTrace}");
+                return -1; // Return -1 instead of throwing an exception
             }
             catch (Exception ex){
-                // transaction.Rollback();
-                _logger.LogError(ex, "An error occurred while creating branch.");
-                _logger.LogError("Stacktrace:");
-                _logger.LogError(ex.StackTrace);
-
-                throw new Exception("Internal Server Error");
+                _logger.LogError($"General Exception: {ex.Message}");
+                _logger.LogError($"Stack Trace: {ex.StackTrace}");
+                return -1; // Prevent unhandled exceptions
             }
         }
 

@@ -29,7 +29,7 @@ namespace qrmanagement.backend.Repositories{
                         SELECT
                             kecamatanId,
                             kecamatanName,
-                            kecamatanKota,
+                            kotaId
                         FROM 
                             Kecamatans
                     ";
@@ -43,7 +43,7 @@ namespace qrmanagement.backend.Repositories{
                                 KecamatanResponseDTO kecamatan = new KecamatanResponseDTO{
                                     kecamatanId = reader.GetInt32(0),
                                     kecamatanName = reader.GetString(1),
-                                    kecamatanKota = reader.GetInt32(2),
+                                    kotaId = reader.GetInt32(2),
                                 };
                                 kecamatanList.Add(kecamatan);
                             }
@@ -54,7 +54,7 @@ namespace qrmanagement.backend.Repositories{
             }
             catch (SqlException sqlEx){
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while retrieving branches data from the database");
+                throw new Exception("An error occured while retrieving kecamatans data from the database");
             }
             catch (Exception ex){
                 _logger.LogError($"An error occured: {ex.Message}");
@@ -75,7 +75,7 @@ namespace qrmanagement.backend.Repositories{
                         SELECT
                             kecamatanId,
                             kecamatanName,
-                            kecamatanKota,
+                            kotaId
                         FROM 
                             Kecamatans
                         WHERE
@@ -92,9 +92,9 @@ namespace qrmanagement.backend.Repositories{
                                 KecamatanResponseDTO kecamatan = new KecamatanResponseDTO{
                                     kecamatanId = reader.GetInt32(0),
                                     kecamatanName = reader.GetString(1),
-                                    kecamatanKota = reader.GetInt32(2),
+                                    kotaId = reader.GetInt32(2),
                                 };
-                                _logger.LogDebug("Branch fetched successfully");
+                                _logger.LogDebug("Kecamatan fetched successfully");
                                 return kecamatan;
                             }
                             else{
@@ -108,7 +108,7 @@ namespace qrmanagement.backend.Repositories{
             }
             catch (SqlException sqlEx){
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while retrieving branch data from the database");
+                throw new Exception("An error occured while retrieving kecamatan data from the database");
             }
             catch (Exception ex){
                 _logger.LogError($"An error occured: {ex.Message}");

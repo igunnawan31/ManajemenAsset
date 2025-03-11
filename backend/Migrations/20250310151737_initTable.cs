@@ -50,7 +50,8 @@ namespace qrmanagement.Migrations
                 name: "Branches",
                 columns: table => new
                 {
-                    branchId = table.Column<int>(type: "int", nullable: false),
+                    branchId = table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1"),
                     branchName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -63,8 +64,8 @@ namespace qrmanagement.Migrations
                 {
                     table.PrimaryKey("PK_Branches", x => x.branchId);
                     table.ForeignKey(
-                        name: "FK_Branches_Kecamatans_branchId",
-                        column: x => x.branchId,
+                        name: "FK_Branches_Kecamatans_kecamatanId",
+                        column: x => x.kecamatanId,
                         principalTable: "Kecamatans",
                         principalColumn: "kecamatanId");
                     table.ForeignKey(

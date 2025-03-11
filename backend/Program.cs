@@ -43,6 +43,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
+builder.Services.AddScoped<IKotaRepository, KotaRepository>();
+builder.Services.AddScoped<IKecamatanRepository, KecamatanRepository>();
 builder.Services.AddScoped<JwtService>();
 
 builder.Logging.ClearProviders();
