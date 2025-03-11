@@ -27,7 +27,7 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             kotaId,
-                            kotaName,
+                            kotaName
                         FROM 
                             Kotas
                     ";

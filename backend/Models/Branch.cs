@@ -6,7 +6,7 @@ namespace qrmanagement.backend.Models{
     public class Branch{
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public required int branchId {get; set;}
+        public int branchId {get; set;}
         [Required]
         public required string branchName {get; set;}
         [Required]
