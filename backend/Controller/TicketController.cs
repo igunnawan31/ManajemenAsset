@@ -1,15 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
+using qrmanagement.backend.DTO.Ticket;
+using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
+using qrmanagement.backend.Services;
 
-namespace qrmanagement.backend.DTO.Ticket{
+namespace qrmanagement.backend.Controllers{
     [Route("api/ticket")]
     [ApiController]
     public class TicketController : ControllerBase{
         private readonly ITicketRepository _ticketRepo;
+        private readonly TicketService _ticketService;
         private readonly ILogger<TicketController> _logger;
-        public TicketController(ITicketRepository ticketRepository, ILogger<TicketController> logger){
+        public TicketController(ITicketRepository ticketRepository, ILogger<TicketController> logger, TicketService ticketService){
             _ticketRepo = ticketRepository;
             _logger = logger;
+            _ticketService = ticketService;
         }
 
         [HttpGet("index")]
@@ -59,6 +64,24 @@ namespace qrmanagement.backend.DTO.Ticket{
         }
 
         [HttpPost("create")]
-        public 
+        public async Task<ActionResult> CreateTicket ([FromForm] CreateTicketDTO ticketDTO){
+            var ticketNumber = await _ticketService.GenerateTicketNumberAsync(ticketDTO.dateRequested);
+            Ticket ticket = new Ticket{
+                ticketNumber = ticketNumber,
+                quantity = ticketDTO.quantity,
+                branchOrigin = ticketDTO.branchOrigin,
+                branchDestination = ticketDTO.branchDestination,
+                outboundDate = ticketDTO.outboundDate,
+                inboundDate = ticketDTO.inboundDate,
+                dateRequested = ticketDTO.dateRequested,
+                approvalStatus = ticketDTO.approvalStatus,
+                moveStatus = ticketDTO.moveStatus
+            };
+            int row = await _ticketRepo.AddTicket(ticket);
+            if(row == 0){
+                return BadRequest("Failed while creating ticket");
+            }
+            return Ok(new {statusCode = 200, message = "Ticket Created Successfully"});
+        }
     }
 }

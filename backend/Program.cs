@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using qrmanagement.backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -46,6 +47,7 @@ builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IKotaRepository, KotaRepository>();
 builder.Services.AddScoped<IKecamatanRepository, KecamatanRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<JwtService>();
 
 builder.Logging.ClearProviders();
