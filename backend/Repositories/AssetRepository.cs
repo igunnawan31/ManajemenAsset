@@ -376,7 +376,7 @@ namespace qrmanagement.backend.Repositories{
                 using (var connection = new SqlConnection(connectionString)){
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = await connection.BeginTransactionAsync()){ // kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
                         string checkMoveQuery = @"
                             SELECT
                                 am.status
@@ -389,7 +389,7 @@ namespace qrmanagement.backend.Repositories{
                             ORDER BY
                                 t.outboundDate DESC
                         ";
-                        using (var checkMoveCommand = new SqlCommand(checkMoveQuery, connection, transaction)){
+                        using (var checkMoveCommand = new SqlCommand(checkMoveQuery, connection, (SqlTransaction)transaction)){
                             using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
                                 checkMoveCommand.Parameters.AddWithValue("@id", id);
                                 if (Enum.Parse<MoveStatus>(reader.GetString(0))==MoveStatus.Incomplete){
@@ -404,7 +404,7 @@ namespace qrmanagement.backend.Repositories{
                             WHERE
                                 id = @id
                         ";
-                        using (var assetCommand = new SqlCommand(deleteAssetQuery, connection, transaction)){
+                        using (var assetCommand = new SqlCommand(deleteAssetQuery, connection, (SqlTransaction)transaction)){
                             assetCommand.Parameters.AddWithValue("@id", id);
 
                             rowsAffected = await assetCommand.ExecuteNonQueryAsync();
