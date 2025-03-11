@@ -381,11 +381,156 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        // public async Task <int> UpdateTicket(UpdateTicketDTO ticket){
+        public async Task <int> UpdateTicket(UpdateTicketDTO ticket){
+            _logger.LogDebug("Updating ticket data");
 
-        // }
-        // public async Task <int> UpdateTicketMoveStatus(UpdateTicketDTO ticket);
-        // public async Task <int> UpdateTicketApprovalStatus(UpdateTicketDTO ticket);
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        string updateQuery = @"
+                            UPDATE 
+                                Tickets
+                            SET
+                                quantity = @quantity, 
+                                branchDestination = @branchDestination,
+                                outboundDate = @outboundDate,
+                                inboundDate = @inboundDate
+                            WHERE
+                                ticketNumber = @ticketNumber
+                        ";
+
+                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            ticketCommand.Parameters.AddWithValue("@quantity", ticket.quantity);
+                            ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
+                            ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
+                            ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
+                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+
+                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                        }
+
+                        _logger.LogDebug("Successfuly updated ticket");
+                        transaction.Commit();
+                    }
+                }     
+
+                _logger.LogDebug("Ticket successfully updated");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while updating ticket");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while updating ticket.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }  
+        }
+        public async Task <int> UpdateTicketMoveStatus(UpdateTicketStatusDTO ticket){
+            _logger.LogDebug("Updating ticket data");
+
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        string updateQuery = @"
+                            UPDATE 
+                                Tickets
+                            SET
+                                moveStatus = @moveStatus
+                            WHERE
+                                ticketNumber = @ticketNumber
+                        ";
+
+                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
+                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+
+                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                        }
+
+                        _logger.LogDebug("Successfuly updated ticket");
+                        transaction.Commit();
+                    }
+                }     
+
+                _logger.LogDebug("Ticket successfully updated");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while updating ticket");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while updating ticket.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }  
+        }
+        public async Task <int> UpdateTicketApprovalStatus(UpdateTicketStatusDTO ticket){
+            _logger.LogDebug("Updating ticket data");
+
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        string updateQuery = @"
+                            UPDATE 
+                                Tickets
+                            SET
+                                approvalStatus = @approvalStatus
+                            WHERE
+                                ticketNumber = @ticketNumber
+                        ";
+
+                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+
+                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                        }
+
+                        _logger.LogDebug("Successfuly updated ticket");
+                        transaction.Commit();
+                    }
+                }     
+
+                _logger.LogDebug("Ticket successfully updated");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while updating ticket");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while updating ticket.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }
+        }
         // public async Task <int> DeleteTicket(string id);
     }
 }
