@@ -1,6 +1,8 @@
+using System.Data;
 using Microsoft.Data.SqlClient;
 using qrmanagement.backend.Context;
 using qrmanagement.backend.DTO.Ticket;
+using qrmanagement.backend.Models;
 namespace qrmanagement.backend.Repositories{
     public class TicketRepository : ITicketRepository{
         private readonly AppDBContext _context;
@@ -13,7 +15,7 @@ namespace qrmanagement.backend.Repositories{
         }
         async Task<IEnumerable<TicketResponseDTO>> GetAllTicket(){
             try{
-                var assetList = new List<TicketResponseDTO>();
+                var ticketList = new List<TicketResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
@@ -40,24 +42,27 @@ namespace qrmanagement.backend.Repositories{
 
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
-                                    id = reader.GetString(0),
-                                    name = reader.GetString(1),
-                                    locationId = reader.GetInt32(2),
-                                    assetType = Enum.Parse<assetType>(reader.GetString(3)),
-                                    itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
-                                    imagePath = reader.GetString(5)
+                                    ticketNumber = reader.GetString(0),
+                                    quantity = reader.GetInt32(1),
+                                    branchOrigin = reader.GetInt32(2),
+                                    branchDestination = reader.GetInt32(3),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
                                 };
-                                assetList.Add(asset);
+                                ticketList.Add(asset);
                             }
                         }
                     }
 
                 }
-                return assetList;
+                return ticketList;
             }
             catch (SqlException sqlEx){
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while retrieving asset data from the database");
+                throw new Exception("An error occured while retrieving ticket data from the database");
             }
             catch (Exception ex){
                 _logger.LogError($"An error occured: {ex.Message}");
