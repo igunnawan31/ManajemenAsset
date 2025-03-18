@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using qrmanagement.backend.Models;
 
-namespace qrmanagement.backend.Helpers
+namespace qrmanagement.backend.Services
 {
    public class JwtService
    {

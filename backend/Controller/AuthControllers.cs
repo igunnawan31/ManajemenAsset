@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using qrmanagement.backend.DTO.Login;
 using qrmanagement.backend.DTO.register;
-using qrmanagement.backend.Helpers;
+using qrmanagement.backend.Services;
 using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
 

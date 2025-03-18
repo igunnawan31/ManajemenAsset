@@ -68,7 +68,6 @@ namespace qrmanagement.backend.Controllers{
             var ticketNumber = await _ticketService.GenerateTicketNumberAsync(ticketDTO.dateRequested);
             Ticket ticket = new Ticket{
                 ticketNumber = ticketNumber,
-                quantity = ticketDTO.quantity,
                 branchOrigin = ticketDTO.branchOrigin,
                 branchDestination = ticketDTO.branchDestination,
                 outboundDate = ticketDTO.outboundDate,

@@ -26,7 +26,6 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             ticketNumber,
-                            quantity,
                             branchOrigin,
                             branchDestination,
                             outboundDate,
@@ -46,14 +45,13 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    quantity = reader.GetInt32(1),
-                                    branchOrigin = reader.GetInt32(2),
-                                    branchDestination = reader.GetInt32(3),
-                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
-                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
+                                    branchOrigin = reader.GetInt32(1),
+                                    branchDestination = reader.GetInt32(2),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -107,14 +105,13 @@ namespace qrmanagement.backend.Repositories{
                             if (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    quantity = reader.GetInt32(1),
-                                    branchOrigin = reader.GetInt32(2),
-                                    branchDestination = reader.GetInt32(3),
-                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
-                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
+                                    branchOrigin = reader.GetInt32(1),
+                                    branchDestination = reader.GetInt32(2),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
@@ -173,14 +170,13 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    quantity = reader.GetInt32(1),
-                                    branchOrigin = reader.GetInt32(2),
-                                    branchDestination = reader.GetInt32(3),
-                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
-                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
+                                    branchOrigin = reader.GetInt32(1),
+                                    branchDestination = reader.GetInt32(2),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -235,14 +231,13 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    quantity = reader.GetInt32(1),
-                                    branchOrigin = reader.GetInt32(2),
-                                    branchDestination = reader.GetInt32(3),
-                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
-                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
+                                    branchOrigin = reader.GetInt32(1),
+                                    branchDestination = reader.GetInt32(2),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -297,14 +292,13 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    quantity = reader.GetInt32(1),
-                                    branchOrigin = reader.GetInt32(2),
-                                    branchDestination = reader.GetInt32(3),
-                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
-                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(6)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(7)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(8))
+                                    branchOrigin = reader.GetInt32(1),
+                                    branchDestination = reader.GetInt32(2),
+                                    outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
+                                    dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
+                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -336,14 +330,13 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertTicketQuery = @"
                                 INSERT INTO Tickets 
-                                    (ticketNumber, quantity, branchOrigin, branchDestination, outboundDate, inboundDate, dateRequested, approvalStatus, moveStatus)
+                                    (ticketNumber, branchOrigin, branchDestination, outboundDate, inboundDate, dateRequested, approvalStatus, moveStatus)
                                 VALUES
-                                    (@ticketNumber, @quantity, @branchOrigin, @branchDestination, @outboundDate, @inboundDate, @dateRequested, @approvalStatus, @moveStatus);
+                                    (@ticketNumber, @branchOrigin, @branchDestination, @outboundDate, @inboundDate, @dateRequested, @approvalStatus, @moveStatus);
                             ";
-
+                            
                             using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
-                                ticketCommand.Parameters.AddWithValue("@quantity", ticket.quantity);
                                 ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
                                 ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
@@ -391,11 +384,12 @@ namespace qrmanagement.backend.Repositories{
                     await connection.OpenAsync();
 
                     using (var transaction = connection.BeginTransaction()){
+                        // TO DO: check status, cuma ticket dengan status draft yang bisa diupdate
+                        
                         string updateQuery = @"
                             UPDATE 
                                 Tickets
                             SET
-                                quantity = @quantity, 
                                 branchDestination = @branchDestination,
                                 outboundDate = @outboundDate,
                                 inboundDate = @inboundDate
@@ -404,7 +398,6 @@ namespace qrmanagement.backend.Repositories{
                         ";
 
                         using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                            ticketCommand.Parameters.AddWithValue("@quantity", ticket.quantity);
                             ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
                             ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
                             ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
@@ -454,6 +447,8 @@ namespace qrmanagement.backend.Repositories{
                                 ticketNumber = @ticketNumber
                         ";
 
+                        // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
+
                         using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
                             ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
                             ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
@@ -498,12 +493,14 @@ namespace qrmanagement.backend.Repositories{
                                 Tickets
                             SET
                                 approvalStatus = @approvalStatus
+                                reason = @reason
                             WHERE
                                 ticketNumber = @ticketNumber
                         ";
 
                         using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
                             ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                            ticketCommand.Parameters.AddWithValue("@reason", ticket.reason);
                             ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
                             rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
@@ -572,6 +569,9 @@ namespace qrmanagement.backend.Repositories{
                             WHERE
                                 ticketNumber = @id
                         ";
+
+                        // TO DO: delete semua asset move yang terkait ticketnya
+
                         using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
                             ticketCommand.Parameters.AddWithValue("@id", id);
 

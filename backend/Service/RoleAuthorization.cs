@@ -3,7 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace qrmanagement.backend.Helpers
+namespace qrmanagement.backend.Services
 {
     public class RoleAuthorization : Attribute, IAuthorizationFilter
     {

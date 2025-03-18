@@ -8,15 +8,15 @@ namespace qrmanagement.backend.Models{
         [StringLength(13)]
         public required string ticketNumber {get; set;}
         [Required]
-        public required int quantity {get; set;}
-        [Required]
         public required int branchOrigin {get; set;}
         [Required]
         public required int branchDestination {get; set;}
         public DateOnly outboundDate {get; set;}
         public DateOnly inboundDate {get; set;}
+        public string? reason {get; set;}
         [Required]
         public required DateOnly dateRequested {get; set;}
+        public DateOnly dateApproved {get; set;}
         [Required]
         public required approvalStatus approvalStatus {get; set;}
         [Required]
@@ -34,7 +34,8 @@ namespace qrmanagement.backend.Models{
     public enum approvalStatus{
         Rejected,
         Approved,
-        Pending
+        Pending,
+        Draft
     }
 
     public enum moveStatus{
