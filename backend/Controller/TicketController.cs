@@ -63,8 +63,28 @@ namespace qrmanagement.backend.Controllers{
             return Ok(tickets);
         }
 
+        // [HttpPost("create")]
+        // public async Task<ActionResult> CreateTicket ([FromForm] CreateTicketDTO ticketDTO){
+        //     var ticketNumber = await _ticketService.GenerateTicketNumberAsync(ticketDTO.dateRequested);
+        //     Ticket ticket = new Ticket{
+        //         ticketNumber = ticketNumber,
+        //         branchOrigin = ticketDTO.branchOrigin,
+        //         branchDestination = ticketDTO.branchDestination,
+        //         outboundDate = ticketDTO.outboundDate,
+        //         inboundDate = ticketDTO.inboundDate,
+        //         dateRequested = ticketDTO.dateRequested,
+        //         approvalStatus = ticketDTO.approvalStatus,
+        //         moveStatus = ticketDTO.moveStatus
+        //     };
+        //     int row = await _ticketRepo.AddTicket(ticket);
+        //     if(row == 0){
+        //         return BadRequest("Failed while creating ticket");
+        //     }
+        //     return Ok(new {statusCode = 200, message = "Ticket Created Successfully"});
+        // }
+
         [HttpPost("create")]
-        public async Task<ActionResult> CreateTicket ([FromForm] CreateTicketDTO ticketDTO){
+        public async Task<ActionResult> CreateTicket ([FromBody] CreateTicketDTO ticketDTO){
             var ticketNumber = await _ticketService.GenerateTicketNumberAsync(ticketDTO.dateRequested);
             Ticket ticket = new Ticket{
                 ticketNumber = ticketNumber,
@@ -76,8 +96,8 @@ namespace qrmanagement.backend.Controllers{
                 approvalStatus = ticketDTO.approvalStatus,
                 moveStatus = ticketDTO.moveStatus
             };
-            int row = await _ticketRepo.AddTicket(ticket);
-            if(row == 0){
+            bool success = await _ticketService.CreateTicketWithAssetsAsync(ticket, ticketDTO.assetNumbers);
+            if(!success){
                 return BadRequest("Failed while creating ticket");
             }
             return Ok(new {statusCode = 200, message = "Ticket Created Successfully"});

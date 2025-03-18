@@ -49,7 +49,7 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
-                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(4))
+                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(3))
                                 };
                                 assetMoveList.Add(asset);
                             }
@@ -103,7 +103,7 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
-                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(4))
+                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(3))
                                 };
                                 assetMoveList.Add(asset);
                             }
@@ -156,7 +156,7 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
-                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(4))
+                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(3))
                                 };
                                 assetMoveList.Add(asset);
                             }
@@ -209,7 +209,7 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
-                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(4))
+                                    moveStatus = Enum.Parse<AssetMoveStatus>(reader.GetString(3))
                                 };
                                 assetMoveList.Add(asset);
                             }
@@ -298,7 +298,7 @@ namespace qrmanagement.backend.Repositories{
                                 SET
                                     moveStatus = @moveStatus
                                 WHERE
-                                    assetMoveId = @assetMoveId
+                                    id = @assetMoveId
                             ";
                             foreach (var asset in assets){
                                 using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction)){

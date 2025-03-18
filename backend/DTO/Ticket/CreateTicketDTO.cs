@@ -8,5 +8,6 @@ namespace qrmanagement.backend.DTO.Ticket{
         public required DateOnly dateRequested {get; set;}
         public required approvalStatus approvalStatus {get; set;}
         public required ticketMoveStatus moveStatus {get; set;}
+        public required IEnumerable<string> assetNumbers {get; set;}
     }
 }

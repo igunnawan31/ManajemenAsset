@@ -352,6 +352,7 @@ namespace qrmanagement.backend.Repositories{
                                 await transaction.CommitAsync();
                                 return rowsAffected;
                             }
+                            
                         }
                         catch (Exception ex)
                         {
