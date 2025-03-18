@@ -111,5 +111,14 @@ namespace qrmanagement.backend.Controllers{
             }
             return Ok( new {StatusCode = 200, message = "Ticket Approval Status Updated Successfully"});
         }
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteTicket([FromBody] string id){
+            int row = await _ticketRepo.DeleteTicket(id);
+            if(row == 0){
+                return BadRequest("Failed while deleting ticket");
+            }
+            return Ok(new {StatusCode = 200, message = "Ticket Deleted Successfully"});
+        }
+
     }
 }

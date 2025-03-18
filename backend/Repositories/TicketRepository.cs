@@ -531,6 +531,73 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal Server Error");
             }
         }
-        // public async Task <int> DeleteTicket(string id);
+        public async Task <int> DeleteTicket(string id){
+            _logger.LogDebug("Deleting ticket from the database");
+
+            int rowsAffected = 0;
+            try
+            {
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = await connection.BeginTransactionAsync()){ // kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
+                        string checkStatusQuery = @"
+                            SELECT
+                                t.moveStatus
+                            FROM 
+                                Tickets t
+                            WHERE
+                                t.ticketNumber = @id
+                        ";
+                        using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
+                            checkMoveCommand.Parameters.AddWithValue("@id", id);
+                            using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
+                                if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
+                                {
+                                    if (!(Enum.Parse<moveStatus>(reader.GetString(0)) == moveStatus.Not_Started)){
+                                        throw new Exception("Ticket is currently being executed or has been completed");
+                                    }
+                                }
+                                else
+                                {
+                                    throw new Exception("Ticket not found");
+                                }
+                            }
+                        }
+
+                        string deleteTicketQuery = @"
+                            DELETE FROM
+                                Tickets
+                            WHERE
+                                ticketNumber = @id
+                        ";
+                        using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
+                            ticketCommand.Parameters.AddWithValue("@id", id);
+
+                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                        }
+                        _logger.LogDebug("Successfuly deleted Ticket");
+                        transaction.Commit();
+                    }
+                }
+
+                _logger.LogDebug("Ticket successfully deleted.");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                // transaction.Rollback();
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while deleting ticket");    
+            }
+            catch (Exception ex){
+                // transaction.Rollback();
+                _logger.LogError(ex, "An error occurred while deleting ticket.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            } 
+        }
     }
 }

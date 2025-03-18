@@ -51,7 +51,7 @@ namespace qrmanagement.Migrations
 
                     b.HasIndex("locationId");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
 
                     b.HasData(
                         new
@@ -100,7 +100,7 @@ namespace qrmanagement.Migrations
 
                     b.HasIndex("ticketNumber");
 
-                    b.ToTable("AssetMoves");
+                    b.ToTable("AssetMoves", (string)null);
 
                     b.HasData(
                         new
@@ -154,7 +154,7 @@ namespace qrmanagement.Migrations
 
                     b.HasIndex("kotaId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
 
                     b.HasData(
                         new
@@ -199,7 +199,7 @@ namespace qrmanagement.Migrations
 
                     b.HasIndex("kotaId");
 
-                    b.ToTable("Kecamatans");
+                    b.ToTable("Kecamatans", (string)null);
 
                     b.HasData(
                         new
@@ -230,7 +230,7 @@ namespace qrmanagement.Migrations
 
                     b.HasKey("kotaId");
 
-                    b.ToTable("Kotas");
+                    b.ToTable("Kotas", (string)null);
 
                     b.HasData(
                         new
@@ -283,7 +283,7 @@ namespace qrmanagement.Migrations
 
                     b.HasIndex("branchOrigin");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
 
                     b.HasData(
                         new
@@ -351,7 +351,7 @@ namespace qrmanagement.Migrations
                     b.HasIndex("userEmail")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
