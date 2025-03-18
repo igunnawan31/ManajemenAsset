@@ -8,6 +8,6 @@ namespace qrmanagement.backend.DTO.Ticket{
         public DateOnly inboundDate {get; set;}
         public required DateOnly dateRequested {get; set;}
         public required approvalStatus approvalStatus {get; set;}
-        public required moveStatus moveStatus {get; set;}
+        public required ticketMoveStatus moveStatus {get; set;}
     }
 }

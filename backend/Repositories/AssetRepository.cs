@@ -392,7 +392,7 @@ namespace qrmanagement.backend.Repositories{
                         using (var checkMoveCommand = new SqlCommand(checkMoveQuery, connection, (SqlTransaction)transaction)){
                             using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
                                 checkMoveCommand.Parameters.AddWithValue("@id", id);
-                                if (Enum.Parse<MoveStatus>(reader.GetString(0))==MoveStatus.Incomplete){
+                                if (Enum.Parse<AssetMoveStatus>(reader.GetString(0))==AssetMoveStatus.Moving){
                                     throw new Exception("Asset is currently being transported");
                                 }
                             }

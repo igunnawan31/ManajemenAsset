@@ -51,7 +51,7 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
+                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -111,7 +111,7 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
+                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
@@ -176,7 +176,7 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
+                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -237,7 +237,7 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
+                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -298,7 +298,7 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<moveStatus>(reader.GetString(7))
+                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
                                 };
                                 ticketList.Add(asset);
                             }
@@ -384,30 +384,39 @@ namespace qrmanagement.backend.Repositories{
                     await connection.OpenAsync();
 
                     using (var transaction = connection.BeginTransaction()){
-                        // TO DO: check status, cuma ticket dengan status draft yang bisa diupdate
-                        
-                        string updateQuery = @"
-                            UPDATE 
-                                Tickets
-                            SET
-                                branchDestination = @branchDestination,
-                                outboundDate = @outboundDate,
-                                inboundDate = @inboundDate
-                            WHERE
-                                ticketNumber = @ticketNumber
-                        ";
+                        try
+                        {
+                            // TO DO: check status, cuma ticket dengan status draft yang bisa diupdate
+                            
+                            string updateQuery = @"
+                                UPDATE 
+                                    Tickets
+                                SET
+                                    branchDestination = @branchDestination,
+                                    outboundDate = @outboundDate,
+                                    inboundDate = @inboundDate
+                                WHERE
+                                    ticketNumber = @ticketNumber
+                            ";
 
-                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                            ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
-                            ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
-                            ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
-                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
+                                ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
+                                ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
+                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
-                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            }
+
+                            _logger.LogDebug("Successfuly updated ticket");
+                            transaction.Commit();   
                         }
-
-                        _logger.LogDebug("Successfuly updated ticket");
-                        transaction.Commit();
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
+                        }
                     }
                 }     
 
@@ -415,12 +424,10 @@ namespace qrmanagement.backend.Repositories{
                 return rowsAffected;          
             }
             catch (SqlException sqlEx){
-                // transaction.Rollback();
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while updating ticket");    
             }
             catch (Exception ex){
-                // transaction.Rollback();
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -438,26 +445,35 @@ namespace qrmanagement.backend.Repositories{
                     await connection.OpenAsync();
 
                     using (var transaction = connection.BeginTransaction()){
-                        string updateQuery = @"
-                            UPDATE 
-                                Tickets
-                            SET
-                                moveStatus = @moveStatus
-                            WHERE
-                                ticketNumber = @ticketNumber
-                        ";
+                        try
+                        {
+                            string updateQuery = @"
+                                UPDATE 
+                                    Tickets
+                                SET
+                                    moveStatus = @moveStatus
+                                WHERE
+                                    ticketNumber = @ticketNumber
+                            ";
 
-                        // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
+                            // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
+                            // TO DO: modify inbound & outbound date kalau move status berubah
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
+                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
-                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                            ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
-                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            }
 
-                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            _logger.LogDebug("Successfuly updated ticket");
+                            transaction.Commit();
                         }
-
-                        _logger.LogDebug("Successfuly updated ticket");
-                        transaction.Commit();
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
+                        }
                     }
                 }     
 
@@ -465,12 +481,10 @@ namespace qrmanagement.backend.Repositories{
                 return rowsAffected;          
             }
             catch (SqlException sqlEx){
-                // transaction.Rollback();
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while updating ticket");    
             }
             catch (Exception ex){
-                // transaction.Rollback();
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -488,26 +502,37 @@ namespace qrmanagement.backend.Repositories{
                     await connection.OpenAsync();
 
                     using (var transaction = connection.BeginTransaction()){
-                        string updateQuery = @"
-                            UPDATE 
-                                Tickets
-                            SET
-                                approvalStatus = @approvalStatus
-                                reason = @reason
-                            WHERE
-                                ticketNumber = @ticketNumber
-                        ";
+                        try
+                        {
+                            string updateQuery = @"
+                                UPDATE 
+                                    Tickets
+                                SET
+                                    approvalStatus = @approvalStatus
+                                    reason = @reason
+                                    dateApproved = @dateApproved
+                                WHERE
+                                    ticketNumber = @ticketNumber
+                            ";
 
-                        using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                            ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
-                            ticketCommand.Parameters.AddWithValue("@reason", ticket.reason);
-                            ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                                ticketCommand.Parameters.AddWithValue("@reason", ticket.reason);
+                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
+                                
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            }
 
-                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            _logger.LogDebug("Successfuly updated ticket");
+                            transaction.Commit();   
                         }
-
-                        _logger.LogDebug("Successfuly updated ticket");
-                        transaction.Commit();
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
+                        }
                     }
                 }     
 
@@ -515,12 +540,10 @@ namespace qrmanagement.backend.Repositories{
                 return rowsAffected;          
             }
             catch (SqlException sqlEx){
-                // transaction.Rollback();
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while updating ticket");    
             }
             catch (Exception ex){
-                // transaction.Rollback();
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -538,47 +561,56 @@ namespace qrmanagement.backend.Repositories{
                 using (var connection = new SqlConnection(connectionString)){
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){ // kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
-                        string checkStatusQuery = @"
-                            SELECT
-                                t.moveStatus
-                            FROM 
-                                Tickets t
-                            WHERE
-                                t.ticketNumber = @id
-                        ";
-                        using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
-                            checkMoveCommand.Parameters.AddWithValue("@id", id);
-                            using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
-                                if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
-                                {
-                                    if (!(Enum.Parse<moveStatus>(reader.GetString(0)) == moveStatus.Not_Started)){
-                                        throw new Exception("Ticket is currently being executed or has been completed");
+                    using (var transaction = await connection.BeginTransactionAsync()){ 
+                        try
+                        {// kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
+                            string checkStatusQuery = @"
+                                SELECT
+                                    t.moveStatus
+                                FROM 
+                                    Tickets t
+                                WHERE
+                                    t.ticketNumber = @id
+                            ";
+                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
+                                checkMoveCommand.Parameters.AddWithValue("@id", id);
+                                using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
+                                    if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
+                                    {
+                                        if (!(Enum.Parse<ticketMoveStatus>(reader.GetString(0)) == ticketMoveStatus.Not_Started)){
+                                            throw new Exception("Ticket is currently being executed or has been completed");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Ticket not found");
                                     }
                                 }
-                                else
-                                {
-                                    throw new Exception("Ticket not found");
-                                }
                             }
+
+                            string deleteTicketQuery = @"
+                                DELETE FROM
+                                    Tickets
+                                WHERE
+                                    ticketNumber = @id
+                            ";
+
+                            // TO DO: delete semua asset move yang terkait ticketnya
+
+                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
+                                ticketCommand.Parameters.AddWithValue("@id", id);
+
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            }
+                            _logger.LogDebug("Successfuly deleted Ticket");
+                            transaction.Commit();    
                         }
-
-                        string deleteTicketQuery = @"
-                            DELETE FROM
-                                Tickets
-                            WHERE
-                                ticketNumber = @id
-                        ";
-
-                        // TO DO: delete semua asset move yang terkait ticketnya
-
-                        using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
-                            ticketCommand.Parameters.AddWithValue("@id", id);
-
-                            rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
                         }
-                        _logger.LogDebug("Successfuly deleted Ticket");
-                        transaction.Commit();
                     }
                 }
 
@@ -586,12 +618,10 @@ namespace qrmanagement.backend.Repositories{
                 return rowsAffected;          
             }
             catch (SqlException sqlEx){
-                // transaction.Rollback();
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while deleting ticket");    
             }
             catch (Exception ex){
-                // transaction.Rollback();
                 _logger.LogError(ex, "An error occurred while deleting ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);

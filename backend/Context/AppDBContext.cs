@@ -115,8 +115,8 @@ namespace qrmanagement.backend.Context{
                     .OnDelete(DeleteBehavior.NoAction); 
                 
                 entity.HasData(
-                    new Ticket{ticketNumber = "TN-001-070225", branchOrigin = 1, branchDestination = 2, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)},
-                    new Ticket{ticketNumber = "TN-002-070225", branchOrigin = 2, branchDestination = 1, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = moveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)}
+                    new Ticket{ticketNumber = "TN-001-070225", branchOrigin = 1, branchDestination = 2, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = ticketMoveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)},
+                    new Ticket{ticketNumber = "TN-002-070225", branchOrigin = 2, branchDestination = 1, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = ticketMoveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)}
                 );
             });
 
@@ -134,8 +134,8 @@ namespace qrmanagement.backend.Context{
                     .HasForeignKey(a => a.ticketNumber);
 
                 entity.HasData(
-                    new AssetMove{id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = MoveStatus.Completed},
-                    new AssetMove{id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = MoveStatus.Completed}
+                    new AssetMove{id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moved},
+                    new AssetMove{id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Moved}
                 );
             });
 

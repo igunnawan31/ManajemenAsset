@@ -12,7 +12,7 @@ namespace qrmanagement.backend.Models{
         [Required]
         public required string assetNumber {get; set;}
         [Required]
-        public required MoveStatus moveStatus {get; set;}
+        public required AssetMoveStatus moveStatus {get; set;}
         [ForeignKey("ticketNumber")]
         public Ticket ticket {get; set;} = null!;
         [ForeignKey("assetNumber")]
@@ -20,9 +20,10 @@ namespace qrmanagement.backend.Models{
 
     }
     
-    public enum MoveStatus{
-        Completed,
+    public enum AssetMoveStatus{
+        Moved,
         Missing, 
-        Incomplete
+        Waiting,
+        Moving
     }
 }
