@@ -377,11 +377,13 @@ namespace qrmanagement.backend.Repositories{
                             //     }
                             // }
 
+                            // TO DO: check status dari ticketNumber, kalo masih draft boleh delete asset move if not then failed
+
                             string deleteAssetMoveQuery = @"
                                 DELETE FROM
-                                    Tickets
+                                    AssetMoves
                                 WHERE
-                                    ticketNumber = @id
+                                    id = @id
                             ";
                             foreach (var id in ids)
                             {

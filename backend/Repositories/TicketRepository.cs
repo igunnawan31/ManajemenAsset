@@ -388,7 +388,31 @@ namespace qrmanagement.backend.Repositories{
                         try
                         {
                             // TO DO: check status, cuma ticket dengan status draft yang bisa diupdate
-                            
+                            // DONE
+                            string checkStatusQuery = @"
+                                SELECT
+                                    t.approvalStatus
+                                FROM 
+                                    Tickets t
+                                WHERE
+                                    t.ticketNumber = @id
+                            ";
+                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
+                                checkMoveCommand.Parameters.AddWithValue("@id", ticket.ticketNumber);
+                                using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
+                                    if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
+                                    {
+                                        if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft)){
+                                            throw new Exception("Ticket has been sent. Cannot be updated");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Ticket not found");
+                                    }
+                                }
+                            }
+
                             string updateQuery = @"
                                 UPDATE 
                                     Tickets
@@ -458,6 +482,8 @@ namespace qrmanagement.backend.Repositories{
                             ";
 
                             // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
+
+                            
                             // TO DO: modify inbound & outbound date kalau move status berubah
                             using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
                                 ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
@@ -567,7 +593,7 @@ namespace qrmanagement.backend.Repositories{
                         {// kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
                             string checkStatusQuery = @"
                                 SELECT
-                                    t.moveStatus
+                                    t.approvalStatus
                                 FROM 
                                     Tickets t
                                 WHERE
@@ -578,8 +604,8 @@ namespace qrmanagement.backend.Repositories{
                                 using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
                                     if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
                                     {
-                                        if (!(Enum.Parse<ticketMoveStatus>(reader.GetString(0)) == ticketMoveStatus.Not_Started)){
-                                            throw new Exception("Ticket is currently being executed or has been completed");
+                                        if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft)){
+                                            throw new Exception("Ticket has been sent. Cannot be deleted");
                                         }
                                     }
                                     else

@@ -37,7 +37,7 @@ namespace qrmanagement.backend.Services{
             int rowsAffectedMove = await _moveRepo.AddAssetMove(assetNumbers, ticket.ticketNumber);
             if (rowsAffectedMove == 0) return false;
             return true;
-    }
+        }
     }
 }
 
