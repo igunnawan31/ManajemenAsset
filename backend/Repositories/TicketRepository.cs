@@ -480,18 +480,47 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     ticketNumber = @ticketNumber
                             ";
-
-                            // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
-
-                            
-                            // TO DO: modify inbound & outbound date kalau move status berubah
                             using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
                                 ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
+                            
+                            // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
+                            // NOT NEEDED KARENA UPDATE MOVE STATUS ASSET MOVE HARUS PER ITEM
+                            
+                            // TO DO: modify inbound & outbound date kalau move status berubah
+                            // DONE
 
+                            string updateDate;
+                            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                            if(ticket.status == "Completed"){
+                                updateDate = @"
+                                    UPDATE
+                                        Tickets
+                                    SET
+                                        inboundDate = @date
+                                    WHERE
+                                        ticketNumber = @ticketNumber
+                                ";
+                            } 
+                            else{
+                                updateDate = @"
+                                    UPDATE
+                                        Tickets
+                                    SET
+                                        outboundDate = @date
+                                    WHERE
+                                        ticketNumber = @ticketNumber
+                                ";
+                            }
+                            using(var assetMoveCommand = new SqlCommand(updateDate, connection, transaction)){
+                                assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                assetMoveCommand.Parameters.AddWithValue("@date", date);
+                                
+                                rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
+                            }
                             _logger.LogDebug("Successfuly updated ticket");
                             transaction.Commit();
                         }
@@ -614,6 +643,20 @@ namespace qrmanagement.backend.Repositories{
                                     }
                                 }
                             }
+                            // TO DO: delete semua asset move yang terkait ticketnya
+                            // DONE
+                            string deleteAssetMoveQuery = @"
+                                DELETE FROM
+                                    AssetMoves
+                                WHERE
+                                    ticketNumber = @id
+                            ";
+
+                            using (var assetMoveCommand = new SqlCommand(deleteAssetMoveQuery, connection, (SqlTransaction)transaction)){
+                                assetMoveCommand.Parameters.AddWithValue("@id", id);
+
+                                rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
+                            }
 
                             string deleteTicketQuery = @"
                                 DELETE FROM
@@ -622,7 +665,6 @@ namespace qrmanagement.backend.Repositories{
                                     ticketNumber = @id
                             ";
 
-                            // TO DO: delete semua asset move yang terkait ticketnya
 
                             using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
                                 ticketCommand.Parameters.AddWithValue("@id", id);
