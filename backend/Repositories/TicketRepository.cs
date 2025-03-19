@@ -318,7 +318,7 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> AddTicket(Ticket ticket){
+        public async Task<int> AddTicket(CreateTicketDTO ticket, string ticketNumber){
             _logger.LogDebug("Adding ticket to the database.");
 
             try{
@@ -336,7 +336,7 @@ namespace qrmanagement.backend.Repositories{
                             ";
                             
                             using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
-                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                 ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
                                 ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);

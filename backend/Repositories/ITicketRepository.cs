@@ -7,7 +7,7 @@ namespace qrmanagement.backend.Repositories{
         Task <IEnumerable<TicketResponseDTO>> GetTicketByOrigin(int locationId);
         Task <IEnumerable<TicketResponseDTO>> GetTicketByMoveStatus(string status);
         Task <IEnumerable<TicketResponseDTO>> GetTicketByApprovalStatus(string status);
-        Task <int> AddTicket(Ticket ticket);
+        Task <int> AddTicket(CreateTicketDTO ticket, string ticketNumber);
         Task <int> UpdateTicket(UpdateTicketDTO ticket);
         Task <int> UpdateTicketMoveStatus(UpdateTicketStatusDTO ticket);
         Task <int> UpdateTicketApprovalStatus(UpdateTicketStatusDTO ticket);
