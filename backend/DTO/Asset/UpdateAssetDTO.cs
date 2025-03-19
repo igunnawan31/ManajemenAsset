@@ -6,7 +6,7 @@ namespace qrmanagement.backend.DTO.Asset{
         public required string id { get; set; }
         public string? name { get; set; }
         public int? locationId { get; set; }
-        public assetType? assetType { get; set; }
-        public managementStatus? itemStatus { get; set; }
+        public string? assetType { get; set; }
+        public string? itemStatus { get; set; }
     }
 }

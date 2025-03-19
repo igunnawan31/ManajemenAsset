@@ -50,8 +50,8 @@ namespace qrmanagement.backend.Repositories{
                                     outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
+                                    approvalStatus = reader.GetString(6),
+                                    moveStatus = reader.GetString(7)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -110,8 +110,8 @@ namespace qrmanagement.backend.Repositories{
                                     outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
+                                    approvalStatus = reader.GetString(6),
+                                    moveStatus = reader.GetString(7)
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
@@ -175,8 +175,8 @@ namespace qrmanagement.backend.Repositories{
                                     outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
+                                    approvalStatus = reader.GetString(6),
+                                    moveStatus = reader.GetString(7)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -236,8 +236,8 @@ namespace qrmanagement.backend.Repositories{
                                     outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
+                                    approvalStatus = reader.GetString(6),
+                                    moveStatus = reader.GetString(7)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -297,8 +297,8 @@ namespace qrmanagement.backend.Repositories{
                                     outboundDate = DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
-                                    approvalStatus = Enum.Parse<approvalStatus>(reader.GetString(6)),
-                                    moveStatus = Enum.Parse<ticketMoveStatus>(reader.GetString(7))
+                                    approvalStatus = reader.GetString(6),
+                                    moveStatus = reader.GetString(7)
                                 };
                                 ticketList.Add(asset);
                             }

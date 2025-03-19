@@ -5,7 +5,7 @@ namespace qrmanagement.backend.DTO.AssetMove{
         public required int id {get; set;}
         public required string ticketNumber {get; set;}
         public required string assetNumber {get; set;}
-        public required AssetMoveStatus moveStatus {get; set;}
+        public required string moveStatus {get; set;}
 
     }
 }

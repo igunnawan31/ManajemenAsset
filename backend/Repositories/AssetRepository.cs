@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
@@ -53,8 +54,8 @@ namespace qrmanagement.backend.Repositories{
                                     name = reader.GetString(1),
                                     locationId = reader.GetInt32(2), 
                                     branchName = reader.GetString(3),
-                                    assetType = Enum.TryParse<assetType>(reader.GetString(4), out var assetTypeResult) ? assetTypeResult : default,
-                                    itemStatus = Enum.TryParse<managementStatus>(reader.GetString(5), out var statusResult) ? statusResult : default,
+                                    assetType = reader.GetString(4),
+                                    itemStatus = reader.GetString(5),
                                     imagePath = reader.GetString(6)
                                 };
                                 assetList.Add(asset);
@@ -109,8 +110,8 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetString(0),
                                     name = reader.GetString(1),
                                     locationId = reader.GetInt32(2),
-                                    assetType = Enum.Parse<assetType>(reader.GetString(3)),
-                                    itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
+                                    assetType = reader.GetString(3),
+                                    itemStatus = reader.GetString(4),
                                     imagePath = reader.GetString(5)
                                 };
                                 _logger.LogDebug("Asset fetched successfully");
@@ -170,8 +171,8 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetString(0),
                                     name = reader.GetString(1),
                                     locationId = reader.GetInt32(2),
-                                    assetType = Enum.Parse<assetType>(reader.GetString(3)),
-                                    itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
+                                    assetType = reader.GetString(3),
+                                    itemStatus = reader.GetString(4),
                                     imagePath = reader.GetString(5)
                                 };
                                 assetList.Add(asset);
@@ -227,8 +228,8 @@ namespace qrmanagement.backend.Repositories{
                                     id = reader.GetString(0),
                                     name = reader.GetString(1),
                                     locationId = reader.GetInt32(2),
-                                    assetType = Enum.Parse<assetType>(reader.GetString(3)),
-                                    itemStatus = Enum.Parse<managementStatus>(reader.GetString(4)),
+                                    assetType = reader.GetString(3),
+                                    itemStatus = reader.GetString(4),
                                     imagePath = reader.GetString(5)
                                 };
                                 assetList.Add(asset);
@@ -337,8 +338,8 @@ namespace qrmanagement.backend.Repositories{
                             assetCommand.Parameters.AddWithValue("@id", asset.id);
                             assetCommand.Parameters.AddWithValue("@name", asset.name);
                             assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
-                            assetCommand.Parameters.AddWithValue("@assetType", asset.assetType.ToString());
-                            assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus.ToString());
+                            assetCommand.Parameters.AddWithValue("@assetType", asset.assetType);
+                            assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus);
 
                             rowsAffected = await assetCommand.ExecuteNonQueryAsync();
                         }
