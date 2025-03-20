@@ -79,7 +79,7 @@ const UserNavbar = () => {
 
                     <div className="hidden md:flex space-x-6">
                         {["inbound", "outbound", "how-to-scan-qr"].map((item, index) => (
-                            <Link key={index} href={`/${item}`} className="relative group">
+                            <Link key={index} href={`/userdashboard/${item}`} className="relative group">
                                 <span className="text-white poppins text-sm tracking-wide capitalize transition-all duration-300 ease-in-out">
                                     {item.replace(/-/g, " ")}
                                 </span>

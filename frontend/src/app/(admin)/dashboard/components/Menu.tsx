@@ -31,11 +31,11 @@ const menuInbound = [
     items: [
       {
         label: "Request Asset Masuk",
-        href: "/dashboard/requestbarangmasuk",
+        href: "/dashboard/requestassetmasuk",
       },
       {
         label: "Pengecekan Asset Masuk",
-        href: "/dashboard/pengecekanbarangmasuk",
+        href: "/dashboard/pengecekanassetmasuk",
       },
     ],
   },

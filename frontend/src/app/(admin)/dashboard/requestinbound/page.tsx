@@ -7,55 +7,109 @@ import DataTable from "../components/DataTable";
 import Upper from "../components/Upper";
 import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
-interface Asset {
-    no: string;
-    assetId: string;
-    assetName: string;
-    assetType: string;
-    assetLocation: string;
-    assetStock: string;
-    assetStatusPengelolaan: string;
+interface Ticket {
+    ticketNumber: string;
+    branchOrigin: string;
+    branchDestination: string;
+    outboundDate: string;
+    inboundDate: string;
+    dateRequested: string;
+    approvalStatus: string;
+    moveStatus: string;
+}
+
+interface AssetMove {
+    id: string;
+    ticketNumber: string;
+    assetNumber: string;
+    moveStatus: string;
+    ticket: string;
+    asset: string;
 }
 
 const RequestInboundPage = () => {
-    const [assets, setAssets] = useState<Asset[]>([
-        { no: "1", assetId: "AID-001-100225", assetName: "Samsung2", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
-        { no: "2", assetId: "AID-002-100225", assetName: "Samsung1", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
-        { no: "3", assetId: "AID-003-100225", assetName: "Samsung3", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "4", assetStatusPengelolaan: "Active" },
-        { no: "4", assetId: "AID-004-100225", assetName: "Kursi1", assetType: "Barang", assetLocation: "Astra International - Pusat", assetStock: "2", assetStatusPengelolaan: "Active" },
-        { no: "5", assetId: "AID-005-100225", assetName: "Kursi2", assetType: "Barang", assetLocation: "Astra International - Pusat", assetStock: "2", assetStatusPengelolaan: "Active" },
-        { no: "6", assetId: "AID-006-100225", assetName: "Printer", assetType: "Elektronik", assetLocation: "Astra International - Pusat", assetStock: "5", assetStatusPengelolaan: "Active" }
-    ]);
-
-    const [asset, setAsset] = useState<Asset | null>(null);
-
-    const [filteredassets, setFilteredassets] = useState<Asset[]>(assets);
+    const [tickets, setTickets] = useState<Ticket[]>([]);
+    const [activeTab, setActiveTab] = useState("createrequestinbound");
+    const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [createRequest, setCreateRequest] = useState<Ticket[]>([]);
+    const [draft, setDraft] = useState<Ticket[]>([]);
+    const itemsPerPage = 5;
 
     const columns = [
-        { key: "no", label: "No", alwaysVisible:true },
-        { key: "assetId", label: "Id Asset", alwaysVisible: true },
-        { key: "assetName", label: "Nama Asset", alwaysVisible: true },
-        { key: "assetType", label: "Tipe Asset", alwaysVisible: true },
-        { key: "assetLocation", label: "Lokasi Asset", alwaysVisible: true },
-        { key: "assetStock", label: "Stock Asset" },
-        { key: "assetStatusPengelolaan", label: "Status Asset" },
+        { key: "ticketNumber", label: "ticketNumber", alwaysVisible: true },
+        { key: "branchOrigin", label: "Branch Origin", alwaysVisible: true },
+        { key: "branchDestination", label: "Branch Destination", alwaysVisible: true },
+        { key: "outboundDate", label: "Outbound Date" },
+        { key: "inboundDate", label: "Inbound Date" },
+        { key: "dateRequested", label: "Date Requested" },
+        { key: "approvalStatus", label: "Approval Status" },
+        { key: "moveStatus", label: "Move Status" },
     ];
 
-    const handleSearch = (query: string) => {
-        if (!query.trim()) {
-            setFilteredassets(assets);
-            return;
+    useEffect(() => {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+                .then((response) => {
+                    if (!response.ok) {
+                        return response.text().then((text) => {
+                            throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then((data: Ticket[]) => {
+                    setTickets(data);
+                    setCreateRequest(data.filter(ticket => ticket.approvalStatus !== "Draft"));
+                    setDraft(data.filter(ticket => ticket.approvalStatus === "Draft"));
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                    setError('Failed to fetch data. Please try again later.');
+                    setLoading(false);
+                });
+        }, []);
+
+    useEffect(() => {
+        let filtered = tickets;
+        if (searchQuery.trim()) {
+                let filtered = tickets.filter((ticket) =>
+                ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                ticket.approvalStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
+            );
         }
+
+        Object.keys(selectedFilters).forEach((filterType) => {
+            const filterValue = selectedFilters[filterType];
+            if (filterValue) {
+                filtered = filtered.filter((user) => (user as any)[filterType] === filterValue);
+            }
+        });
+
+        setFilteredTickets(filtered);
+    }, [searchQuery, selectedFilters]);
     
-        const filtered = assets.filter((asset) =>
-            asset.assetId.toLowerCase().includes(query.toLowerCase()) ||
-            asset.assetName.toLowerCase().includes(query.toLowerCase()) ||
-            asset.assetType.toLowerCase().includes(query.toLowerCase()) ||
-            asset.assetLocation.toLowerCase().includes(query.toLowerCase()) ||
-            asset.assetStatusPengelolaan.toLowerCase().includes(query.toLowerCase())
-        );
-    
-        setFilteredassets(filtered);
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+    };
+
+    const handleFilterChange = (type: string, value: string | null) => {
+        setSelectedFilters((prev) => ({ ...prev, [type]: value }));
+    };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentTickets = filteredTickets.slice(indexOfFirstItem, indexOfLastItem);
+  
+    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+  
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     return (
@@ -65,39 +119,76 @@ const RequestInboundPage = () => {
                 <div className="flex justify-end items-end">
                     <Link href="/dashboard/requestinbound/create">
                         <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
-                            <span className="text-white font-sans font-bold">Create New Inbound</span>
+                            <span className="text-white font-sans font-bold">Create New Request Inbound</span>
                         </button>
                     </Link>
                 </div>
             </div>
-            <div className="mt-5">
-                <Search
-                    placeholder="Cari Email asset/Branch asset/Dll"
-                    onSearch={handleSearch} 
-                />
+            <div className="flex w-full mt-5 justify-between poppins text-xs">
+                {["createrequestinbound", "draft"].map((tab) => (
+                    <button
+                        key={tab}
+                        className={`py-6 px-6 w-full border-b-2  ${activeTab === tab ? "bg-[#202B51] text-white" : "text-black hover:bg-gray-100"}`}
+                        onClick={() => setActiveTab(tab)}
+                    >
+                        {tab === "createrequestinbound" ? "Create New Ticket Inbound" : "Draft Inbound Ticket"}
+                    </button>
+                ))}
             </div>
-            <div className="mt-5">
-                { filteredassets.length > 0 ? (
-                    <DataTable
-                        columns={columns}
-                        data={filteredassets}
-                        actions={[
-                            {
-                                label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/requestinbound/view/${row.assetId}`,
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                            {
-                                label: <IoTrash className="text-red-700" />,
-                                onClick: (row) => console.log("Delete asset:", row.assetId),
-                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                            },
-                        ]}
-                    />
-                ) : (
-                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
-                )}
-            </div>
+            {activeTab === "createrequestinbound" && (
+                <div className="mt-5">
+                    <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                    <div className="mt-5">
+                        {createRequest.length > 0 ? (
+                            <DataTable
+                                columns={columns}
+                                data={createRequest}
+                                actions={[
+                                    {
+                                        label: <IoEyeSharp className="text-[#202B51]" />,
+                                        href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                    },
+                                ]}
+                            />
+                        ) : (
+                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {activeTab === "draft" && (
+                <div className="mt-5">
+                    <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                    <div className="mt-5">
+                        {draft.length > 0 ? (
+                            <DataTable
+                                columns={columns}
+                                data={draft}
+                                actions={[
+                                    {
+                                        label: <IoEyeSharp className="text-[#202B51]" />,
+                                        href: (row) => `/dashboard/requestinbound/view/${row.id}`,
+                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                    },
+                                    {
+                                        label: <IoReaderSharp className="text-[#202B51]" />,
+                                        href: (row) => `/dashboard/requestinbound/edit/${row.userId}`,
+                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                    },
+                                    {
+                                        label: <IoTrash className="text-red-700" />,
+                                        onClick: (row) => console.log("Delete user:", row.userId),
+                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                    },
+                                ]}
+                            />
+                        ) : (
+                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
