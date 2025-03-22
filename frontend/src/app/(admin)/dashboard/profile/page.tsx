@@ -8,7 +8,7 @@ type UserResponseDTO = {
     userId: number;
     userName: string;
     userEmail: string;
-    userBranch: number; // This is the branchId
+    userBranch: number;
     userPhone: string;
     userRole: string;
     userSubRole: string;
