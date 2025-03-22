@@ -334,16 +334,14 @@ namespace qrmanagement.backend.Repositories{
                                 VALUES
                                     (@ticketNumber, @branchOrigin, @branchDestination, @outboundDate, @inboundDate, @dateRequested, @approvalStatus, @moveStatus);
                             ";
-                            
+                             
                             using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                 ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
-                                ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
-                                ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
                                 ticketCommand.Parameters.AddWithValue("@dateRequested", ticket.dateRequested);
-                                ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.approvalStatus.ToString());
-                                ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.moveStatus.ToString());
+                                ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.approvalStatus);
+                                ticketCommand.Parameters.AddWithValue("@moveStatus", ticketMoveStatus.Not_Started.ToString());
 
                                 int rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                                 

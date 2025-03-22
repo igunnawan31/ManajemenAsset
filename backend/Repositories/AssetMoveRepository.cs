@@ -249,7 +249,7 @@ namespace qrmanagement.backend.Repositories{
                                 using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
                                     assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
-                                    assetMoveCommand.Parameters.AddWithValue("@moveStatus", AssetMoveStatus.Waiting.ToString());
+                                    assetMoveCommand.Parameters.AddWithValue("@moveStatus", AssetMoveStatus.Draft.ToString());
 
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                     

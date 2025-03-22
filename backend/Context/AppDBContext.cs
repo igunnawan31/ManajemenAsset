@@ -134,8 +134,8 @@ namespace qrmanagement.backend.Context{
                     .HasForeignKey(a => a.ticketNumber);
 
                 entity.HasData(
-                    new AssetMove{id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moved},
-                    new AssetMove{id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Moved}
+                    new AssetMove{id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived},
+                    new AssetMove{id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived}
                 );
             });
 

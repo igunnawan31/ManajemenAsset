@@ -21,9 +21,10 @@ namespace qrmanagement.backend.Models{
     }
     
     public enum AssetMoveStatus{
-        Moved,
+        Arrived,
         Missing, 
         Waiting,
-        Moving
+        Moving,
+        Draft
     }
 }
