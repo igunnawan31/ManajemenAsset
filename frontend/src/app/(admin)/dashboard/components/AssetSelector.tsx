@@ -6,13 +6,12 @@ import Search from "./Search";
 import FilterDropdown from "@/app/(user)/userdashboard/usercomponent/Filter";
 
 interface Asset {
-  no: string;
-  assetId: string;
-  assetName: string;
+  id: string;
+  name: string;
+  locationId: string;
+  branchName: string;
   assetType: string;
-  assetStock: string;
-  assetLocation: string;
-  assetStatusPengelolaan: string;
+  itemStatus: string;
 }
 
 interface AssetSelectorProps {
@@ -39,14 +38,14 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
 
   // Add asset to temporary selection
   const handleSelectAsset = (asset: Asset) => {
-    if (!tempSelectedAssets.some((a) => a.assetId === asset.assetId)) {
+    if (!tempSelectedAssets.some((a) => a.id === asset.id)) {
       setTempSelectedAssets([...tempSelectedAssets, asset]);
     }
   };
 
   // Remove asset from temporary selection
-  const handleRemoveAsset = (assetId: string) => {
-    setTempSelectedAssets(tempSelectedAssets.filter((asset) => asset.assetId !== assetId));
+  const handleRemoveAsset = (id: string) => {
+    setTempSelectedAssets(tempSelectedAssets.filter((asset) => asset.id !== id));
   };
 
   // Confirm selection and close the popup
@@ -58,8 +57,8 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
   // Filter available assets (exclude those in tempSelectedAssets)
   const filteredAssets = assets.filter(
     (asset) =>
-      !tempSelectedAssets.some((selected) => selected.assetId === asset.assetId) &&
-      asset.assetName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !tempSelectedAssets.some((selected) => selected.id === asset.id) &&
+      asset.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (selectedFilter ? asset.assetType === selectedFilter : true)
   );
 
@@ -67,7 +66,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Select Assets</h2>
           <button onClick={onClose}>
@@ -80,11 +79,11 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
             <h3 className="text-sm font-semibold mb-2">Selected Assets</h3>
             <div className="grid gap-2 max-h-32 overflow-y-auto">
               {tempSelectedAssets.map((asset) => (
-                <div key={asset.assetId} className="flex justify-between items-center p-2 bg-white border rounded-lg">
-                  <span className="text-sm">{asset.assetName}</span>
+                <div key={asset.id} className="flex justify-between items-center p-2 bg-white border rounded-lg">
+                  <span className="text-sm">{asset.name}</span>
                   <button
                     className="text-red-500 hover:text-red-700 text-sm"
-                    onClick={() => handleRemoveAsset(asset.assetId)}
+                    onClick={() => handleRemoveAsset(asset.id)}
                   >
                     <FaTimes />
                   </button>
@@ -105,7 +104,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
                         label: "Asset Type",
                         options: [
                         { label: "All", value: "" },
-                        { label: "Elektronik", value: "Elektronik" },
+                        { label: "Electronics", value: "Electronics" },
                         { label: "Barang", value: "Barang" },
                         ],
                     },
@@ -117,9 +116,9 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
         <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto">
           {filteredAssets.length > 0 ? (
             filteredAssets.map((asset) => (
-              <div key={asset.assetId} className="p-3 border rounded-lg flex justify-between hover:bg-gray-100">
+              <div key={asset.id} className="p-3 border rounded-lg flex justify-between hover:bg-gray-100">
                 <div>
-                  <h3 className="font-semibold">{asset.assetName}</h3>
+                  <h3 className="font-semibold">{asset.id}</h3>
                   <p className="text-sm text-gray-500">{asset.assetType}</p>
                 </div>
                 <button

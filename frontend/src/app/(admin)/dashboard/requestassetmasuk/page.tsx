@@ -53,7 +53,7 @@ const RequestAssetMasukPage = () => {
                 return response.json();
             })
             .then((data: Ticket[]) => {
-                console.log("Fetched data:", data); // Check API response
+                console.log("Fetched data:", data);
                 setTickets(data);
                 setTiketMasuk(data.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started"));
                 setDitolak(data.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"));

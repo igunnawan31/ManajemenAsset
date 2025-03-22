@@ -5,7 +5,7 @@ import Link from "next/link";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
 import Upper from "../components/Upper";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoEyeSharp, IoReaderSharp, IoTrash, IoCar } from "react-icons/io5";
 
 interface Ticket {
     ticketNumber: string;
@@ -38,6 +38,7 @@ const RequestInboundPage = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [createRequest, setCreateRequest] = useState<Ticket[]>([]);
     const [draft, setDraft] = useState<Ticket[]>([]);
+    const [delivery, setDelivery] = useState<Ticket[]>([]);
     const itemsPerPage = 5;
 
     const columns = [
@@ -62,9 +63,12 @@ const RequestInboundPage = () => {
                     return response.json();
                 })
                 .then((data: Ticket[]) => {
+                    console.log("Fetched Data:", data);
                     setTickets(data);
-                    setCreateRequest(data.filter(ticket => ticket.approvalStatus !== "Draft"));
+                    setDelivery(data.filter(ticket => ticket.approvalStatus === "Approved"));
+                    setCreateRequest(data);
                     setDraft(data.filter(ticket => ticket.approvalStatus === "Draft"));
+                    console.log("Delivery Data:", data.filter(ticket => ticket.approvalStatus === "Approved")); // Log filtered data
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -125,13 +129,13 @@ const RequestInboundPage = () => {
                 </div>
             </div>
             <div className="flex w-full mt-5 justify-between poppins text-xs">
-                {["createrequestinbound", "draft"].map((tab) => (
+                {["createrequestinbound", "draft", "delivery"].map((tab) => (
                     <button
                         key={tab}
                         className={`py-6 px-6 w-full border-b-2  ${activeTab === tab ? "bg-[#202B51] text-white" : "text-black hover:bg-gray-100"}`}
                         onClick={() => setActiveTab(tab)}
                     >
-                        {tab === "createrequestinbound" ? "Create New Ticket Inbound" : "Draft Inbound Ticket"}
+                        {tab === "createrequestinbound" ? "Create New Ticket Inbound" : tab === "draft" ? "Draft Inbound Ticket" : "Delivery"}
                     </button>
                 ))}
             </div>
@@ -181,6 +185,28 @@ const RequestInboundPage = () => {
                                         onClick: (row) => console.log("Delete user:", row.userId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
+                                ]}
+                            />
+                        ) : (
+                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {activeTab === "delivery" && (
+                <div className="mt-5">
+                    <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                    <div className="mt-5">
+                        {delivery.length > 0 ? (
+                            <DataTable
+                                columns={columns}
+                                data={delivery}
+                                actions={[
+                                    {
+                                        label: <IoCar className="text-[#202B51]" />,
+                                        href: (row) => `/dashboard/requestinbound/delivery/${row.id}`,
+                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                    }
                                 ]}
                             />
                         ) : (
