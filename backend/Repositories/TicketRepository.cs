@@ -330,9 +330,9 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertTicketQuery = @"
                                 INSERT INTO Tickets 
-                                    (ticketNumber, branchOrigin, branchDestination, outboundDate, inboundDate, dateRequested, approvalStatus, moveStatus)
+                                    (ticketNumber, branchOrigin, branchDestination, dateRequested, approvalStatus, moveStatus)
                                 VALUES
-                                    (@ticketNumber, @branchOrigin, @branchDestination, @outboundDate, @inboundDate, @dateRequested, @approvalStatus, @moveStatus);
+                                    (@ticketNumber, @branchOrigin, @branchDestination, @dateRequested, @approvalStatus, @moveStatus);
                             ";
                              
                             using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
