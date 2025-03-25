@@ -4,7 +4,7 @@ namespace qrmanagement.backend.DTO.Ticket{
         public required string ticketNumber {get; set;}
         public required int branchOrigin {get; set;}
         public required int branchDestination {get; set;}
-        public DateOnly outboundDate {get; set;}
-        public DateOnly inboundDate {get; set;}
+        public DateOnly? outboundDate {get; set;}
+        public DateOnly? inboundDate {get; set;}
     }
 }
