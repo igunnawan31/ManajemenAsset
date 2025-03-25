@@ -39,6 +39,7 @@ const RequestInboundPage = () => {
     const [createRequest, setCreateRequest] = useState<Ticket[]>([]);
     const [draft, setDraft] = useState<Ticket[]>([]);
     const [delivery, setDelivery] = useState<Ticket[]>([]);
+    const [userBranch, setUserBranch] = useState<string | null>(null);
     const itemsPerPage = 5;
 
     const columns = [
@@ -53,6 +54,22 @@ const RequestInboundPage = () => {
     ];
 
     useEffect(() => {
+        // Fetch user data to get the branch
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`)
+                .then(response => response.json())
+                .then(userData => {
+                    setUserBranch(userData.userBranch);
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        }
+    }, []);
+
+    useEffect(() => {
+        if (userBranch) {
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
                 .then((response) => {
                     if (!response.ok) {
@@ -63,12 +80,16 @@ const RequestInboundPage = () => {
                     return response.json();
                 })
                 .then((data: Ticket[]) => {
-                    console.log("Fetched Data:", data);
-                    setTickets(data);
-                    setDelivery(data.filter(ticket => ticket.approvalStatus === "Approved"));
-                    setCreateRequest(data);
-                    setDraft(data.filter(ticket => ticket.approvalStatus === "Draft"));
-                    console.log("Delivery Data:", data.filter(ticket => ticket.approvalStatus === "Approved")); // Log filtered data
+                    // Filter tickets where branchDestination matches user's branch
+                    const filteredData = data.filter(ticket => 
+                        ticket.branchDestination === userBranch
+                    );
+                    
+                    console.log("Filtered Data:", filteredData);
+                    setTickets(filteredData);
+                    setDelivery(filteredData.filter(ticket => ticket.approvalStatus === "Approved"));
+                    setCreateRequest(filteredData);
+                    setDraft(filteredData.filter(ticket => ticket.approvalStatus === "Draft"));
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -76,12 +97,13 @@ const RequestInboundPage = () => {
                     setError('Failed to fetch data. Please try again later.');
                     setLoading(false);
                 });
-        }, []);
+        }
+    }, [userBranch]);
 
     useEffect(() => {
         let filtered = tickets;
         if (searchQuery.trim()) {
-                let filtered = tickets.filter((ticket) =>
+            filtered = tickets.filter((ticket) =>
                 ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.approvalStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
@@ -91,12 +113,12 @@ const RequestInboundPage = () => {
         Object.keys(selectedFilters).forEach((filterType) => {
             const filterValue = selectedFilters[filterType];
             if (filterValue) {
-                filtered = filtered.filter((user) => (user as any)[filterType] === filterValue);
+                filtered = filtered.filter((ticket) => (ticket as any)[filterType] === filterValue);
             }
         });
 
         setFilteredTickets(filtered);
-    }, [searchQuery, selectedFilters]);
+    }, [searchQuery, selectedFilters, tickets]);
     
     const handleSearch = (query: string) => {
         setSearchQuery(query);

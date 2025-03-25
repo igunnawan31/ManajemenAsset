@@ -145,20 +145,19 @@ const CreateRequestInbound = () => {
         resolver: zodResolver(ticketSchema),
     });
 
-    const onSubmit = async (data: any, status: string) => {
-        console.log("Form data:", data); // Debugging line
-        console.log("Status:", status); // Debugging line
+    const onSubmit = async (data: any) => {
         setError(null);
         setSuccess(null);
     
         const payload = {
-            branchOrigin: parseInt(data.branchOrigin, 10), // Convert to int
-            branchDestination: parseInt(data.branchDestination, 10), // Convert to int
-            dateRequested: data.dateRequested, // Ensure this is in the correct format
-            approvalStatus: status,
-            moveStatus: "Not_Started", // Default value
-            assetNumbers: confirmedAssets.map(asset => asset.id), // Map to asset IDs
+            branchOrigin: data.branchOrigin ? parseInt(data.branchOrigin, 10) : null,
+            branchDestination: data.branchDestination ? parseInt(data.branchDestination, 10) : null,
+            dateRequested: data.dateRequested,
+            approvalStatus: data.approvalStatus || "Pending",
+            assetNumbers: data.assetNumbers || confirmedAssets.map(asset => asset.id),
         };
+    
+        console.log("Submitting Payload:", payload);
     
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/create`, {
@@ -174,10 +173,26 @@ const CreateRequestInbound = () => {
             if (!response.ok) {
                 throw new Error(result.message || "Failed to create ticket");
             }
-            console.log("Confirmed assets:", confirmedAssets);
+            console.log("Response Status:", response.status);
+
+            console.log("Server Response:", result);
+    
+            if (!response.ok) {
+                console.error("Backend Error:", result.message || "Unknown error");
+                throw new Error(result.message || "Failed to create ticket");
+            }
+    
+            console.log("Ticket created successfully:", result);
             setSuccess("Ticket created successfully!");
+            router.push("/dashboard/requestinbound");
         } catch (err: any) {
-            setError(err.message || "An error occurred.");
+            console.error("Error submitting form:", err);
+            console.error("Error details:", {
+                message: err.message,
+                stack: err.stack,
+                response: err.response,
+            });
+            setError(err.message || "An error occurred while creating the ticket.");
         }
     };
 
@@ -189,26 +204,37 @@ const CreateRequestInbound = () => {
             <Upper title="Create Request Inbound" />
 
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
-                <form className="mt-5 space-y-4">
+                <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Request Ticket */}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Branch Origin</label>
+                        <label className="block text-sm font-medium text-gray-700">Branch Origin</label>
                             <select
                                 className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                                value={selectedBranch}
-                                {...register("branchOrigin")}
-                                onChange={(e) => setSelectedBranch(e.target.value)}
+                                {...register("branchOrigin", {
+                                    validate: (value) => 
+                                        value !== users?.userBranch || "Cannot select your own branch as origin"
+                                })}
+                                onChange={(e) => {
+                                    setSelectedBranch(e.target.value);
+                                }}
                             >
                                 <option value="">Select Branch</option>
-                                {branches.map((branch) => (
-                                    <option key={branch.branchId} value={branch.branchId}>
-                                        {branch.branchName}
-                                    </option>
-                                ))}
+                                {branches
+                                    .filter(branch => branch.branchId !== users?.userBranch) // Filter out user's branch
+                                    .map((branch) => (
+                                        <option key={branch.branchId} value={branch.branchId}>
+                                            {branch.branchName}
+                                        </option>
+                                    ))}
                             </select>
+                            {errors.branchOrigin?.message && (
+                                <p className="text-red-500 text-xs mt-2">
+                                    {String(errors.branchOrigin.message)}
+                                </p>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Branch Destination</label>
@@ -224,31 +250,9 @@ const CreateRequestInbound = () => {
                             <label className="block text-sm font-medium text-gray-700">Request Date</label>
                             <input
                                 type="date"
-                                {...register("requestDate")}
+                                {...register("dateRequested")}
                                 className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-500 opacity-80"
                                 defaultValue={new Date().toISOString().split("T")[0]}
-                                readOnly
-                            />
-                            {errors.assetName?.message && <p className="text-red-500 text-xs mt-2">{String(errors.assetName.message)}</p>}
-                        </div>
-                        <div>
-                            <label className="hidden text-sm font-medium text-gray-700">Approval Status</label>
-                            <input
-                                type="date"
-                                {...register("approvalStatus")}
-                                className=" hidden mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-500 opacity-80"
-                                defaultValue={""}
-                                readOnly
-                            />
-                            {errors.assetName?.message && <p className="text-red-500 text-xs mt-2">{String(errors.assetName.message)}</p>}
-                        </div>
-                        <div>
-                            <label className="hidden text-sm font-medium text-gray-700">Move Status</label>
-                            <input
-                                type="date"
-                                {...register("moveStatus")}
-                                className=" hidden mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-500 opacity-80"
-                                defaultValue={"Not_Started"}
                                 readOnly
                             />
                             {errors.assetName?.message && <p className="text-red-500 text-xs mt-2">{String(errors.assetName.message)}</p>}
@@ -283,15 +287,36 @@ const CreateRequestInbound = () => {
 
                     <div className="mt-4 flex gap-4">
                         <button
-                            type="button" // Use "button" to prevent default form submission
-                            onClick={handleSubmit((data) => onSubmit(data, "Pending"))} // Correct usage
+                            type="button" // Change from "submit" to "button"
+                            onClick={() => {
+                                // Get all form values and set approvalStatus to "Pending"
+                                const formValues = {
+                                    branchOrigin: selectedBranch,
+                                    branchDestination: users?.userBranch || "",
+                                    dateRequested: requestDate,
+                                    approvalStatus: "Pending",
+                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                };
+                                onSubmit(formValues);
+                            }}
                             className="px-6 py-2 bg-[#20458A] text-white rounded-md hover:bg-blue-800 transition"
                         >
                             Submit
                         </button>
+
                         <button
-                            type="button" // Use "button" to prevent default form submission
-                            onClick={handleSubmit((data) => onSubmit(data, "Draft"))} // Correct usage
+                            type="button" // Change from "submit" to "button"
+                            onClick={() => {
+                                // Get all form values and set approvalStatus to "Draft"
+                                const formValues = {
+                                    branchOrigin: selectedBranch,
+                                    branchDestination: users?.userBranch || "",
+                                    dateRequested: requestDate,
+                                    approvalStatus: "Draft",
+                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                };
+                                onSubmit(formValues);
+                            }}
                             className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-700 transition"
                         >
                             Draft
