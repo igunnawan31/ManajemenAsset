@@ -11,6 +11,10 @@ namespace qrmanagement.backend.Models{
         public required int branchOrigin {get; set;}
         [Required]
         public required int branchDestination {get; set;}
+        [Required]
+        public required int requestedBy {get; set;} 
+        [Required]
+        public required int receivedBy {get; set;}
         public DateOnly? outboundDate {get; set;}
         public DateOnly? inboundDate {get; set;}
         public string? reason {get; set;}

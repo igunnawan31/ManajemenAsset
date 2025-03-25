@@ -32,7 +32,10 @@ namespace qrmanagement.backend.Repositories{
                             inboundDate,
                             dateRequested,
                             approvalStatus,
-                            moveStatus
+                            moveStatus,
+                            requestedBy,
+                            receivedBy,
+                            reason
                         FROM 
                             Tickets
                     ";
@@ -51,7 +54,10 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = reader.GetString(6),
-                                    moveStatus = reader.GetString(7)
+                                    moveStatus = reader.GetString(7),
+                                    requestedBy = reader.GetInt32(8),
+                                    receivedBy = reader.GetInt32(9),
+                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -82,14 +88,16 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             ticketNumber,
-                            quantity,
                             branchOrigin,
                             branchDestination,
                             outboundDate,
                             inboundDate,
                             dateRequested,
                             approvalStatus,
-                            moveStatus
+                            moveStatus,
+                            requestedBy,
+                            receivedBy,
+                            reason
                         FROM 
                             Tickets
                         WHERE
@@ -111,7 +119,10 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = reader.GetString(6),
-                                    moveStatus = reader.GetString(7)
+                                    moveStatus = reader.GetString(7),
+                                    requestedBy = reader.GetInt32(8),
+                                    receivedBy = reader.GetInt32(9),
+                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
@@ -147,14 +158,16 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             ticketNumber,
-                            quantity,
                             branchOrigin,
                             branchDestination,
                             outboundDate,
                             inboundDate,
                             dateRequested,
                             approvalStatus,
-                            moveStatus
+                            moveStatus,
+                            requestedBy,
+                            receivedBy,
+                            reason
                         FROM 
                             Tickets
                         WHERE
@@ -176,7 +189,10 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = reader.GetString(6),
-                                    moveStatus = reader.GetString(7)
+                                    moveStatus = reader.GetString(7),
+                                    requestedBy = reader.GetInt32(8),
+                                    receivedBy = reader.GetInt32(9),
+                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -208,14 +224,16 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             ticketNumber,
-                            quantity,
                             branchOrigin,
                             branchDestination,
                             outboundDate,
                             inboundDate,
                             dateRequested,
                             approvalStatus,
-                            moveStatus
+                            moveStatus,
+                            requestedBy,
+                            receivedBy,
+                            reason
                         FROM 
                             Tickets
                         WHERE
@@ -237,7 +255,10 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = reader.GetString(6),
-                                    moveStatus = reader.GetString(7)
+                                    moveStatus = reader.GetString(7),
+                                    requestedBy = reader.GetInt32(8),
+                                    receivedBy = reader.GetInt32(9),
+                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -269,14 +290,16 @@ namespace qrmanagement.backend.Repositories{
                     string query = @"
                         SELECT
                             ticketNumber,
-                            quantity,
                             branchOrigin,
                             branchDestination,
                             outboundDate,
                             inboundDate,
                             dateRequested,
                             approvalStatus,
-                            moveStatus
+                            moveStatus,
+                            requestedBy,
+                            receivedBy,
+                            reason
                         FROM 
                             Tickets
                         WHERE
@@ -298,7 +321,10 @@ namespace qrmanagement.backend.Repositories{
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
                                     approvalStatus = reader.GetString(6),
-                                    moveStatus = reader.GetString(7)
+                                    moveStatus = reader.GetString(7),
+                                    requestedBy = reader.GetInt32(8),
+                                    receivedBy = reader.GetInt32(9),
+                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -330,13 +356,15 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertTicketQuery = @"
                                 INSERT INTO Tickets 
-                                    (ticketNumber, branchOrigin, branchDestination, dateRequested, approvalStatus, moveStatus)
+                                    (ticketNumber, requestedBy, receivedBy, branchOrigin, branchDestination, dateRequested, approvalStatus, moveStatus)
                                 VALUES
-                                    (@ticketNumber, @branchOrigin, @branchDestination, @dateRequested, @approvalStatus, @moveStatus);
+                                    (@ticketNumber, @requestedBy, @receivedBy, @branchOrigin, @branchDestination, @dateRequested, @approvalStatus, @moveStatus);
                             ";
                              
                             using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
+                                ticketCommand.Parameters.AddWithValue("@requestedBy", ticket.requestedBy);
+                                ticketCommand.Parameters.AddWithValue("@receivedBy", ticket.receivedBy);
                                 ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
                                 ticketCommand.Parameters.AddWithValue("@dateRequested", ticket.dateRequested);
