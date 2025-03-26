@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Upper from "../../components/Upper";
 import { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode";
+import { useRouter } from "next/navigation";
 
 const assetSchema = z.object({
     id: z.string().min(1, "Asset id is required"),
@@ -21,6 +22,7 @@ const CreatePageNewAsset = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const router = useRouter();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const { 
@@ -92,7 +94,7 @@ const CreatePageNewAsset = () => {
             const formData = new FormData();
             formData.append("id", data.id);
             formData.append("name", data.name);
-            formData.append("locationId", data.locationId); // Backend will parse to int
+            formData.append("locationId", data.locationId);
             formData.append("assetType", data.assetType);
             formData.append("itemStatus", data.itemStatus);
             formData.append("image", qrCodeFile);
@@ -100,17 +102,16 @@ const CreatePageNewAsset = () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/create`, {
                 method: "POST",
                 body: formData,
-                // Don't set Content-Type - browser will set it with boundary
             });
     
             if (!response.ok) {
-                const errorData = await response.text(); // Try text() first in case JSON parse fails
+                const errorData = await response.text();
                 throw new Error(errorData || "Failed to create asset");
             }
     
             const result = await response.json();
             setSuccess("Asset created successfully!");
-            console.log("Asset created:", result);
+            router.push("/dashboard/newassetmanagement");
             
         } catch (err: any) {
             console.error("Error creating asset:", err);

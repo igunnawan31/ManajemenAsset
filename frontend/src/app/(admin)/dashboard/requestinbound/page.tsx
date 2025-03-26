@@ -54,7 +54,6 @@ const RequestInboundPage = () => {
     ];
 
     useEffect(() => {
-        // Fetch user data to get the branch
         const userId = localStorage.getItem("userId");
         if (userId) {
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`)
@@ -80,7 +79,6 @@ const RequestInboundPage = () => {
                     return response.json();
                 })
                 .then((data: Ticket[]) => {
-                    // Filter tickets where branchDestination matches user's branch
                     const filteredData = data.filter(ticket => 
                         ticket.branchDestination === userBranch
                     );

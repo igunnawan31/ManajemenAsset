@@ -99,5 +99,9 @@ app.UseCors("Frontend");
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions {
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+    RequestPath = "/api/uploads"
+});
 app.Run();

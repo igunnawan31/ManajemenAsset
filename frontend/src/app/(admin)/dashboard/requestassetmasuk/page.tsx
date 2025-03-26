@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Upper from "../components/Upper";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoEyeSharp, IoReaderSharp, IoTrash, IoArrowForwardCircle } from "react-icons/io5";
 
 interface Ticket {
     ticketNumber: string;
@@ -29,6 +29,7 @@ const RequestAssetMasukPage = () => {
     const [tiketMasuk, setTiketMasuk] = useState<Ticket[]>([]);
     const [ditolak, setDitolak] = useState<Ticket[]>([]);
     const [diterima, setDiterima] = useState<Ticket[]>([]);
+    const [userBranch, setUserBranch] = useState<string | null>(null);
     const itemsPerPage = 5;
 
     const columns = [
@@ -43,29 +44,50 @@ const RequestAssetMasukPage = () => {
     ];
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data: Ticket[]) => {
-                console.log("Fetched data:", data);
-                setTickets(data);
-                setTiketMasuk(data.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started"));
-                setDitolak(data.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"));
-                setDiterima(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"));
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setError('Failed to fetch data. Please try again later.');
-                setLoading(false);
-            });
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`)
+                .then(response => response.json())
+                .then(userData => {
+                    setUserBranch(userData.userBranch);
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        }
     }, []);
+
+    useEffect(() => {
+            if (userBranch) {
+                console.log("branch user", userBranch);
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+                .then((response) => {
+                    if (!response.ok) {
+                        return response.text().then((text) => {
+                            throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then((data: Ticket[]) => {
+                    const filteredData = data.filter(ticket => 
+                        ticket.branchOrigin === userBranch
+                    );
+    
+                    console.log("Fetched data:", filteredData);
+                    setTickets(filteredData);
+                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started"));
+                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"));
+                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"));
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                    setError('Failed to fetch data. Please try again later.');
+                    setLoading(false);
+                });
+            }
+        }, [userBranch]);
 
     useEffect(() => {
         let filtered = tickets;
@@ -133,7 +155,7 @@ const RequestAssetMasukPage = () => {
                                     data={tiketMasuk}
                                     actions={[
                                         {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
+                                            label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
                                             href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },

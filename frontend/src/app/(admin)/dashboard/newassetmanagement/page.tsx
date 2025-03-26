@@ -4,6 +4,7 @@ import Upper from "../components/Upper";
 import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
@@ -14,6 +15,7 @@ interface Asset {
     branchName: string;
     assetType: string;
     itemStatus: string;
+    imagePath: string;
 }
 
 const NewAssetManagement = () => {
@@ -56,9 +58,34 @@ const NewAssetManagement = () => {
     const columns = [
         { key: "id", label: "Id Asset", alwaysVisible: true },
         { key: "name", label: "Nama Asset", alwaysVisible: true },
-        { key: "branchName", label: "Lokasi Saat ini",},
+        { key: "branchName", label: "Lokasi Saat ini" },
         { key: "assetType", label: "Type Asset", alwaysVisible: true },
         { key: "itemStatus", label: "Status Asset" },
+        { 
+            key: "imagePath", 
+            label: "Image",
+            render: (value: string) => {
+                if (!value) return <span className="text-gray-400">No Image</span>;
+                
+                // Clean up the path
+                const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/uploads/${
+                    value.replace(/\\/g, '/')
+                         .replace(/.*?uploads[\\/]/, '')
+                }`;
+                
+                return (
+                    <div className="w-16 h-16 relative">
+                        <Image
+                            src={imageUrl}
+                            alt="Asset Image"
+                            fill
+                            className="object-cover rounded"
+                            sizes="(max-width: 768px) 100px, 150px"
+                        />
+                    </div>
+                );
+            }
+        },
     ];
 
     const handleSearch = (query: string) => {
