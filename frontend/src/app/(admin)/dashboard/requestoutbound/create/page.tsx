@@ -184,7 +184,7 @@ const CreateRequestOutboundPage = () => {
     
             console.log("Ticket created successfully:", result);
             setSuccess("Ticket created successfully!");
-            router.push("/dashboard/requestinbound");
+            router.push("/dashboard/requestoutbound");
         } catch (err: any) {
             console.error("Error submitting form:", err);
             console.error("Error details:", {
@@ -284,12 +284,11 @@ const CreateRequestOutboundPage = () => {
 
                     <div className="mt-4 flex gap-4">
                         <button
-                            type="button" // Change from "submit" to "button"
+                            type="button"
                             onClick={() => {
-                                // Get all form values and set approvalStatus to "Pending"
                                 const formValues = {
-                                    branchOrigin: selectedBranch,
-                                    branchDestination: users?.userBranch || "",
+                                    branchOrigin: users?.userBranch || "",
+                                    branchDestination: selectedBranch,
                                     dateRequested: requestDate,
                                     approvalStatus: "Pending",
                                     assetNumbers: confirmedAssets.map(asset => asset.id)
@@ -302,9 +301,8 @@ const CreateRequestOutboundPage = () => {
                         </button>
 
                         <button
-                            type="button" // Change from "submit" to "button"
+                            type="button"
                             onClick={() => {
-                                // Get all form values and set approvalStatus to "Draft"
                                 const formValues = {
                                     branchOrigin: selectedBranch,
                                     branchDestination: users?.userBranch || "",

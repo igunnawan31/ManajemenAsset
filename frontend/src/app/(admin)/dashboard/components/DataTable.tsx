@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { JSX, ReactNode } from "react";
 
+interface Column {
+  key: string;
+  label: string;
+  alwaysVisible?: boolean;
+  render?: (value: any, row?: Record<string, any>) => ReactNode;
+}
+
 interface DataTableProps {
-    columns: { key: string; label: string; alwaysVisible?: boolean }[];
+    columns: Column[];
     data: Record<string, any>[];
     actions?: {
       label: ReactNode;
@@ -41,7 +48,7 @@ export default function DataTable({ columns, data, actions }: DataTableProps) {
                     col.alwaysVisible ? "" : "hidden lg:table-cell"
                   }`}
                 >
-                  {row[col.key]}
+                  {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
               {actions && (
