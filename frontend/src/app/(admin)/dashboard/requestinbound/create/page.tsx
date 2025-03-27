@@ -155,6 +155,8 @@ const CreateRequestInbound = () => {
             dateRequested: data.dateRequested,
             approvalStatus: data.approvalStatus || "Pending",
             assetNumbers: data.assetNumbers || confirmedAssets.map(asset => asset.id),
+            requestedBy: users?.userBranch,
+            receivedBy: data.branchOrigin,
         };
     
         console.log("Submitting Payload:", payload);
@@ -287,15 +289,16 @@ const CreateRequestInbound = () => {
 
                     <div className="mt-4 flex gap-4">
                         <button
-                            type="button" // Change from "submit" to "button"
+                            type="button"
                             onClick={() => {
-                                // Get all form values and set approvalStatus to "Pending"
                                 const formValues = {
                                     branchOrigin: selectedBranch,
                                     branchDestination: users?.userBranch || "",
                                     dateRequested: requestDate,
                                     approvalStatus: "Pending",
-                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                    assetNumbers: confirmedAssets.map(asset => asset.id),
+                                    requestedBy: users?.userBranch,
+                                    receivedBy: selectedBranch,
                                 };
                                 onSubmit(formValues);
                             }}
@@ -305,15 +308,16 @@ const CreateRequestInbound = () => {
                         </button>
 
                         <button
-                            type="button" // Change from "submit" to "button"
+                            type="button"
                             onClick={() => {
-                                // Get all form values and set approvalStatus to "Draft"
                                 const formValues = {
                                     branchOrigin: selectedBranch,
                                     branchDestination: users?.userBranch || "",
                                     dateRequested: requestDate,
                                     approvalStatus: "Draft",
-                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                    assetNumbers: confirmedAssets.map(asset => asset.id),
+                                    requestedBy: users?.userBranch,
+                                    receivedBy: selectedBranch,
                                 };
                                 onSubmit(formValues);
                             }}

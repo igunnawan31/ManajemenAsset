@@ -155,6 +155,8 @@ const CreateRequestOutboundPage = () => {
             dateRequested: data.dateRequested,
             approvalStatus: data.approvalStatus || "Pending",
             assetNumbers: data.assetNumbers || confirmedAssets.map(asset => asset.id),
+            requestedBy: users?.userBranch,
+            receivedBy: data.branchDestination,
         };
     
         console.log("Submitting Payload:", payload);
@@ -291,7 +293,9 @@ const CreateRequestOutboundPage = () => {
                                     branchDestination: selectedBranch,
                                     dateRequested: requestDate,
                                     approvalStatus: "Pending",
-                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                    assetNumbers: confirmedAssets.map(asset => asset.id),
+                                    requestedBy: users?.userBranch,
+                                    receivedBy: selectedBranch,
                                 };
                                 onSubmit(formValues);
                             }}
@@ -304,11 +308,13 @@ const CreateRequestOutboundPage = () => {
                             type="button"
                             onClick={() => {
                                 const formValues = {
-                                    branchOrigin: selectedBranch,
-                                    branchDestination: users?.userBranch || "",
+                                    branchOrigin: users?.userBranch || "",
+                                    branchDestination: selectedBranch,
                                     dateRequested: requestDate,
                                     approvalStatus: "Draft",
-                                    assetNumbers: confirmedAssets.map(asset => asset.id)
+                                    assetNumbers: confirmedAssets.map(asset => asset.id),
+                                    requestedBy: users?.userBranch,
+                                    receivedBy: selectedBranch,
                                 };
                                 onSubmit(formValues);
                             }}

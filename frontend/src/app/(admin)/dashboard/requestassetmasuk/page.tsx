@@ -15,9 +15,27 @@ interface Ticket {
     dateRequested: string;
     approvalStatus: string;
     moveStatus: string;
+    receivedBy: string;
+    requestedBy: string;
 }
 
+interface Branch {
+    branchId: string;
+    branchName: string;
+}
+
+type UserResponseDTO = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userBranch: string;
+    userPhone: string;
+    userRole: string;
+    userSubRole: string;
+};
+
 const RequestAssetMasukPage = () => {
+    const [users, setUsers] = useState<UserResponseDTO | null>(null);
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [activeTab, setActiveTab] = useState("tiketmasuk");
     const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
@@ -30,6 +48,7 @@ const RequestAssetMasukPage = () => {
     const [ditolak, setDitolak] = useState<Ticket[]>([]);
     const [diterima, setDiterima] = useState<Ticket[]>([]);
     const [userBranch, setUserBranch] = useState<string | null>(null);
+    const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
 
     const columns = [
@@ -41,20 +60,68 @@ const RequestAssetMasukPage = () => {
         { key: "dateRequested", label: "Date Requested" },
         { key: "approvalStatus", label: "Approval Status" },
         { key: "moveStatus", label: "Move Status" },
+        { key: "receivedBy", label: "Received By" },
+        { key: "requestedBy", label: "Requested By" },
     ];
 
     useEffect(() => {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`)
-                .then(response => response.json())
-                .then(userData => {
-                    setUserBranch(userData.userBranch);
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                });
+        const fetchUserData = async () => {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                setError("No user ID found. Please log in.");
+                setLoading(false);
+                return;
+            }
+    
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`);
+                if (!response.ok) throw new Error("Failed to fetch user data");
+    
+                const data = await response.json();
+                setUsers(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "An unknown error occurred");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchBranches = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/index`);
+                if (!response.ok) throw new Error("Failed to fetch branches");
+
+                const data = await response.json();
+                setBranches(data);
+            } catch (err) {
+                console.error("Error fetching branches:", err);
+            }
+        };
+
+        fetchUserData();
+        fetchBranches();
+    }, []);
+
+    useEffect(() => {
+        if (users) {
+            setUserBranch(users.userBranch);
         }
+    }, [users]);
+
+    useEffect(() => {
+        const fetchBranches = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/index`);
+                if (!response.ok) throw new Error("Failed to fetch branches");
+
+                const data = await response.json();
+                setBranches(data);
+            } catch (err) {
+                console.error("Error fetching branches:", err);
+            }
+        };
+
+        fetchBranches();
     }, []);
 
     useEffect(() => {
@@ -76,9 +143,9 @@ const RequestAssetMasukPage = () => {
     
                     console.log("Fetched data:", filteredData);
                     setTickets(filteredData);
-                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started"));
-                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"));
-                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"));
+                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
+                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
+                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
                     setLoading(false);
                 })
                 .catch((error) => {

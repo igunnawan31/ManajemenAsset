@@ -13,8 +13,8 @@ enum Role {
 }
 
 enum SubRole {
-    Kepala_Gudang = "Kepala Gudang",
-    PIC_Gudang = "PIC Gudang",
+    Kepala_Gudang = "Kepala_Gudang",
+    PIC_Gudang = "PIC_Gudang",
 }
 
 interface Branch {
@@ -69,7 +69,8 @@ const CreatePageUser = () => {
     const onSubmit = async (data: any) => {
         setError(null);
         setSuccess(null);
-        
+        console.log("data", data)
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
                 method: "POST",
