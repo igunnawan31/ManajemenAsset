@@ -51,7 +51,7 @@ namespace qrmanagement.Migrations
                 columns: table => new
                 {
                     branchId = table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     branchName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     branchPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -102,12 +102,15 @@ namespace qrmanagement.Migrations
                 columns: table => new
                 {
                     ticketNumber = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    quantity = table.Column<int>(type: "int", nullable: false),
                     branchOrigin = table.Column<int>(type: "int", nullable: false),
                     branchDestination = table.Column<int>(type: "int", nullable: false),
-                    outboundDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    inboundDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    requestedBy = table.Column<int>(type: "int", nullable: false),
+                    receivedBy = table.Column<int>(type: "int", nullable: false),
+                    outboundDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    inboundDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     dateRequested = table.Column<DateOnly>(type: "date", nullable: false),
+                    dateApproved = table.Column<DateOnly>(type: "date", nullable: true),
                     approvalStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     moveStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -184,7 +187,12 @@ namespace qrmanagement.Migrations
                 values: new object[,]
                 {
                     { 1, "Jakarta Utara" },
-                    { 2, "Jakarta Pusat" }
+                    { 2, "Jakarta Pusat" },
+                    { 101, "Jakarta Selatan" },
+                    { 102, "Bandung" },
+                    { 103, "Surabaya" },
+                    { 104, "Yogyakarta" },
+                    { 105, "Medan" }
                 });
 
             migrationBuilder.InsertData(
@@ -193,7 +201,12 @@ namespace qrmanagement.Migrations
                 values: new object[,]
                 {
                     { 1, "Tanjung Priok", 1 },
-                    { 2, "Senen", 2 }
+                    { 2, "Senen", 2 },
+                    { 201, "Menteng", 101 },
+                    { 202, "Cibiru", 102 },
+                    { 203, "Wonokromo", 103 },
+                    { 204, "Kotagede", 104 },
+                    { 205, "Medan Baru", 105 }
                 });
 
             migrationBuilder.InsertData(
@@ -202,7 +215,12 @@ namespace qrmanagement.Migrations
                 values: new object[,]
                 {
                     { 1, "astraInternational@ai.astra.co.id", "Jakarta Utara", "Astra International", "1234567890123", 1, 1, null },
-                    { 2, "ag.it@ai.astra.co.id", "Jakarta Pusat", "Astragraphia Information Technology", "1234567890321", 2, 2, 1 }
+                    { 2, "ag.it@ai.astra.co.id", "Jakarta Pusat", "Astragraphia Information Technology", "1234567890321", 2, 2, 1 },
+                    { 3, "jakarta@company.com", "Jl. Sudirman No. 1, Jakarta", "Branch Jakarta", "+62123456789", 201, 101, 1 },
+                    { 4, "bandung@company.com", "Jl. Asia Afrika No. 2, Bandung", "Branch Bandung", "+62223456789", 202, 102, 1 },
+                    { 5, "surabaya@company.com", "Jl. Tunjungan No. 3, Surabaya", "Branch Surabaya", "+62313456789", 203, 103, null },
+                    { 6, "yogyakarta@company.com", "Jl. Malioboro No. 4, Yogyakarta", "Branch Yogyakarta", "+62274567890", 204, 104, 5 },
+                    { 7, "medan@company.com", "Jl. Gatot Subroto No. 5, Medan", "Branch Medan", "+62613456789", 205, 105, null }
                 });
 
             migrationBuilder.InsertData(
@@ -216,11 +234,17 @@ namespace qrmanagement.Migrations
 
             migrationBuilder.InsertData(
                 table: "Tickets",
-                columns: new[] { "ticketNumber", "approvalStatus", "branchDestination", "branchOrigin", "dateRequested", "inboundDate", "moveStatus", "outboundDate", "quantity" },
+                columns: new[] { "ticketNumber", "approvalStatus", "branchDestination", "branchOrigin", "dateApproved", "dateRequested", "inboundDate", "moveStatus", "outboundDate", "reason", "receivedBy", "requestedBy" },
                 values: new object[,]
                 {
-                    { "TN-001-070225", "Approved", 2, 1, new DateOnly(2025, 1, 28), new DateOnly(2025, 2, 5), "Completed", new DateOnly(2025, 2, 1), 1 },
-                    { "TN-002-070225", "Approved", 1, 2, new DateOnly(2025, 1, 28), new DateOnly(2025, 2, 5), "Completed", new DateOnly(2025, 2, 1), 1 }
+                    { "TN-001-070225", "Approved", 2, 1, new DateOnly(2025, 1, 30), new DateOnly(2025, 1, 28), new DateOnly(2025, 2, 5), "Completed", new DateOnly(2025, 2, 1), null, 1, 2 },
+                    { "TN-002-070225", "Approved", 1, 2, new DateOnly(2025, 1, 30), new DateOnly(2025, 1, 28), new DateOnly(2025, 2, 5), "Completed", new DateOnly(2025, 2, 1), null, 2, 1 },
+                    { "TN-003-070225", "Approved", 1, 2, new DateOnly(2025, 2, 26), new DateOnly(2025, 2, 25), new DateOnly(2025, 3, 3), "Completed", new DateOnly(2025, 3, 1), null, 2, 1 },
+                    { "TN-004-070225", "Pending", 2, 1, null, new DateOnly(2025, 2, 28), null, "Not_Started", new DateOnly(2025, 3, 5), null, 1, 2 },
+                    { "TN-005-070225", "Approved", 3, 2, new DateOnly(2025, 3, 6), new DateOnly(2025, 3, 5), new DateOnly(2025, 3, 12), "Completed", new DateOnly(2025, 3, 10), null, 2, 3 },
+                    { "TN-006-070225", "Draft", 3, 1, null, new DateOnly(2025, 3, 8), null, "Not_Started", null, null, 1, 3 },
+                    { "TN-007-070225", "Rejected", 3, 1, null, new DateOnly(2025, 3, 8), null, "Not_Started", null, "Unit rusak", 3, 1 },
+                    { "TN-008-070225", "Approved", 1, 3, new DateOnly(2025, 3, 11), new DateOnly(2025, 3, 10), null, "In_Progress", new DateOnly(2025, 3, 15), null, 1, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -239,8 +263,19 @@ namespace qrmanagement.Migrations
                 columns: new[] { "id", "assetNumber", "moveStatus", "ticketNumber" },
                 values: new object[,]
                 {
-                    { 1, "AN-001-070225", "Completed", "TN-001-070225" },
-                    { 2, "AN-002-070225", "Completed", "TN-002-070225" }
+                    { 1, "AN-001-070225", "Arrived", "TN-001-070225" },
+                    { 2, "AN-002-070225", "Arrived", "TN-002-070225" },
+                    { 3, "AN-001-070225", "Arrived", "TN-001-070225" },
+                    { 4, "AN-002-070225", "Arrived", "TN-001-070225" },
+                    { 5, "AN-001-070225", "Arrived", "TN-002-070225" },
+                    { 6, "AN-002-070225", "Arrived", "TN-002-070225" },
+                    { 7, "AN-001-070225", "Moving", "TN-003-070225" },
+                    { 8, "AN-002-070225", "Waiting", "TN-004-070225" },
+                    { 9, "AN-001-070225", "Arrived", "TN-005-070225" },
+                    { 10, "AN-002-070225", "Missing", "TN-005-070225" },
+                    { 11, "AN-001-070225", "Draft", "TN-006-070225" },
+                    { 12, "AN-002-070225", "Draft", "TN-007-070225" },
+                    { 13, "AN-001-070225", "Moving", "TN-008-070225" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -257,6 +292,11 @@ namespace qrmanagement.Migrations
                 name: "IX_Assets_locationId",
                 table: "Assets",
                 column: "locationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Branches_kecamatanId",
+                table: "Branches",
+                column: "kecamatanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Branches_kotaId",

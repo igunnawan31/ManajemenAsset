@@ -12,7 +12,7 @@ using qrmanagement.backend.Context;
 namespace qrmanagement.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250310151737_initTable")]
+    [Migration("20250327185909_initTable")]
     partial class initTable
     {
         /// <inheritdoc />
@@ -110,15 +110,92 @@ namespace qrmanagement.Migrations
                         {
                             id = 1,
                             assetNumber = "AN-001-070225",
-                            moveStatus = "Completed",
+                            moveStatus = "Arrived",
                             ticketNumber = "TN-001-070225"
                         },
                         new
                         {
                             id = 2,
                             assetNumber = "AN-002-070225",
-                            moveStatus = "Completed",
+                            moveStatus = "Arrived",
                             ticketNumber = "TN-002-070225"
+                        },
+                        new
+                        {
+                            id = 3,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Arrived",
+                            ticketNumber = "TN-001-070225"
+                        },
+                        new
+                        {
+                            id = 4,
+                            assetNumber = "AN-002-070225",
+                            moveStatus = "Arrived",
+                            ticketNumber = "TN-001-070225"
+                        },
+                        new
+                        {
+                            id = 5,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Arrived",
+                            ticketNumber = "TN-002-070225"
+                        },
+                        new
+                        {
+                            id = 6,
+                            assetNumber = "AN-002-070225",
+                            moveStatus = "Arrived",
+                            ticketNumber = "TN-002-070225"
+                        },
+                        new
+                        {
+                            id = 7,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Moving",
+                            ticketNumber = "TN-003-070225"
+                        },
+                        new
+                        {
+                            id = 8,
+                            assetNumber = "AN-002-070225",
+                            moveStatus = "Waiting",
+                            ticketNumber = "TN-004-070225"
+                        },
+                        new
+                        {
+                            id = 9,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Arrived",
+                            ticketNumber = "TN-005-070225"
+                        },
+                        new
+                        {
+                            id = 10,
+                            assetNumber = "AN-002-070225",
+                            moveStatus = "Missing",
+                            ticketNumber = "TN-005-070225"
+                        },
+                        new
+                        {
+                            id = 11,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Draft",
+                            ticketNumber = "TN-006-070225"
+                        },
+                        new
+                        {
+                            id = 12,
+                            assetNumber = "AN-002-070225",
+                            moveStatus = "Draft",
+                            ticketNumber = "TN-007-070225"
+                        },
+                        new
+                        {
+                            id = 13,
+                            assetNumber = "AN-001-070225",
+                            moveStatus = "Moving",
+                            ticketNumber = "TN-008-070225"
                         });
                 });
 
@@ -127,6 +204,8 @@ namespace qrmanagement.Migrations
                     b.Property<int>("branchId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("branchId"));
 
                     b.Property<string>("branchEmail")
                         .IsRequired()
@@ -155,6 +234,8 @@ namespace qrmanagement.Migrations
 
                     b.HasKey("branchId");
 
+                    b.HasIndex("kecamatanId");
+
                     b.HasIndex("kotaId");
 
                     b.ToTable("Branches");
@@ -180,6 +261,59 @@ namespace qrmanagement.Migrations
                             kecamatanId = 2,
                             kotaId = 2,
                             parentId = 1
+                        },
+                        new
+                        {
+                            branchId = 3,
+                            branchEmail = "jakarta@company.com",
+                            branchLocation = "Jl. Sudirman No. 1, Jakarta",
+                            branchName = "Branch Jakarta",
+                            branchPhone = "+62123456789",
+                            kecamatanId = 201,
+                            kotaId = 101,
+                            parentId = 1
+                        },
+                        new
+                        {
+                            branchId = 4,
+                            branchEmail = "bandung@company.com",
+                            branchLocation = "Jl. Asia Afrika No. 2, Bandung",
+                            branchName = "Branch Bandung",
+                            branchPhone = "+62223456789",
+                            kecamatanId = 202,
+                            kotaId = 102,
+                            parentId = 1
+                        },
+                        new
+                        {
+                            branchId = 5,
+                            branchEmail = "surabaya@company.com",
+                            branchLocation = "Jl. Tunjungan No. 3, Surabaya",
+                            branchName = "Branch Surabaya",
+                            branchPhone = "+62313456789",
+                            kecamatanId = 203,
+                            kotaId = 103
+                        },
+                        new
+                        {
+                            branchId = 6,
+                            branchEmail = "yogyakarta@company.com",
+                            branchLocation = "Jl. Malioboro No. 4, Yogyakarta",
+                            branchName = "Branch Yogyakarta",
+                            branchPhone = "+62274567890",
+                            kecamatanId = 204,
+                            kotaId = 104,
+                            parentId = 5
+                        },
+                        new
+                        {
+                            branchId = 7,
+                            branchEmail = "medan@company.com",
+                            branchLocation = "Jl. Gatot Subroto No. 5, Medan",
+                            branchName = "Branch Medan",
+                            branchPhone = "+62613456789",
+                            kecamatanId = 205,
+                            kotaId = 105
                         });
                 });
 
@@ -216,6 +350,36 @@ namespace qrmanagement.Migrations
                             kecamatanId = 2,
                             kecamatanName = "Senen",
                             kotaId = 2
+                        },
+                        new
+                        {
+                            kecamatanId = 201,
+                            kecamatanName = "Menteng",
+                            kotaId = 101
+                        },
+                        new
+                        {
+                            kecamatanId = 202,
+                            kecamatanName = "Cibiru",
+                            kotaId = 102
+                        },
+                        new
+                        {
+                            kecamatanId = 203,
+                            kecamatanName = "Wonokromo",
+                            kotaId = 103
+                        },
+                        new
+                        {
+                            kecamatanId = 204,
+                            kecamatanName = "Kotagede",
+                            kotaId = 104
+                        },
+                        new
+                        {
+                            kecamatanId = 205,
+                            kecamatanName = "Medan Baru",
+                            kotaId = 105
                         });
                 });
 
@@ -245,6 +409,31 @@ namespace qrmanagement.Migrations
                         {
                             kotaId = 2,
                             kotaName = "Jakarta Pusat"
+                        },
+                        new
+                        {
+                            kotaId = 101,
+                            kotaName = "Jakarta Selatan"
+                        },
+                        new
+                        {
+                            kotaId = 102,
+                            kotaName = "Bandung"
+                        },
+                        new
+                        {
+                            kotaId = 103,
+                            kotaName = "Surabaya"
+                        },
+                        new
+                        {
+                            kotaId = 104,
+                            kotaName = "Yogyakarta"
+                        },
+                        new
+                        {
+                            kotaId = 105,
+                            kotaName = "Medan"
                         });
                 });
 
@@ -264,20 +453,29 @@ namespace qrmanagement.Migrations
                     b.Property<int>("branchOrigin")
                         .HasColumnType("int");
 
+                    b.Property<DateOnly?>("dateApproved")
+                        .HasColumnType("date");
+
                     b.Property<DateOnly>("dateRequested")
                         .HasColumnType("date");
 
-                    b.Property<DateOnly>("inboundDate")
+                    b.Property<DateOnly?>("inboundDate")
                         .HasColumnType("date");
 
                     b.Property<string>("moveStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("outboundDate")
+                    b.Property<DateOnly?>("outboundDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("quantity")
+                    b.Property<string>("reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("receivedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("requestedBy")
                         .HasColumnType("int");
 
                     b.HasKey("ticketNumber");
@@ -295,11 +493,13 @@ namespace qrmanagement.Migrations
                             approvalStatus = "Approved",
                             branchDestination = 2,
                             branchOrigin = 1,
+                            dateApproved = new DateOnly(2025, 1, 30),
                             dateRequested = new DateOnly(2025, 1, 28),
                             inboundDate = new DateOnly(2025, 2, 5),
                             moveStatus = "Completed",
                             outboundDate = new DateOnly(2025, 2, 1),
-                            quantity = 1
+                            receivedBy = 1,
+                            requestedBy = 2
                         },
                         new
                         {
@@ -307,11 +507,89 @@ namespace qrmanagement.Migrations
                             approvalStatus = "Approved",
                             branchDestination = 1,
                             branchOrigin = 2,
+                            dateApproved = new DateOnly(2025, 1, 30),
                             dateRequested = new DateOnly(2025, 1, 28),
                             inboundDate = new DateOnly(2025, 2, 5),
                             moveStatus = "Completed",
                             outboundDate = new DateOnly(2025, 2, 1),
-                            quantity = 1
+                            receivedBy = 2,
+                            requestedBy = 1
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-003-070225",
+                            approvalStatus = "Approved",
+                            branchDestination = 1,
+                            branchOrigin = 2,
+                            dateApproved = new DateOnly(2025, 2, 26),
+                            dateRequested = new DateOnly(2025, 2, 25),
+                            inboundDate = new DateOnly(2025, 3, 3),
+                            moveStatus = "Completed",
+                            outboundDate = new DateOnly(2025, 3, 1),
+                            receivedBy = 2,
+                            requestedBy = 1
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-004-070225",
+                            approvalStatus = "Pending",
+                            branchDestination = 2,
+                            branchOrigin = 1,
+                            dateRequested = new DateOnly(2025, 2, 28),
+                            moveStatus = "Not_Started",
+                            outboundDate = new DateOnly(2025, 3, 5),
+                            receivedBy = 1,
+                            requestedBy = 2
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-005-070225",
+                            approvalStatus = "Approved",
+                            branchDestination = 3,
+                            branchOrigin = 2,
+                            dateApproved = new DateOnly(2025, 3, 6),
+                            dateRequested = new DateOnly(2025, 3, 5),
+                            inboundDate = new DateOnly(2025, 3, 12),
+                            moveStatus = "Completed",
+                            outboundDate = new DateOnly(2025, 3, 10),
+                            receivedBy = 2,
+                            requestedBy = 3
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-006-070225",
+                            approvalStatus = "Draft",
+                            branchDestination = 3,
+                            branchOrigin = 1,
+                            dateRequested = new DateOnly(2025, 3, 8),
+                            moveStatus = "Not_Started",
+                            receivedBy = 1,
+                            requestedBy = 3
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-007-070225",
+                            approvalStatus = "Rejected",
+                            branchDestination = 3,
+                            branchOrigin = 1,
+                            dateRequested = new DateOnly(2025, 3, 8),
+                            moveStatus = "Not_Started",
+                            reason = "Unit rusak",
+                            receivedBy = 3,
+                            requestedBy = 1
+                        },
+                        new
+                        {
+                            ticketNumber = "TN-008-070225",
+                            approvalStatus = "Approved",
+                            branchDestination = 1,
+                            branchOrigin = 3,
+                            dateApproved = new DateOnly(2025, 3, 11),
+                            dateRequested = new DateOnly(2025, 3, 10),
+                            moveStatus = "In_Progress",
+                            outboundDate = new DateOnly(2025, 3, 15),
+                            receivedBy = 1,
+                            requestedBy = 3
                         });
                 });
 
@@ -437,7 +715,7 @@ namespace qrmanagement.Migrations
                 {
                     b.HasOne("qrmanagement.backend.Models.Kecamatan", "branchKecamatan")
                         .WithMany("Branches")
-                        .HasForeignKey("branchId")
+                        .HasForeignKey("kecamatanId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
