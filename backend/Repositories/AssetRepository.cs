@@ -250,64 +250,66 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> AddAsset(CreateAssetDTO asset){
+        public async Task<int> AddAsset(CreateAssetDTO asset) {
             _logger.LogDebug("Adding asset to the database.");
-            
+
             int rowsAffected = 0;
-            try{
+            try {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString)) {
                     await connection.OpenAsync();
+                    using (var transaction = connection.BeginTransaction()) {
+                        try {
+                            // Menyimpan file
+                            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(asset.image.FileName);
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                            string relativePath = Path.Combine("uploads", uniqueFileName);
+                            if (!Directory.Exists(uploadsFolder)) {
+                                Directory.CreateDirectory(uploadsFolder);
+                            }
 
-                    using (var transaction = connection.BeginTransaction()){
+                            using (var fileStream = new FileStream(filePath, FileMode.Create)) {
+                                await asset.image.CopyToAsync(fileStream);
+                            }
 
-                        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), UploadsFolder);
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + asset.image.FileName;
-                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                            // Simpan ke database
+                            string insertAssetQuery = @"
+                                INSERT INTO Assets (id, name, locationId, assetType, itemStatus, imagePath)
+                                VALUES (@id, @name, @locationId, @assetType, @itemStatus, @imagePath)";
+                            
+                            using (var assetCommand = new SqlCommand(insertAssetQuery, connection, transaction)) {
+                                assetCommand.Parameters.AddWithValue("@id", asset.id ?? Guid.NewGuid().ToString());
+                                assetCommand.Parameters.AddWithValue("@name", asset.name);
+                                assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
+                                assetCommand.Parameters.AddWithValue("@assetType", asset.assetType);
+                                assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus);
+                                assetCommand.Parameters.AddWithValue("@imagePath", relativePath);
 
-                        if (!Directory.Exists(uploadsFolder)){
-                            Directory.CreateDirectory(uploadsFolder);
+                                rowsAffected = await assetCommand.ExecuteNonQueryAsync();
+                            }
+
+                            _logger.LogDebug("Successfully added asset");
+                            transaction.Commit();
                         }
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create)){
-                            await asset.image.CopyToAsync(fileStream);
+                        catch (Exception ex) {
+                            transaction.Rollback();
+                            _logger.LogError(ex, "An error occurred while creating asset.");
+                            throw;
                         }
-
-                        string insertAssetQuery = @"
-                            INSERT INTO 
-                                Assets (id, name, locationId, assetType, itemStatus, imagePath)
-                            VALUES
-                                (@id, @name, @locationId, @assetType, @itemStatus, @imagePath) 
-                        ";
-                        using (var assetCommand = new SqlCommand(insertAssetQuery, connection, transaction)){
-                            assetCommand.Parameters.AddWithValue("@id", asset.id);
-                            assetCommand.Parameters.AddWithValue("@name", asset.name);
-                            assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
-                            assetCommand.Parameters.AddWithValue("@assetType", asset.assetType.ToString());
-                            assetCommand.Parameters.AddWithValue("@itemStatus", asset.itemStatus.ToString());
-                            assetCommand.Parameters.AddWithValue("@imagePath", asset.image);
-
-                            rowsAffected = await assetCommand.ExecuteNonQueryAsync();
-                        }
-                        _logger.LogDebug("Successfuly added asset");
-                        transaction.Commit();
                     }
                 }
 
-                _logger.LogDebug("Asset successfully added.");
                 return rowsAffected;
             }
-            catch (SqlException sqlEx){
-                _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while creating asset");    
+            catch (SqlException sqlEx) {
+                _logger.LogError($"An error occurred: {sqlEx.Message}");
+                throw new Exception("An error occurred while creating asset");
             }
-            catch (Exception ex){
+            catch (Exception ex) {
                 _logger.LogError(ex, "An error occurred while creating asset.");
-                _logger.LogError("Stacktrace:");
-                _logger.LogError(ex.StackTrace);
-
                 throw new Exception("Internal Server Error");
-            }        
+            }
         }
 
         public async Task<int> UpdateAsset(UpdateAssetDTO asset){
