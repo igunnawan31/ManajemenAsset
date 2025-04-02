@@ -3,12 +3,12 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { IoCaretDown, IoNotifications } from "react-icons/io5";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 
 const NavbarAdmin = () => {
     const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const router = useRouter(); // Initialize useRouter
+    const router = useRouter();
 
     const logout = () => {
         document.cookie = "token=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";

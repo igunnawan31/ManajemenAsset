@@ -138,7 +138,7 @@ const RequestAssetMasukPage = () => {
                 })
                 .then((data: Ticket[]) => {
                     const filteredData = data.filter(ticket => 
-                        ticket.branchOrigin === userBranch
+                        ticket.branchDestination === userBranch
                     );
     
                     console.log("Fetched data:", filteredData);
