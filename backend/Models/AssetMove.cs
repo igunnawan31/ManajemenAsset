@@ -21,10 +21,12 @@ namespace qrmanagement.backend.Models{
     }
     
     public enum AssetMoveStatus{
-        Arrived,
-        Missing, 
-        Waiting,
-        Moving,
-        Draft
+        Arrived, // Barang udah dikirim
+        Missing, // Barang hilang di jalan
+        Waiting, // Ticket approved, belum dikirim
+        Moving, // Barang masih dikirim
+        Draft, // Ticket draft
+        Reject, // Ticket reject
+        Pending // Ticket pending
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using qrmanagement.backend.Context;
+using qrmanagement.backend.DTO.AssetMove;
 using qrmanagement.backend.DTO.Ticket;
 using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
@@ -39,6 +41,29 @@ namespace qrmanagement.backend.Services{
             if (rowsAffectedMove == 0) return false;
             return true;
         }
+
+        public async Task<bool> RejectTicket(UpdateTicketStatusDTO ticket)
+        {
+            int rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
+            if (ticket.status == "Rejected")
+            {
+                var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
+                
+                if (assetmovelist != null && assetmovelist.Any())
+                {
+                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    {
+                        assetMoveId = assetmove.id,
+                        status = "Rejected"
+                    }).ToList();
+
+                    await _moveRepo.UpdateAssetMoveStatuses(list);
+                }
+            }
+
+            return rowsAffectedTicket > 0;
+        }
+
     }
 }
 

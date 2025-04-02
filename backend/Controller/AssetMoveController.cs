@@ -63,7 +63,7 @@ namespace qrmanagement.backend.Controllers{
             return Ok(new {statusCode = 200, message = "Assetmove Created Successfully"});        
         }
 
-        [HttpPut("update")]
+        [HttpPut("bulk-update")]
         public async Task <IActionResult> UpdateAssetMoveStatuses ([FromBody] IEnumerable<UpdateAssetMoveStatusDTO> assets){
             // each object consists of assetmoveid with the new status
             int row = await _moveRepo.UpdateAssetMoveStatuses(assets);
@@ -71,6 +71,15 @@ namespace qrmanagement.backend.Controllers{
                 return BadRequest("Failed while updating assetmove");
             }
             return Ok(new {statusCode = 200, message = "Assetmove Updated Successfully"});       
+        }
+
+        [HttpPut("single-update")]
+        public async Task<IActionResult> UpdateAssetMoveStatus ([FromBody] UpdateAssetMoveStatusDTO asset){
+            int row = await _moveRepo.UpdateAssetMoveStatus(asset);
+            if(row == 0){
+                return BadRequest("Failed while updating assetmove");
+            }
+            return Ok(new {statusCode = 200, message = "Assetmove Updated Successfully"});
         }
         
         [HttpDelete("delete")]

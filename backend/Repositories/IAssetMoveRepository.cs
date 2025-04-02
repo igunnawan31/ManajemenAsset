@@ -8,6 +8,8 @@ namespace qrmanagement.backend.Repositories{
         Task <IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByStatus(string status);
         Task <int> AddAssetMove (IEnumerable<string> assetNumbers, string ticketNumber);
         Task <int> UpdateAssetMoveStatuses (IEnumerable<UpdateAssetMoveStatusDTO> assets); // each object consists of assetmoveid with the new status
+        Task <int> UpdateAssetMoveStatus (UpdateAssetMoveStatusDTO asset); // each object consists of assetmoveid with the new status
+
         Task <int> DeleteAssetMoves (IEnumerable<string> ids); 
     }
 }

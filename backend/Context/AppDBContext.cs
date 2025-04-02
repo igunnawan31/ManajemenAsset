@@ -169,7 +169,7 @@ namespace qrmanagement.backend.Context{
                     new AssetMove{id = 5, ticketNumber = "TN-002-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived },
                     new AssetMove{id = 6, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived },
                     new AssetMove{id = 7, ticketNumber = "TN-003-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moving },
-                    new AssetMove{id = 8, ticketNumber = "TN-004-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Waiting },
+                    new AssetMove{id = 8, ticketNumber = "TN-004-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Pending },
                     new AssetMove{id = 9, ticketNumber = "TN-005-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived },
                     new AssetMove{id = 10, ticketNumber = "TN-005-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Missing },
                     new AssetMove{id = 11, ticketNumber = "TN-006-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Draft },

@@ -94,7 +94,7 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> UpdateTicket (UpdateTicketDTO ticketDTO){
+        public async Task<ActionResult> UpdateTicket ([FromBody] UpdateTicketDTO ticketDTO){
             int row = await _ticketRepo.UpdateTicket(ticketDTO);
             if(row == 0){
                 return BadRequest("Failed while updating ticket");
@@ -104,7 +104,7 @@ namespace qrmanagement.backend.Controllers{
         }
         
         [HttpPut("update-move")]
-        public async Task<ActionResult> UpdateTicketMove (UpdateTicketStatusDTO ticket){
+        public async Task<ActionResult> UpdateTicketMove ([FromBody] UpdateTicketStatusDTO ticket){
             int row = await _ticketRepo.UpdateTicketMoveStatus(ticket);
             if(row == 0){
                 return BadRequest("Failed while updating ticket move status");
@@ -113,7 +113,7 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPut("update-approval")]
-        public async Task<ActionResult> UpdateTicketApproval (UpdateTicketStatusDTO ticket){
+        public async Task<ActionResult> UpdateTicketApproval ([FromBody] UpdateTicketStatusDTO ticket){
             int row = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
             if(row == 0){
                 return BadRequest("Failed while updating ticket approval status");
@@ -129,5 +129,13 @@ namespace qrmanagement.backend.Controllers{
             return Ok(new {StatusCode = 200, message = "Ticket Deleted Successfully"});
         }
 
+        [HttpPost("decline")]
+        public async Task<IActionResult> DeclineTicket([FromBody] UpdateTicketStatusDTO ticket){
+            bool success = await _ticketService.RejectTicket(ticket);
+            if(!success){
+                return BadRequest("Failed while rejecting a ticket");
+            }
+            return Ok(new {statusCode = 200, message = "Ticket Rejected Successfully"});
+        }
     }
 }
