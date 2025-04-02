@@ -136,7 +136,7 @@ const RequestAssetKeluarPage = () => {
             })
             .then((data: Ticket[]) => {
                 const filteredData = data.filter(ticket => 
-                    ticket.branchDestination === userBranch
+                    ticket.branchOrigin === userBranch
                 );
 
                 console.log("Fetched data:", filteredData);
@@ -221,7 +221,7 @@ const RequestAssetKeluarPage = () => {
                                     actions={[
                                         {
                                             label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestassetkeluar/action/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
