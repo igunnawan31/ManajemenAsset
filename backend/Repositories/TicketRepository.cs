@@ -35,7 +35,7 @@ namespace qrmanagement.backend.Repositories{
                             moveStatus,
                             requestedBy,
                             receivedBy,
-                            reason
+                            rejectReason
                         FROM 
                             Tickets
                     ";
@@ -57,7 +57,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -97,7 +97,7 @@ namespace qrmanagement.backend.Repositories{
                             moveStatus,
                             requestedBy,
                             receivedBy,
-                            reason
+                            rejectReason
                         FROM 
                             Tickets
                         WHERE
@@ -122,7 +122,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
@@ -167,7 +167,7 @@ namespace qrmanagement.backend.Repositories{
                             moveStatus,
                             requestedBy,
                             receivedBy,
-                            reason
+                            rejectReason
                         FROM 
                             Tickets
                         WHERE
@@ -192,7 +192,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -233,7 +233,7 @@ namespace qrmanagement.backend.Repositories{
                             moveStatus,
                             requestedBy,
                             receivedBy,
-                            reason
+                            rejectReason
                         FROM 
                             Tickets
                         WHERE
@@ -258,7 +258,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -299,7 +299,7 @@ namespace qrmanagement.backend.Repositories{
                             moveStatus,
                             requestedBy,
                             receivedBy,
-                            reason
+                            rejectReason
                         FROM 
                             Tickets
                         WHERE
@@ -324,7 +324,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    reason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
                                 };
                                 ticketList.Add(asset);
                             }
@@ -586,25 +586,51 @@ namespace qrmanagement.backend.Repositories{
                     using (var transaction = connection.BeginTransaction()){
                         try
                         {
-                            string updateQuery = @"
-                                UPDATE 
-                                    Tickets
-                                SET
-                                    approvalStatus = @approvalStatus
-                                    reason = @reason
-                                    dateApproved = @dateApproved
-                                WHERE
-                                    ticketNumber = @ticketNumber
-                            ";
-
-                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                                ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
-                                ticketCommand.Parameters.AddWithValue("@reason", ticket.reason);
-                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
-                                ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
-                                
-                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            string updateQuery;
+                            if (ticket.status == "Rejected"){
+                                updateQuery = @"
+                                    UPDATE 
+                                        Tickets
+                                    SET
+                                        approvalStatus = @approvalStatus
+                                        rejectReason = @rejectReason
+                                        rejectClassification = @rejectClassification
+                                        dateApproved = @dateApproved
+                                    WHERE
+                                        ticketNumber = @ticketNumber
+                                ";
+                            
+                                using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                    ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                                    ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason);
+                                    ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification);
+                                    ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                    ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
+                                    
+                                    rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                                }
                             }
+                            else{
+                                updateQuery = @"
+                                    UPDATE 
+                                        Tickets
+                                    SET
+                                        approvalStatus = @approvalStatus
+                                        dateApproved = @dateApproved
+                                    WHERE
+                                        ticketNumber = @ticketNumber
+                                ";
+
+                                using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                    ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                                    ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                    ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
+                                    
+                                    rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                                }
+
+                            }
+                            
 
                             _logger.LogDebug("Successfuly updated ticket");
                             transaction.Commit();   

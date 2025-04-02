@@ -119,7 +119,9 @@ namespace qrmanagement.backend.Context{
                         .HasConversion<string>();
                 entity.Property(a => a.moveStatus)
                         .HasConversion<string>();
-
+                entity.Property(a => a.rejectClassification)
+                        .HasConversion<string>();
+                        
                 entity.HasMany(a => a.assetMoves)
                     .WithOne(a => a.ticket)
                     .HasForeignKey(a => a.ticketNumber);
@@ -141,7 +143,7 @@ namespace qrmanagement.backend.Context{
                     new Ticket{ticketNumber = "TN-004-070225", branchOrigin = 1, branchDestination = 2, requestedBy = 2, receivedBy = 1, outboundDate = new DateOnly(2025, 3, 5),inboundDate = null,dateRequested = new DateOnly(2025, 2, 28),dateApproved = null,approvalStatus = approvalStatus.Pending,moveStatus = ticketMoveStatus.Not_Started},
                     new Ticket{ticketNumber = "TN-005-070225", branchOrigin = 2, branchDestination = 3, requestedBy = 3, receivedBy = 2, outboundDate = new DateOnly(2025, 3, 10),inboundDate = new DateOnly(2025, 3, 12),dateRequested = new DateOnly(2025, 3, 5),dateApproved = new DateOnly(2025, 3, 6),approvalStatus = approvalStatus.Approved,moveStatus = ticketMoveStatus.Completed},
                     new Ticket{ticketNumber = "TN-006-070225", branchOrigin = 1, branchDestination = 3, requestedBy = 3, receivedBy = 1, outboundDate = null,inboundDate = null,dateRequested = new DateOnly(2025, 3, 8),dateApproved = null,approvalStatus = approvalStatus.Draft,moveStatus = ticketMoveStatus.Not_Started},
-                    new Ticket{ticketNumber = "TN-007-070225", branchOrigin = 1, branchDestination = 3, requestedBy = 1, receivedBy = 3, outboundDate = null,inboundDate = null,reason = "Unit rusak",dateRequested = new DateOnly(2025, 3, 8),dateApproved = null,approvalStatus = approvalStatus.Rejected,moveStatus = ticketMoveStatus.Not_Started},
+                    new Ticket{ticketNumber = "TN-007-070225", branchOrigin = 1, branchDestination = 3, requestedBy = 1, receivedBy = 3, outboundDate = null,inboundDate = null,rejectReason = "Unit rusak",dateRequested = new DateOnly(2025, 3, 8),dateApproved = null,approvalStatus = approvalStatus.Rejected,moveStatus = ticketMoveStatus.Not_Started},
                     new Ticket{ticketNumber = "TN-008-070225", branchOrigin = 3, branchDestination = 1, requestedBy = 3, receivedBy = 1, outboundDate = new DateOnly(2025, 3, 15), inboundDate = null, dateRequested = new DateOnly(2025, 3, 10),dateApproved = new DateOnly(2025, 3, 11),approvalStatus = approvalStatus.Approved,moveStatus = ticketMoveStatus.In_Progress}
                 );
             });

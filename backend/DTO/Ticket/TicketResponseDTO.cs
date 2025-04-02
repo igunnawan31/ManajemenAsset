@@ -11,6 +11,8 @@ namespace qrmanagement.backend.DTO.Ticket{
         public required string moveStatus {get; set;}
         public required int requestedBy {get; set;}
         public required int receivedBy {get; set;}
-        public string? reason {get; set;}
+        public string? rejectReason {get; set;}
+        public string? rejectClassification {get; set;}
+        public string? requestReason {get; set;}
     }
 }
