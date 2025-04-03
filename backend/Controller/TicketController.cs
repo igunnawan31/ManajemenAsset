@@ -112,14 +112,14 @@ namespace qrmanagement.backend.Controllers{
             return Ok( new {StatusCode = 200, message = "Ticket Move Status Updated Successfully"});
         }
 
-        [HttpPut("update-approval")]
-        public async Task<ActionResult> UpdateTicketApproval ([FromBody] UpdateTicketStatusDTO ticket){
-            int row = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
-            if(row == 0){
-                return BadRequest("Failed while updating ticket approval status");
-            }
-            return Ok( new {StatusCode = 200, message = "Ticket Approval Status Updated Successfully"});
-        }
+        // [HttpPut("update-approval")]
+        // public async Task<ActionResult> UpdateTicketApproval ([FromBody] UpdateTicketStatusDTO ticket){
+        //     int row = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
+        //     if(row == 0){
+        //         return BadRequest("Failed while updating ticket approval status");
+        //     }
+        //     return Ok( new {StatusCode = 200, message = "Ticket Approval Status Updated Successfully"});
+        // }
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteTicket([FromBody] string id){
             int row = await _ticketRepo.DeleteTicket(id);
@@ -129,13 +129,13 @@ namespace qrmanagement.backend.Controllers{
             return Ok(new {StatusCode = 200, message = "Ticket Deleted Successfully"});
         }
 
-        [HttpPost("decline")]
-        public async Task<IActionResult> DeclineTicket([FromBody] UpdateTicketStatusDTO ticket){
-            bool success = await _ticketService.RejectTicket(ticket);
+        [HttpPost("approval")]
+        public async Task<IActionResult> TicketApproval([FromBody] UpdateTicketStatusDTO ticket){
+            bool success = await _ticketService.TicketApproval(ticket);
             if(!success){
-                return BadRequest("Failed while rejecting a ticket");
+                return BadRequest("Failed while updating ticket approval");
             }
-            return Ok(new {statusCode = 200, message = "Ticket Rejected Successfully"});
+            return Ok(new {statusCode = 200, message = "Ticket approval updated Successfully"});
         }
     }
 }

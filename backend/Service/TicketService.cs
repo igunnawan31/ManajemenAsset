@@ -42,7 +42,7 @@ namespace qrmanagement.backend.Services{
             return true;
         }
 
-        public async Task<bool> RejectTicket(UpdateTicketStatusDTO ticket)
+        public async Task<bool> TicketApproval(UpdateTicketStatusDTO ticket)
         {
             int rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
             if (ticket.status == "Rejected")
@@ -60,7 +60,6 @@ namespace qrmanagement.backend.Services{
                     await _moveRepo.UpdateAssetMoveStatuses(list);
                 }
             }
-
             return rowsAffectedTicket > 0;
         }
 
