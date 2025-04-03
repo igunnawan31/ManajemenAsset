@@ -587,50 +587,27 @@ namespace qrmanagement.backend.Repositories{
                         try
                         {
                             string updateQuery;
-                            if (ticket.status == "Rejected"){
-                                updateQuery = @"
-                                    UPDATE 
-                                        Tickets
-                                    SET
-                                        approvalStatus = @approvalStatus
-                                        rejectReason = @rejectReason
-                                        rejectClassification = @rejectClassification
-                                        dateApproved = @dateApproved
-                                    WHERE
-                                        ticketNumber = @ticketNumber
-                                ";
-                            
-                                using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                                    ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
-                                    ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason);
-                                    ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification);
-                                    ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
-                                    ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
-                                    
-                                    rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
-                                }
+                            updateQuery = @"
+                                UPDATE 
+                                    Tickets
+                                SET
+                                    approvalStatus = @approvalStatus
+                                    rejectReason = @rejectReason
+                                    rejectClassification = @rejectClassification
+                                    dateApproved = @dateApproved
+                                WHERE
+                                    ticketNumber = @ticketNumber
+                            ";
+                        
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
+                                ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason);
+                                ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification);
+                                ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
+                                ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
+                                
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
-                            else{
-                                updateQuery = @"
-                                    UPDATE 
-                                        Tickets
-                                    SET
-                                        approvalStatus = @approvalStatus
-                                        dateApproved = @dateApproved
-                                    WHERE
-                                        ticketNumber = @ticketNumber
-                                ";
-
-                                using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
-                                    ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
-                                    ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
-                                    ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
-                                    
-                                    rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
-                                }
-
-                            }
-                            
 
                             _logger.LogDebug("Successfuly updated ticket");
                             transaction.Commit();   
