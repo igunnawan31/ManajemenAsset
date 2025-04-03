@@ -591,9 +591,9 @@ namespace qrmanagement.backend.Repositories{
                                 UPDATE 
                                     Tickets
                                 SET
-                                    approvalStatus = @approvalStatus
-                                    rejectReason = @rejectReason
-                                    rejectClassification = @rejectClassification
+                                    approvalStatus = @approvalStatus,
+                                    rejectReason = @rejectReason,
+                                    rejectClassification = @rejectClassification,
                                     dateApproved = @dateApproved
                                 WHERE
                                     ticketNumber = @ticketNumber
@@ -601,10 +601,10 @@ namespace qrmanagement.backend.Repositories{
                         
                             using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
                                 ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
-                                ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason);
-                                ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification);
+                                ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason ?? (object)DBNull.Value);
+                                ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification ?? (object)DBNull.Value);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
-                                ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved);
+                                ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved ?? (object)DBNull.Value);
                                 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
