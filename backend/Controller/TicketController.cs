@@ -105,8 +105,8 @@ namespace qrmanagement.backend.Controllers{
         
         [HttpPut("update-move")]
         public async Task<ActionResult> UpdateTicketMove ([FromBody] UpdateTicketStatusDTO ticket){
-            int row = await _ticketRepo.UpdateTicketMoveStatus(ticket);
-            if(row == 0){
+            bool success = await _ticketService.TicketStatus(ticket);
+            if(!success){
                 return BadRequest("Failed while updating ticket move status");
             }
             return Ok( new {StatusCode = 200, message = "Ticket Move Status Updated Successfully"});

@@ -67,6 +67,35 @@ namespace qrmanagement.backend.Services{
             return rowsAffectedTicket > 0;
         }
 
+        public async Task<bool> TicketStatus(UpdateTicketStatusDTO ticket)
+        {
+            int rowsAffectedTicket = await _ticketRepo.UpdateTicketMoveStatus(ticket);
+            var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
+            if(assetmovelist != null && assetmovelist.Any())
+            {
+                if (ticket.status == "Complete")
+                {
+                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    {
+                        assetMoveId = assetmove.id,
+                        status = assetmove.moveStatus != "Arrived" ? assetmove.moveStatus: "Missing"
+                    }).ToList();
+
+                    await _moveRepo.UpdateAssetMoveStatuses(list);
+                }
+                else
+                {
+                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    {
+                        assetMoveId = assetmove.id,
+                        status = "Moving"
+                    }).ToList();
+
+                    await _moveRepo.UpdateAssetMoveStatuses(list);
+                }
+            }
+            return rowsAffectedTicket > 0;
+        }
     }
 }
 
