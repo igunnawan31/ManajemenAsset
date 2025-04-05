@@ -6,6 +6,7 @@ import DataTable from "../../../components/DataTable";
 import Upper from "../../../components/Upper";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { IoQrCodeOutline } from "react-icons/io5";
+import { ClassNames } from "@emotion/react";
 
 interface Ticket {
     ticketNumber: string;
@@ -129,10 +130,10 @@ const DetailRequestAssetKeluar = () => {
                     body: JSON.stringify({
                         ticketNumber: ticket?.ticketNumber,
                         status: "Approved",
-                        dateApproved: new Date().toISOString(),
+                        dateApproved: new Date().toISOString().split("T")[0],
                     }),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error("Failed to approve ticket.");
                 }
@@ -201,7 +202,7 @@ const DetailRequestAssetKeluar = () => {
     const allAssetsScanned = assets.length > 0 && assets.every((asset) => asset.scanned === asset.total);
 
     const columns = [
-        { key: "assetNumber", label: "Asset Number", alwaysVisible: true },
+        { key: "assetNumber", label: "Asset Number", alwaysVisible: true, className:"text-[#202B51]"},
         { key: "moveStatus", label: "Move Status", alwaysVisible: true },
         {
             key: "scanned",
