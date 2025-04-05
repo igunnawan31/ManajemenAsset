@@ -163,6 +163,54 @@ namespace qrmanagement.backend.Repositories{
             }
         }
         
+        public async Task<String> GetBranchNameById(string id){
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                _logger.LogDebug("Connection string retrieved");
+
+                using (SqlConnection connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+                    _logger.LogDebug("Database connection opened.");
+
+                    string query = @"
+                        SELECT
+                            branchName
+                        FROM 
+                            Branches
+                        WHERE
+                            branchId = @id
+                    ";
+
+                    _logger.LogDebug("Executing query");
+                    using (SqlCommand command = new SqlCommand(query, connection)){
+                        command.Parameters.AddWithValue("@id", id);
+                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                            _logger.LogDebug("Query executed successfully. Reading data...");
+
+                            if (await reader.ReadAsync()){
+                                String branchName = reader.GetString(0);
+                                _logger.LogDebug("BranchName fetched successfully");
+                                return branchName;
+                            }
+                            else{
+                                _logger.LogWarning("No branch found with the given id: {branchId}", id);
+                                return null!;
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (SqlException sqlEx){
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while retrieving branch data from the database");
+            }
+            catch (Exception ex){
+                _logger.LogError($"An error occured: {ex.Message}");
+                throw new Exception("Internal server error");
+            }
+        }
+
         public async Task<int> AddBranch(CreateBranchDTO branch)
         {
             _logger.LogDebug("Adding branch to the database.");

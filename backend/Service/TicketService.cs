@@ -14,11 +14,13 @@ namespace qrmanagement.backend.Services{
         private readonly AppDBContext _context;
         private readonly IAssetMoveRepository _moveRepo;
         private readonly ITicketRepository _ticketRepo;
+        private readonly IBranchRepository _branchRepo;
 
-        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository){
+        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository, IBranchRepository branchRepository){
             _moveRepo = moveRepository;
             _context = context;
             _ticketRepo = ticketRepository;
+            _branchRepo = branchRepository;
         }
 
         public async Task<string> GenerateTicketNumberAsync(DateOnly dateRequested){
@@ -61,6 +63,17 @@ namespace qrmanagement.backend.Services{
                 }
             }
             return rowsAffectedTicket > 0;
+        }
+
+        public async Task<IEnumerable<TicketResponseDTO>> GetAllTicket()
+        {
+            var tickets = await _ticketRepo.GetAllTicket();
+            foreach (var ticket in tickets)
+            {
+                ticket.branchOrigin = await _branchRepo.GetBranchNameById(ticket.branchOrigin);
+                ticket.branchDestination = await _branchRepo.GetBranchNameById(ticket.branchDestination);
+            }
+            return tickets;
         }
 
     }

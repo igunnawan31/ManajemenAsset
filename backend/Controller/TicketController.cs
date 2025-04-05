@@ -19,7 +19,7 @@ namespace qrmanagement.backend.Controllers{
 
         [HttpGet("index")]
         public async Task<ActionResult<IEnumerable<TicketResponseDTO>>> Index(){
-            var tickets = await _ticketRepo.GetAllTicket();
+            var tickets = await _ticketService.GetAllTicket();
             if(tickets == null){
                 return NotFound();
             }

@@ -48,8 +48,8 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    branchOrigin = reader.GetInt32(1),
-                                    branchDestination = reader.GetInt32(2),
+                                    branchOrigin = reader.GetInt32(1).ToString(),
+                                    branchDestination = reader.GetInt32(2).ToString(),
                                     outboundDate = reader.IsDBNull(3) ? null : DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
@@ -113,8 +113,8 @@ namespace qrmanagement.backend.Repositories{
                             if (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    branchOrigin = reader.GetInt32(1),
-                                    branchDestination = reader.GetInt32(2),
+                                    branchOrigin = reader.GetInt32(1).ToString(),
+                                    branchDestination = reader.GetInt32(2).ToString(),
                                     outboundDate = reader.IsDBNull(3) ? null : DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
@@ -183,8 +183,8 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    branchOrigin = reader.GetInt32(1),
-                                    branchDestination = reader.GetInt32(2),
+                                    branchOrigin = reader.GetInt32(1).ToString(),
+                                    branchDestination = reader.GetInt32(2).ToString(),
                                     outboundDate = reader.IsDBNull(3) ? null : DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
@@ -249,8 +249,8 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    branchOrigin = reader.GetInt32(1),
-                                    branchDestination = reader.GetInt32(2),
+                                    branchOrigin = reader.GetInt32(1).ToString(),
+                                    branchDestination = reader.GetInt32(2).ToString(),
                                     outboundDate = reader.IsDBNull(3) ? null : DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
@@ -315,8 +315,8 @@ namespace qrmanagement.backend.Repositories{
                             while (await reader.ReadAsync()){
                                 TicketResponseDTO asset = new TicketResponseDTO{
                                     ticketNumber = reader.GetString(0),
-                                    branchOrigin = reader.GetInt32(1),
-                                    branchDestination = reader.GetInt32(2),
+                                    branchOrigin = reader.GetInt32(1).ToString(),
+                                    branchDestination = reader.GetInt32(2).ToString(),
                                     outboundDate = reader.IsDBNull(3) ? null : DateOnly.FromDateTime(reader.GetDateTime(3)),
                                     inboundDate = reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
                                     dateRequested = DateOnly.FromDateTime(reader.GetDateTime(5)),
