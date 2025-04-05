@@ -78,7 +78,7 @@ namespace qrmanagement.backend.Services{
                     var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
                         assetMoveId = assetmove.id,
-                        status = assetmove.moveStatus != "Arrived" ? assetmove.moveStatus: "Missing"
+                        status = assetmove.moveStatus == "Arrived" ? assetmove.moveStatus: "Missing"
                     }).ToList();
 
                     await _moveRepo.UpdateAssetMoveStatuses(list);
