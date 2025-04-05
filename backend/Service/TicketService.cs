@@ -45,20 +45,24 @@ namespace qrmanagement.backend.Services{
         public async Task<bool> TicketApproval(UpdateTicketStatusDTO ticket)
         {
             int rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
-            if (ticket.status == "Rejected")
+            string status;
+            if(ticket.status == "Rejected"){
+                status = "Rejected";
+            }
+            else{
+                status = "Waiting";
+            }
+            var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
+            
+            if (assetmovelist != null && assetmovelist.Any())
             {
-                var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
-                
-                if (assetmovelist != null && assetmovelist.Any())
+                var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                 {
-                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
-                    {
-                        assetMoveId = assetmove.id,
-                        status = "Rejected"
-                    }).ToList();
+                    assetMoveId = assetmove.id,
+                    status = status
+                }).ToList();
 
-                    await _moveRepo.UpdateAssetMoveStatuses(list);
-                }
+                await _moveRepo.UpdateAssetMoveStatuses(list);
             }
             return rowsAffectedTicket > 0;
         }
