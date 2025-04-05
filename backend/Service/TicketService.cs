@@ -37,6 +37,17 @@ namespace qrmanagement.backend.Services{
             int rowsAffectedTicket = await _ticketRepo.AddTicket(ticket, ticketNumber);
             if (rowsAffectedTicket == 0) return false;
 
+            if(ticket.approvalStatus != "Draft"){
+                string status;
+                foreach (var asset in assetNumbers)
+                {
+                    status = await _moveRepo.GetAssetLastStatus(asset);
+                    if(status == "Missing" || status == "Moving" || status == "Waiting" || status == "Pending"){
+                        return false;
+                    }
+                }
+            }
+
             int rowsAffectedMove = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber);
             if (rowsAffectedMove == 0) return false;
             return true;
