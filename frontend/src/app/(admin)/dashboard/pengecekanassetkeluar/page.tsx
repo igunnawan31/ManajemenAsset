@@ -123,28 +123,46 @@ const PengecekanAssetKeluarPage = () => {
     }, []);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data: Ticket[]) => {
+        if (!users) return;
+    
+        const fetchTickets = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`);
+                if (!response.ok) throw new Error("Failed to fetch tickets");
+    
+                const data: Ticket[] = await response.json();
                 setTickets(data);
-                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch && ticket.branchOrigin === users?.userBranch));
-                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.receivedBy === users?.userBranch && ticket.branchOrigin === users?.userBranch));
-                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.receivedBy === users?.userBranch && ticket.branchOrigin === users?.userBranch));
+    
+                setNotStarted(data.filter(ticket =>
+                    ticket.approvalStatus === "Approved" &&
+                    ticket.moveStatus === "Not_Started" &&
+                    ticket.receivedBy === users.userBranch &&
+                    ticket.branchOrigin === users.userBranch
+                ));
+    
+                setInProgress(data.filter(ticket =>
+                    ticket.approvalStatus === "Approved" &&
+                    ticket.moveStatus === "In_Progress" &&
+                    ticket.receivedBy === users.userBranch &&
+                    ticket.branchOrigin === users.userBranch
+                ));
+    
+                setCompleted(data.filter(ticket =>
+                    ticket.approvalStatus === "Approved" &&
+                    ticket.moveStatus === "Completed" &&
+                    ticket.receivedBy === users.userBranch &&
+                    ticket.branchOrigin === users.userBranch
+                ));
+            } catch (error) {
+                console.error("Error fetching tickets:", error);
+                setError("Failed to fetch data. Please try again later.");
+            } finally {
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setError('Failed to fetch data. Please try again later.');
-                setLoading(false);
-            });
-    }, []);
+            }
+        };
+    
+        fetchTickets();
+    }, [users]);
 
     useEffect(() => {
         let filtered = tickets;
