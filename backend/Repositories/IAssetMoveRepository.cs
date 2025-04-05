@@ -6,6 +6,7 @@ namespace qrmanagement.backend.Repositories{
         Task <IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByTN(string ticketNumber); // ticket number, ini buat list asset apa aja yang pindah dari ticket yang direquest
         Task <IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByAN(string assetNumber); // asset number, ini buat history si asset udah pindah berapa kali
         Task <IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByStatus(string status);
+        Task <String> GetAssetLastStatus(string assetNumber);
         Task <int> AddAssetMove (IEnumerable<string> assetNumbers, string ticketNumber);
         Task <int> UpdateAssetMoveStatuses (IEnumerable<UpdateAssetMoveStatusDTO> assets); // each object consists of assetmoveid with the new status
         Task <int> UpdateAssetMoveStatus (UpdateAssetMoveStatusDTO asset); // each object consists of assetmoveid with the new status

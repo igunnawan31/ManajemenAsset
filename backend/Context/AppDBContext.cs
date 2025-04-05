@@ -162,19 +162,19 @@ namespace qrmanagement.backend.Context{
                     .HasForeignKey(a => a.ticketNumber);
 
                 entity.HasData(
-                    new AssetMove{id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived},
-                    new AssetMove{id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived},
-                    new AssetMove{id = 3, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived },
-                    new AssetMove{id = 4, ticketNumber = "TN-001-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived },
-                    new AssetMove{id = 5, ticketNumber = "TN-002-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived },
-                    new AssetMove{id = 6, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived },
-                    new AssetMove{id = 7, ticketNumber = "TN-003-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moving },
-                    new AssetMove{id = 8, ticketNumber = "TN-004-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Pending },
-                    new AssetMove{id = 9, ticketNumber = "TN-005-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived },
-                    new AssetMove{id = 10, ticketNumber = "TN-005-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Missing },
-                    new AssetMove{id = 11, ticketNumber = "TN-006-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Draft },
-                    new AssetMove{id = 12, ticketNumber = "TN-007-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Draft },
-                    new AssetMove{id = 13, ticketNumber = "TN-008-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moving }
+                    new AssetMove { id = 1, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 10, 0, 0) },
+                    new AssetMove { id = 2, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 11, 0, 0) },
+                    new AssetMove { id = 3, ticketNumber = "TN-001-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 12, 0, 0) },
+                    new AssetMove { id = 4, ticketNumber = "TN-001-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 13, 0, 0) },
+                    new AssetMove { id = 5, ticketNumber = "TN-002-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 14, 0, 0) },
+                    new AssetMove { id = 6, ticketNumber = "TN-002-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 1, 28, 15, 0, 0) },
+                    new AssetMove { id = 7, ticketNumber = "TN-003-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moving, createdOn = new DateTime(2025, 2, 25, 10, 0, 0) },
+                    new AssetMove { id = 8, ticketNumber = "TN-004-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Pending, createdOn = new DateTime(2025, 2, 28, 10, 0, 0) },
+                    new AssetMove { id = 9, ticketNumber = "TN-005-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Arrived, createdOn = new DateTime(2025, 3, 5, 10, 0, 0) },
+                    new AssetMove { id = 10, ticketNumber = "TN-005-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Missing, createdOn = new DateTime(2025, 3, 5, 11, 0, 0) },
+                    new AssetMove { id = 11, ticketNumber = "TN-006-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Draft, createdOn = new DateTime(2025, 3, 8, 10, 0, 0) },
+                    new AssetMove { id = 12, ticketNumber = "TN-007-070225", assetNumber = "AN-002-070225", moveStatus = AssetMoveStatus.Draft, createdOn = new DateTime(2025, 3, 8, 11, 0, 0) },
+                    new AssetMove { id = 13, ticketNumber = "TN-008-070225", assetNumber = "AN-001-070225", moveStatus = AssetMoveStatus.Moving, createdOn = new DateTime(2025, 3, 10, 10, 0, 0) }
                 );
             });
 

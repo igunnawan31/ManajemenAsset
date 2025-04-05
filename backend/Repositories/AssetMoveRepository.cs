@@ -228,6 +228,58 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
+        public async Task<string> GetAssetLastStatus(string assetNumber)
+        {
+            try
+            {
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                _logger.LogDebug("Connection string retrieved");
+
+                string asset;
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    _logger.LogDebug("Database connection opened.");
+
+                    string query = @"
+                        SELECT TOP 1
+                            moveStatus
+                        FROM 
+                            AssetMoves
+                        WHERE
+                            assetNumber = @assetNumber
+                        ORDER BY
+                            createdOn DESC
+                    ";
+
+                    _logger.LogDebug("Executing query");
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@assetNumber", assetNumber);
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            asset = reader.GetString(0);
+                            _logger.LogDebug($"Asset status retrieved: {asset}");
+                        }
+                    }
+                }
+
+                return asset;
+            }
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError($"SQL error: {sqlEx.Message}");
+                throw new Exception("An error occurred while retrieving asset move data from the database.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unexpected error: {ex.Message}");
+                throw new Exception("Internal server error.");
+            }
+        }
+
+
         public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber){
             _logger.LogDebug("Adding assetMove to the database.");
 
@@ -241,15 +293,16 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertAssetMove = @"
                                 INSERT INTO AssetMoves 
-                                    (ticketNumber, assetNumber, moveStatus)
+                                    (ticketNumber, assetNumber, moveStatus, createdOn)
                                 VALUES
-                                    (@ticketNumber, @assetNumber, @moveStatus);
+                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn);
                             ";
                             foreach (var assetNumber in assetNumbers){
                                 using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
                                     assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@moveStatus", AssetMoveStatus.Draft.ToString());
+                                    assetMoveCommand.Parameters.AddWithValue("createdOn", DateTime.Now);
 
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                     

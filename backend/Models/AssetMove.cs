@@ -13,6 +13,8 @@ namespace qrmanagement.backend.Models{
         public required string assetNumber {get; set;}
         [Required]
         public required AssetMoveStatus moveStatus {get; set;}
+        [Required]
+        public required DateTime createdOn {get; set;}
         [ForeignKey("ticketNumber")]
         public Ticket ticket {get; set;} = null!;
         [ForeignKey("assetNumber")]
