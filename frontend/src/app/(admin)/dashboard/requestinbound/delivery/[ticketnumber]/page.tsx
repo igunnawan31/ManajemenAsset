@@ -84,7 +84,7 @@ const DetailRequestAssetKeluar = () => {
                     },
                     body: JSON.stringify({
                         ticketNumber: ticket?.ticketNumber,
-                        moveStatus: "In_Progress"
+                        status: "In_Progress"
                     }),
                 });
 
