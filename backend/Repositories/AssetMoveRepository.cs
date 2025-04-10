@@ -266,8 +266,7 @@ namespace qrmanagement.backend.Repositories{
                             }
                             else
                             {
-                                _logger.LogWarning($"No asset move status found for asset number: {assetNumber}");
-                                throw new Exception($"No move status found for asset number: {assetNumber}");
+                                return "Arrived";
                             }
                         }
                     }
