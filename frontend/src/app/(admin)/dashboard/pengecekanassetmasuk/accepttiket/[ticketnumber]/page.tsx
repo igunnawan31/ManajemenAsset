@@ -131,8 +131,8 @@ const DetailRequestAssetKeluar = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        assetMoveId: asset.id,
-                        moveStatus: "Arrived",
+                        assetMoveId: parseInt(asset.id),
+                        status: "Arrived",
                     }),
                 });
             }
@@ -144,8 +144,8 @@ const DetailRequestAssetKeluar = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        assetMoveId: asset.id,
-                        moveStatus: "Missing",
+                        assetMoveId: parseInt(asset.id),
+                        status: "Missing",
                     }),
                 });
             }
