@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Upper from "../components/Upper";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
-import { IoEyeSharp, IoReaderSharp, IoTrash, IoArrowForwardCircle } from "react-icons/io5";
+import { IoEyeSharp, IoReaderSharp, IoTrash, IoArrowForwardCircle, IoCar, IoCheckmarkCircle } from "react-icons/io5";
 
 interface Ticket {
     ticketNumber: string;
@@ -243,8 +243,8 @@ const RequestAssetKeluarPage = () => {
                                     data={ditolak}
                                     actions={[
                                         {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            label: <IoCheckmarkCircle className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestassetkeluar/accepttiket/${row.id}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -266,8 +266,8 @@ const RequestAssetKeluarPage = () => {
                                     data={diterima}
                                     actions={[
                                         {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            label: <IoCar className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestassetkeluar/delivery/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}

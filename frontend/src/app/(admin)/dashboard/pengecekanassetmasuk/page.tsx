@@ -60,6 +60,8 @@ const PengecekanAssetMasukPage = () => {
         { key: "dateRequested", label: "Date Requested" },
         { key: "approvalStatus", label: "Approval Status" },
         { key: "moveStatus", label: "Move Status" },
+        { key: "receivedBy", label: "Received By" },
+        { key: "requestedBy", label: "Requested By" },
     ];
 
     useEffect(() => {
@@ -134,9 +136,9 @@ const PengecekanAssetMasukPage = () => {
             })
             .then((data: Ticket[]) => {
                 setTickets(data);
-                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch && ticket.branchDestination === users?.userBranch));
-                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.receivedBy === users?.userBranch && ticket.branchDestination === users?.userBranch));
-                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.receivedBy === users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.branchDestination === users?.userBranch));
+                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.branchDestination === users?.userBranch));
+                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.branchDestination === users?.userBranch));
                 setLoading(false);
             })
             .catch((error) => {
@@ -144,7 +146,7 @@ const PengecekanAssetMasukPage = () => {
                 setError('Failed to fetch data. Please try again later.');
                 setLoading(false);
             });
-    }, []);
+    }, [userBranch]);
 
     useEffect(() => {
         let filtered = tickets;
@@ -236,7 +238,7 @@ const PengecekanAssetMasukPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/pengecekanassetmasuk/accepttiket/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}

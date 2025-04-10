@@ -23,6 +23,8 @@ interface AssetMoves {
     ticketNumber: string;
     assetNumber: string;
     moveStatus: string;
+    scanned: number;
+    total: number;
 }
 
 const DetailRequestAssetKeluar = () => {
@@ -44,32 +46,34 @@ const DetailRequestAssetKeluar = () => {
             setLoading(false);
             return;
         }
-    
-        const fetchData = async () => {
-            try {
-                const ticketRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/by-id/${ticketnumber}`);
-                if (!ticketRes.ok) throw new Error("Ticket not found");
-                const ticketData = await ticketRes.json();
-                setTicket(ticketData);
-    
-                const assetsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/by-TN/${ticketnumber}`);
-                if (!assetsRes.ok) throw new Error("Failed to fetch assets");
-                const assetsData = await assetsRes.json();
-                console.log("Assets Response:", assetsData);
-                setAssets(assetsData);
-            } catch (err: any) {
-                setError(err.message || "Something went wrong");
-            } finally {
-                setLoading(false);
-            }
-        };
-    
-        fetchData();
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/by-id/${ticketnumber}`)
+            .then((response) => response.json())
+            .then((data) => setTicket(data))
+            .catch(() => setError("Ticket not found"));
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/by-TN/${ticketnumber}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const updatedAssets = data.map((asset: AssetMoves) => ({ ...asset, scanned: 1, total: 1 }));
+                setAssets(updatedAssets);
+            })
+            .catch(() => setError("Failed to fetch assets"))
+            .finally(() => setLoading(false));
     }, [ticketnumber]);
 
     const columns = [
-        { key: "assetNumber", label: "Asset Number" },
-        { key: "moveStatus", label: "Move Status" },
+        { key: "assetNumber", label: "Asset Number", alwaysVisible: true, className:"text-[#202B51]"},
+        { key: "moveStatus", label: "Move Status", alwaysVisible: true },
+        {
+            key: "scanned",
+            label: "Scanned",
+            alwaysVisible: true,
+            render: (_: any, row: Record<string, any>) => {
+                const asset = row as AssetMoves;
+                return `${asset.scanned}/${asset.total}`;
+            },
+        },
     ];
     
     const handleAccept = async () => {
@@ -95,7 +99,7 @@ const DetailRequestAssetKeluar = () => {
                 setIsAcceptModalOpen(false);
                 setConfirmationMessage("Ticket has been delivered.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/requestinbound");
+                router.push("/dashboard/requestassetkeluar");
             } catch (err) {
                 setConfirmationMessage("Error delivered ticket. Please try again.");
                 setShowConfirmationModal(true);
@@ -106,7 +110,7 @@ const DetailRequestAssetKeluar = () => {
     };
 
     const handleBack = () => {
-        router.push("/dashboard/requestinbound");
+        router.push("/dashboard/requestassetkeluar");
     }
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
@@ -121,11 +125,7 @@ const DetailRequestAssetKeluar = () => {
             </div>
 
             <div className="mt-5">
-                {assets.length > 0 ? (
-                    <DataTable columns={columns} data={assets} />
-                    ) : (
-                    <p>No asset data found.</p>
-                    )}
+                <DataTable columns={columns} data={assets} />
             </div>
 
             <div className="mt-5 flex justify-between">
