@@ -136,9 +136,9 @@ const PengecekanAssetMasukPage = () => {
             })
             .then((data: Ticket[]) => {
                 setTickets(data);
-                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.branchDestination === users?.userBranch));
-                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.branchDestination === users?.userBranch));
-                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.branchDestination === users?.userBranch));
+                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
                 setLoading(false);
             })
             .catch((error) => {
@@ -150,8 +150,9 @@ const PengecekanAssetMasukPage = () => {
 
     useEffect(() => {
         let filtered = tickets;
+    
         if (searchQuery.trim()) {
-                let filtered = tickets.filter((ticket) =>
+            filtered = filtered.filter((ticket) =>
                 ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.branchOrigin.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.branchDestination.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -159,16 +160,16 @@ const PengecekanAssetMasukPage = () => {
                 ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-
+    
         Object.keys(selectedFilters).forEach((filterType) => {
             const filterValue = selectedFilters[filterType];
             if (filterValue) {
                 filtered = filtered.filter((user) => (user as any)[filterType] === filterValue);
             }
         });
-
+    
         setFilteredTickets(filtered);
-    }, [searchQuery, selectedFilters]);
+    }, [searchQuery, selectedFilters, tickets]);    
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);

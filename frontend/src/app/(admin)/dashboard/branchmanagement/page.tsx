@@ -62,15 +62,15 @@ const BranchManagement = () => {
 
     const handleSearch = (query: string) => {
         if (!query.trim()) {
-          setFilteredBranches(branches);
-          return;
+            setFilteredBranches(branches);
+            return;
         }
     
         const filtered = branches.filter((branch) =>
-          branch.branchName.toLowerCase().includes(query.toLowerCase()) ||
-          branch.branchEmail.toLowerCase().includes(query.toLowerCase()) ||
-          branch.branchPhone.toLowerCase().includes(query.toLowerCase()) ||
-          branch.branchLocation.toLowerCase().includes(query.toLowerCase())
+            branch.branchName.toLowerCase().includes(query.toLowerCase()) ||
+            branch.branchEmail.toLowerCase().includes(query.toLowerCase()) ||
+            branch.branchPhone.toLowerCase().includes(query.toLowerCase()) ||
+            branch.branchLocation.toLowerCase().includes(query.toLowerCase())
         );
         
         setCurrentPage(1);

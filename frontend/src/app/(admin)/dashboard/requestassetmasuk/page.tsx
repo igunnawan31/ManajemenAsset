@@ -44,12 +44,22 @@ const RequestAssetMasukPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [createRequest, setCreateRequest] = useState<Ticket[]>([]);
     const [tiketMasuk, setTiketMasuk] = useState<Ticket[]>([]);
     const [ditolak, setDitolak] = useState<Ticket[]>([]);
     const [diterima, setDiterima] = useState<Ticket[]>([]);
     const [userBranch, setUserBranch] = useState<string | null>(null);
     const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
+
+    const [currentPageTiket, setCurrentPageTiket] = useState<number>(1);
+    const [currentPageReject, setCurrentPageReject] = useState<number>(1);
+    const [currentPageAccept, setCurrentPageAccept] = useState<number>(1);
+    const paginateData = (data: Ticket[], page: number): Ticket[] => {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return data.slice(start, end);
+    };
 
     const columns = [
         { key: "ticketNumber", label: "ticketNumber", alwaysVisible: true },
@@ -143,9 +153,9 @@ const RequestAssetMasukPage = () => {
     
                     console.log("Fetched data:", filteredData);
                     setTickets(filteredData);
-                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
-                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
-                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.receivedBy === users?.userBranch));
+                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -158,8 +168,9 @@ const RequestAssetMasukPage = () => {
 
     useEffect(() => {
         let filtered = tickets;
+    
         if (searchQuery.trim()) {
-                let filtered = tickets.filter((ticket) =>
+            filtered = filtered.filter((ticket) =>
                 ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.branchOrigin.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 ticket.branchDestination.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -167,16 +178,16 @@ const RequestAssetMasukPage = () => {
                 ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-
+    
         Object.keys(selectedFilters).forEach((filterType) => {
             const filterValue = selectedFilters[filterType];
             if (filterValue) {
                 filtered = filtered.filter((user) => (user as any)[filterType] === filterValue);
             }
         });
-
+    
         setFilteredTickets(filtered);
-    }, [searchQuery, selectedFilters]);
+    }, [searchQuery, selectedFilters, tickets]);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -217,17 +228,50 @@ const RequestAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {tiketMasuk.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={tiketMasuk}
-                                    actions={[
-                                        {
-                                            label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/action/${row.ticketNumber}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(tiketMasuk, currentPageTiket)}
+                                        actions={[
+                                            {
+                                                label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
+                                                href: (row) => `/dashboard/requestassetmasuk/action/${row.ticketNumber}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageTiket === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageTiket - 1)}
+                                        disabled={currentPageTiket === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil(tiketMasuk.length / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageTiket(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageTiket === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageTiket === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageTiket + 1)}
+                                        disabled={currentPageTiket === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                                </>
                             ) : (
                                 <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                             )}
@@ -240,17 +284,50 @@ const RequestAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {ditolak.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={ditolak}
-                                    actions={[
-                                        {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(ditolak, currentPageReject)}
+                                        actions={[
+                                            {
+                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageReject === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageReject - 1)}
+                                        disabled={currentPageReject === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil(ditolak.length / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageReject(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageReject === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageReject === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageReject + 1)}
+                                        disabled={currentPageReject === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                                </>
                             ) : (
                                 <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                             )}
@@ -263,17 +340,50 @@ const RequestAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {diterima.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={diterima}
-                                    actions={[
-                                        {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(diterima, currentPageAccept)}
+                                        actions={[
+                                            {
+                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageAccept === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageAccept - 1)}
+                                        disabled={currentPageAccept === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil(diterima.length / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageAccept(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageAccept === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageAccept === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageAccept + 1)}
+                                        disabled={currentPageAccept === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                                </>
                             ) : (
                                 <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                             )}

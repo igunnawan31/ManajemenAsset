@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import type { Metadata } from "next";
 import { Poppins, Geist, Geist_Mono } from "next/font/google";
 import { Roboto } from 'next/font/google'
@@ -27,11 +30,49 @@ const poppins = Poppins({
   variable: "--font-poppins", // Define CSS variable
 });
 
+type UserResponseDTO = {
+  userId: number;
+  userName: string;
+  userEmail: string;
+  userBranch: number;
+  userPhone: string;
+  userRole: string;
+  userSubRole: string;
+};
+
 export default function AdminLayout({
     children,
   }: Readonly<{
     children: React.ReactNode;
   }>) {
+  const [userData, setUserData] = useState<UserResponseDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            setError("No user ID found. Please log in.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`);
+            if (!response.ok) throw new Error("Failed to fetch user data");
+
+            const data = await response.json();
+            setUserData(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unknown error occurred");
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchUserData();
+  }, []);
+
     return ( 
       <div className="h-screen flex">
           <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] bg-[#202B51] h-screen flex flex-col">
@@ -42,8 +83,12 @@ export default function AdminLayout({
                               {/* <Image src={"/message.png"} alt="" width={10} height={10}></Image> */}
                           </div>
                           <div className="font-sans">
-                              <span className="hidden xl:block text-sm text-white text-bold">Muhamad Gunawan</span>
-                              <span className="hidden xl:block text-sm text-white">igunnawan24@admin.ac.id</span>
+                          <span className="hidden xl:block text-sm text-white font-bold">
+                            {userData?.userName}
+                          </span>
+                          <span className="hidden xl:block text-sm text-white">
+                            {userData?.userEmail}
+                          </span>
                           </div>
                       </div>
                   </Link>

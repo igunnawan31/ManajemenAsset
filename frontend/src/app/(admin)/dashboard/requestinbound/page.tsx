@@ -52,6 +52,15 @@ const RequestInboundPage = () => {
     const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
 
+    const [currentPageCreate, setCurrentPageCreate] = useState<number>(1);
+    const [currentPageDraft, setCurrentPageDraft] = useState<number>(1);
+    const [currentPageDelivery, setCurrentPageDelivery] = useState<number>(1);
+    const paginateData = (data: Ticket[], page: number): Ticket[] => {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return data.slice(start, end);
+    };
+
     const columns = [
         { key: "ticketNumber", label: "ticketNumber", alwaysVisible: true },
         { key: "branchOrigin", label: "Branch Origin", alwaysVisible: true },
@@ -220,71 +229,174 @@ const RequestInboundPage = () => {
                     <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                     <div className="mt-5">
                         {createRequest.length > 0 ? (
-                            <DataTable
-                                columns={columns}
-                                data={createRequest}
-                                actions={[
-                                    {
-                                        label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
-                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                    },
-                                ]}
-                            />
+                            <>
+                                <DataTable
+                                    columns={columns}
+                                    data={paginateData(filteredTickets.length > 0 ? filteredTickets : createRequest, currentPageCreate)}
+                                    actions={[
+                                        {
+                                            label: <IoEyeSharp className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
+                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                        },
+                                    ]}
+                                />
+                                <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageCreate === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageCreate - 1)}
+                                        disabled={currentPageCreate === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil((filteredTickets.length > 0 ? filteredTickets.length : createRequest.length) / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageCreate(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageCreate === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageCreate === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageCreate + 1)}
+                                        disabled={currentPageCreate === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>
             )}
+
+
             {activeTab === "draft" && (
                 <div className="mt-5">
                     <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                     <div className="mt-5">
                         {draft.length > 0 ? (
-                            <DataTable
-                                columns={columns}
-                                data={draft}
-                                actions={[
-                                    {
-                                        label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestinbound/view/${row.id}`,
-                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                    },
-                                    {
-                                        label: <IoReaderSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestinbound/edit/${row.userId}`,
-                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                    },
-                                    {
-                                        label: <IoTrash className="text-red-700" />,
-                                        onClick: (row) => console.log("Delete user:", row.userId),
-                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                    },
-                                ]}
-                            />
+                            <>
+                                <DataTable
+                                    columns={columns}
+                                    data={paginateData(draft, currentPageDraft)}
+                                    actions={[
+                                        {
+                                            label: <IoEyeSharp className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestinbound/view/${row.id}`,
+                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                        },
+                                        {
+                                            label: <IoReaderSharp className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestinbound/edit/${row.userId}`,
+                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                        },
+                                        {
+                                            label: <IoTrash className="text-red-700" />,
+                                            onClick: (row) => console.log("Delete user:", row.userId),
+                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                        },
+                                    ]}
+                                />
+                                <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageDraft === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageDraft - 1)}
+                                        disabled={currentPageDraft === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil(draft.length / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageDraft(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageDraft === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageDraft === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageDraft + 1)}
+                                        disabled={currentPageDraft === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>
             )}
+
+
             {activeTab === "delivery" && (
                 <div className="mt-5">
                     <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                     <div className="mt-5">
                         {delivery.length > 0 ? (
-                            <DataTable
-                                columns={columns}
-                                data={delivery}
-                                actions={[
-                                    {
-                                        label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
-                                        className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                    }
-                                ]}
-                            />
+                            <>
+                                <DataTable
+                                    columns={columns}
+                                    data={paginateData(delivery, currentPageDelivery)}
+                                    actions={[
+                                        {
+                                            label: <IoEyeSharp className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
+                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                        }
+                                    ]}
+                                />
+                                <div className="mt-5 flex justify-center items-center">
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageDelivery === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageDelivery - 1)}
+                                        disabled={currentPageDelivery === 1}
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        {Array.from({ length: Math.ceil(delivery.length / itemsPerPage) }, (_, index) => (
+                                            <button
+                                                key={index + 1}
+                                                onClick={() => setCurrentPageDelivery(index + 1)}
+                                                className={`px-4 py-2 mx-1 rounded ${currentPageDelivery === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className={`px-4 py-2 mx-1 rounded ${
+                                            currentPageDelivery === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                        }`}
+                                        onClick={() => handlePageChange(currentPageDelivery + 1)}
+                                        disabled={currentPageDelivery === totalPages}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                         )}

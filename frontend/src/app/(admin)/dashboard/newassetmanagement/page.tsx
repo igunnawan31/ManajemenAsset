@@ -25,6 +25,7 @@ const NewAssetManagement = () => {
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 5;
+    
     const [statusFilter, setStatusFilter] = useState<string>("All");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [branches, setBranches] = useState<Record<string, string>>({});
@@ -67,7 +68,6 @@ const NewAssetManagement = () => {
             render: (value: string) => {
                 if (!value) return <span className="text-gray-400">No Image</span>;
                 
-                // Clean up the path
                 const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/uploads/${
                     value.replace(/\\/g, '/')
                          .replace(/.*?uploads[\\/]/, '')
@@ -98,6 +98,7 @@ const NewAssetManagement = () => {
  
     useEffect(() => {
         let filtered = newAssets;
+    
         if (searchQuery.trim()) {
             filtered = filtered.filter((asset) =>
                 asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -107,13 +108,24 @@ const NewAssetManagement = () => {
                 asset.itemStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-
+    
         if (statusFilter !== "All") {
             filtered = filtered.filter((asset) => asset.itemStatus === statusFilter);
         }
-
+    
         setFilteredAssets(filtered);
+        setCurrentPage(1);
     }, [newAssets, searchQuery, statusFilter]);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentAssets = filteredAssets.slice(indexOfFirstItem, indexOfLastItem);
+  
+    const totalPages = Math.ceil(filteredAssets.length / itemsPerPage);
+  
+    const handlePageChange = (page: number) => {
+      setCurrentPage(page);
+    };
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
@@ -147,7 +159,7 @@ const NewAssetManagement = () => {
                 {filteredAssets.length > 0 ? (
                     <DataTable
                         columns={columns}
-                        data={filteredAssets}
+                        data={currentAssets}
                         actions={[
                             {
                                 label: <IoEyeSharp className="text-[#202B51]" />,
@@ -169,6 +181,37 @@ const NewAssetManagement = () => {
                 ) : (
                     <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                 )}
+                <div className="mt-5 flex justify-center items-center">
+                    <button
+                        className={`px-4 py-2 mx-1 rounded ${
+                            currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                        }`}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    {[...Array(totalPages)].map((_, index) => (
+                        <button
+                            key={index}
+                            className={`px-4 py-2 mx-1 rounded ${
+                                currentPage === index + 1 ? "bg-blue-700 text-white" : "bg-gray-200 hover:bg-gray-400"
+                            }`}
+                            onClick={() => handlePageChange(index + 1)}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        className={`px-4 py-2 mx-1 rounded ${
+                            currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                        }`}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );
