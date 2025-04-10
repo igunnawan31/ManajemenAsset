@@ -84,7 +84,7 @@ namespace qrmanagement.backend.Services{
             var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
             if(assetmovelist != null && assetmovelist.Any())
             {
-                if (ticket.status == "Complete")
+                if (ticket.status == "Completed")
                 {
                     var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
