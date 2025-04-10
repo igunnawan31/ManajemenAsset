@@ -279,8 +279,8 @@ const RequestInboundPage = () => {
                                 data={delivery}
                                 actions={[
                                     {
-                                        label: <IoCar className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestinbound/delivery/${row.ticketNumber}`,
+                                        label: <IoEyeSharp className="text-[#202B51]" />,
+                                        href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     }
                                 ]}
