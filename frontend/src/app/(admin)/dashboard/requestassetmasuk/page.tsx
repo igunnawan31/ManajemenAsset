@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Upper from "../components/Upper";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
-import { IoEyeSharp, IoReaderSharp, IoTrash, IoArrowForwardCircle } from "react-icons/io5";
+import { IoEyeSharp, IoReaderSharp, IoTrash, IoArrowForwardCircle, IoCafe, IoCar } from "react-icons/io5";
 
 interface Ticket {
     ticketNumber: string;
@@ -223,7 +223,7 @@ const RequestAssetMasukPage = () => {
                                     actions={[
                                         {
                                             label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestassetmasuk/action/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -246,7 +246,7 @@ const RequestAssetMasukPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -269,7 +269,7 @@ const RequestAssetMasukPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}

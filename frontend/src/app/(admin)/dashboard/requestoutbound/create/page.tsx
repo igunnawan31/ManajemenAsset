@@ -117,10 +117,10 @@ const CreateRequestOutboundPage = () => {
 
     useEffect(() => {
         const fetchAssets = async () => {
-            if (!selectedBranch) return;
+            if (!users?.userBranch) return;
     
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${selectedBranch}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${users.userBranch}`);
                 if (!response.ok) throw new Error("Failed to fetch assets");
     
                 const data = await response.json();
@@ -131,7 +131,7 @@ const CreateRequestOutboundPage = () => {
         };
     
         fetchAssets();
-    }, [selectedBranch]);
+    }, [users?.userBranch]);
 
     const handleConfirmSelection = (selectedAssets: Asset[]) => {
         setConfirmedAssets(selectedAssets);

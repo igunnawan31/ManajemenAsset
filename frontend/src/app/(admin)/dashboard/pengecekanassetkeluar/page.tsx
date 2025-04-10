@@ -231,7 +231,7 @@ const PengecekanAssetKeluarPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/pengecekanassetkeluar/view/${row.id}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -254,7 +254,7 @@ const PengecekanAssetKeluarPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/pengecekanassetkeluar/view/${row.id}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}

@@ -289,7 +289,7 @@ const RequestOutboundPage = () => {
                                 actions={[
                                     {
                                         label: <IoCar className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/requestoutbound/delivery/${row.id}`,
+                                        href: (row) => `/dashboard/requestoutbound/delivery/${row.ticketNumber}`,
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     }
                                 ]}

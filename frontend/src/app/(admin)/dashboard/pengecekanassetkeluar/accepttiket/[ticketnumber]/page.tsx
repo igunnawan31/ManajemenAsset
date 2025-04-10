@@ -30,7 +30,7 @@ interface AssetMoves {
     total: number;
 }
 
-const DetailAcceptTicketPengecekanAssetMasuk = () => {
+const DetailRequestAssetKeluar = () => {
     const { ticketnumber } = useParams();
     const [ticket, setTicket] = useState<Ticket | null>(null);
     const [assets, setAssets] = useState<AssetMoves[]>([]);
@@ -107,7 +107,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                 setIsRejectModalOpen(false);
                 setConfirmationMessage("Ticket has been rejected.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/pengecekanassetmasuk");
+                router.push("/dashboard/requestassetkeluar");
             } catch (err) {
                 setConfirmationMessage("Error rejecting ticket. Please try again.");
                 setShowConfirmationModal(true);
@@ -221,7 +221,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
     };
 
     const handleBack = () => {
-        router.push("/dashboard/pengecekanassetmasuk");
+        router.push("/dashboard/requestassetkeluar");
     }
 
     const allAssetsScanned = assets.length > 0 && assets.every((asset) => asset.scanned === asset.total);
@@ -253,7 +253,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
 
     return (
         <div className="w-full max-h-full px-8 py-24">
-            <Upper title="Accept Ticket Pengecekan Asset Masuk" />
+            <Upper title="Request Asset Keluar" />
             <div className="mt-5">
                 <h2 className="text-xl font-bold text-[#202B51]">{ticket?.ticketNumber}</h2>
                 <p><strong>ID:</strong> {ticket?.ticketNumber}</p>
@@ -396,7 +396,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                                 className="px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90"
                                 onClick={() => {
                                     setShowConfirmationModal(false);
-                                    router.push("/dashboard/pengecekanassetmasuk");
+                                    router.push("/dashboard/requestassetkeluar");
                                 }}
                             >
                                 OK
@@ -409,4 +409,4 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
     );
 };
 
-export default DetailAcceptTicketPengecekanAssetMasuk;
+export default DetailRequestAssetKeluar;

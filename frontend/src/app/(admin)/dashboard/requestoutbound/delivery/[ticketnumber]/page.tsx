@@ -6,7 +6,6 @@ import DataTable from "../../../components/DataTable";
 import Upper from "../../../components/Upper";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { IoQrCodeOutline } from "react-icons/io5";
-import { ClassNames } from "@emotion/react";
 
 interface Ticket {
     ticketNumber: string;
@@ -30,7 +29,7 @@ interface AssetMoves {
     total: number;
 }
 
-const DetailAcceptTicketPengecekanAssetMasuk = () => {
+const DetailRequestOutboundDelivery = () => {
     const { ticketnumber } = useParams();
     const [ticket, setTicket] = useState<Ticket | null>(null);
     const [assets, setAssets] = useState<AssetMoves[]>([]);
@@ -41,16 +40,15 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
     const [successPopup, setSuccessPopup] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
     const router = useRouter();
-
+    
+    const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+    const [isAccepting, setIsAccepting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectClassification, setRejectClassification] = useState("");
     const [rejectReason, setRejectReason] = useState("");
     const [rejectError, setRejectError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [isAccepting, setIsAccepting] = useState(false);
-    const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
     
     const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -77,7 +75,62 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
             .finally(() => setLoading(false));
     }, [ticketnumber]);
 
-    const handleReject = async () => {
+    const columns = [
+        { key: "assetNumber", label: "Asset Number", alwaysVisible: true, className:"text-[#202B51]"},
+        { key: "moveStatus", label: "Move Status", alwaysVisible: true },
+        {
+            key: "scanned",
+            label: "Scanned",
+            alwaysVisible: true,
+            render: (_: any, row: Record<string, any>) => {
+                const asset = row as AssetMoves;
+                return `${asset.scanned}/${asset.total}`;
+            },
+        },
+    ];
+
+    const actions = [
+        {
+            label: "Scan QR",
+            onClick: () => handleScanQR(),
+            className: "px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90",
+        },
+    ];
+    
+    const handleAccept = async () => {
+        setIsSubmitting(true);
+
+        setTimeout(async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/update-move`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        ticketNumber: ticket?.ticketNumber,
+                        status: "In_Progress"
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to delivered ticket.");
+                }
+                
+                setIsAcceptModalOpen(false);
+                setConfirmationMessage("Ticket has been delivered.");
+                setShowConfirmationModal(true);
+                router.push("/dashboard/requestoutbound");
+            } catch (err) {
+                setConfirmationMessage("Error delivered ticket. Please try again.");
+                setShowConfirmationModal(true);
+            } finally {
+                setIsSubmitting(false);
+            }
+        }, 3000);
+    };
+
+    const handleCancel = async () => {
         if (!rejectClassification || !rejectReason) {
             setRejectError("Please fill out all required fields.");
             return;
@@ -101,79 +154,20 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                 });
     
                 if (!response.ok) {
-                    throw new Error("Failed to reject ticket.");
+                    throw new Error("Failed to cancel ticket.");
                 }
 
                 setIsRejectModalOpen(false);
-                setConfirmationMessage("Ticket has been rejected.");
+                setConfirmationMessage("Ticket has been Canceled.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/pengecekanassetmasuk");
+                router.push("/dashboard/requestoutbound");
             } catch (err) {
-                setConfirmationMessage("Error rejecting ticket. Please try again.");
+                setConfirmationMessage("Error Canceling ticket. Please try again.");
                 setShowConfirmationModal(true);
             } finally {
                 setIsSubmitting(false);
             }
         }, 3000);
-    };
-    
-    const handleSubmit = async () => {
-        setIsSubmitting(true);
-    
-        const scannedAssets = assets.filter((asset) => asset.scanned > 0);
-        const missingAssets = assets.filter((asset) => asset.scanned === 0);
-    
-        try {
-            for (const asset of scannedAssets) {
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/single-update`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        assetMoveId: parseInt(asset.id),
-                        status: "Arrived",
-                    }),
-                });
-            }
-    
-            for (const asset of missingAssets) {
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/single-update`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        assetMoveId: parseInt(asset.id),
-                        status: "Missing",
-                    }),
-                });
-            }
-    
-            const ticketResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/update-move`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    ticketNumber: ticket?.ticketNumber,
-                    status: "Completed",
-                }),
-            });
-    
-            if (!ticketResponse.ok) {
-                throw new Error("Failed to update ticket status");
-            }
-    
-            setConfirmationMessage("Ticket successfully completed.");
-            setShowConfirmationModal(true);
-        } catch (err) {
-            console.error(err);
-            setConfirmationMessage("Error completing ticket. Please try again.");
-            setShowConfirmationModal(true);
-        } finally {
-            setIsSubmitting(false);
-        }
     };
 
     const handleScanQR = () => {
@@ -220,68 +214,48 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
         }
     };
 
-    const handleBack = () => {
-        router.push("/dashboard/pengecekanassetmasuk");
-    }
-
     const allAssetsScanned = assets.length > 0 && assets.every((asset) => asset.scanned === asset.total);
 
-    const columns = [
-        { key: "assetNumber", label: "Asset Number", alwaysVisible: true, className:"text-[#202B51]"},
-        { key: "moveStatus", label: "Move Status", alwaysVisible: true },
-        {
-            key: "scanned",
-            label: "Scanned",
-            alwaysVisible: true,
-            render: (_: any, row: Record<string, any>) => {
-                const asset = row as AssetMoves;
-                return `${asset.scanned}/${asset.total}`;
-            },
-        },
-    ];
-
-    const actions = [
-        {
-            label: "Scan QR",
-            onClick: () => handleScanQR(),
-            className: "px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90",
-        },
-    ];
+    const handleBack = () => {
+        router.push("/dashboard/requestassetkeluar");
+    }
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
         <div className="w-full max-h-full px-8 py-24">
-            <Upper title="Accept Ticket Pengecekan Asset Masuk" />
+            <Upper title="Request Asset Outbound" />
             <div className="mt-5">
                 <h2 className="text-xl font-bold text-[#202B51]">{ticket?.ticketNumber}</h2>
                 <p><strong>ID:</strong> {ticket?.ticketNumber}</p>
             </div>
+
             <div className="mt-5">
                 <DataTable columns={columns} data={assets} actions={actions} />
             </div>
+
             <div className="mt-5 flex justify-between">
                 <div>
                     <button className="bg-[#202B51] px-4 py-2 text-white rounded-md hover:bg-opacity-90" onClick={handleBack}>
                         &lt; Back
                     </button>
                 </div>
+                
                 <div className="space-x-4">
-                    {assets.some((asset) => asset.scanned > 0) && (
+                    {allAssetsScanned && (
                         <button
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                            onClick={handleSubmit}
-                            disabled={isSubmitting}
+                            className="px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90"
+                            onClick={() => setIsAccepting(true)}
                         >
-                            Submit Ticket
+                            Deliver Ticket
                         </button>
                     )}
                     <button
                         className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                         onClick={() => setIsRejecting(true)}
                     >
-                        Reject Ticket
+                        Cancel Ticket
                     </button>
                     {isAccepting && (
                         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 z-10">
@@ -298,7 +272,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                                     </button>
                                     <button
                                         className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                                        onClick={handleSubmit}
+                                        onClick={handleAccept}
                                     >
                                         Confirm
                                     </button>
@@ -345,7 +319,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                                     </button>
                                     <button
                                         className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                                        onClick={handleReject}
+                                        onClick={handleCancel}
                                     >
                                         I am sure to decline this ticket
                                     </button>
@@ -385,6 +359,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                     </div>
                 </div>
             )}
+
             {showConfirmationModal && (
                 <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-10">
                     <div className="bg-white p-6 rounded-md shadow-lg w-[30rem] text-center">
@@ -396,7 +371,7 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
                                 className="px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90"
                                 onClick={() => {
                                     setShowConfirmationModal(false);
-                                    router.push("/dashboard/pengecekanassetmasuk");
+                                    router.push("/dashboard/requestoutbound");
                                 }}
                             >
                                 OK
@@ -409,4 +384,4 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
     );
 };
 
-export default DetailAcceptTicketPengecekanAssetMasuk;
+export default DetailRequestOutboundDelivery;
