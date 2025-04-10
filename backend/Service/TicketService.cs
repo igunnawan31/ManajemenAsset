@@ -15,10 +15,12 @@ namespace qrmanagement.backend.Services{
         private readonly IAssetMoveRepository _moveRepo;
         private readonly ITicketRepository _ticketRepo;
 
-        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository){
+        private readonly ILogger<TicketService> _logger;
+        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository, ILogger<TicketService> logger){
             _moveRepo = moveRepository;
             _context = context;
             _ticketRepo = ticketRepository;
+            _logger = logger;
         }
 
         public async Task<string> GenerateTicketNumberAsync(DateOnly dateRequested){
@@ -41,6 +43,7 @@ namespace qrmanagement.backend.Services{
                 string status;
                 foreach (var asset in assetNumbers)
                 {
+                    _logger.LogInformation("AN woy: "+asset);
                     status = await _moveRepo.GetAssetLastStatus(asset);
                     if(status == "Missing" || status == "Moving" || status == "Waiting" || status == "Pending"){
                         return false;
@@ -86,12 +89,16 @@ namespace qrmanagement.backend.Services{
             {
                 if (ticket.status == "Completed")
                 {
+                    foreach (var item in assetmovelist)
+                    {
+                        _logger.LogDebug("ID = \n"+item.id.ToString());
+                        _logger.LogDebug("Status = \n"+item.moveStatus);
+                    }
                     var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
                         assetMoveId = assetmove.id,
                         status = assetmove.moveStatus == "Arrived" ? assetmove.moveStatus: "Missing"
                     }).ToList();
-
                     await _moveRepo.UpdateAssetMoveStatuses(list);
                 }
                 else

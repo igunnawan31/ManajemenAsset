@@ -259,8 +259,16 @@ namespace qrmanagement.backend.Repositories{
                         command.Parameters.AddWithValue("@assetNumber", assetNumber);
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            asset = reader.GetString(0);
-                            _logger.LogDebug($"Asset status retrieved: {asset}");
+                            if (await reader.ReadAsync())
+                            {
+                                asset = reader.GetString(0);
+                                _logger.LogDebug($"Asset status retrieved: {asset}");
+                            }
+                            else
+                            {
+                                _logger.LogWarning($"No asset move status found for asset number: {assetNumber}");
+                                throw new Exception($"No move status found for asset number: {assetNumber}");
+                            }
                         }
                     }
                 }
