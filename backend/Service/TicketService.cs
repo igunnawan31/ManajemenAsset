@@ -96,7 +96,7 @@ namespace qrmanagement.backend.Services{
                         _logger.LogDebug("ID = \n"+item.id.ToString());
                         _logger.LogDebug("Status = \n"+item.moveStatus);
                     }
-                   var ticketData = await _ticketRepo.GetTicketById(ticket.ticketNumber);
+                    var ticketData = await _ticketRepo.GetTicketById(ticket.ticketNumber);
                     var newLocation = assetmovelist.Select(asset => new UpdateAssetDTO {
                         id = asset.assetNumber,
                         locationId = ticketData.branchDestination

@@ -390,6 +390,7 @@ namespace qrmanagement.backend.Repositories{
                             using (var assetCommand = new SqlCommand(updateQuery, connection, transaction)){
                                 foreach (var asset in assets)
                                 {
+                                    assetCommand.Parameters.Clear();
                                     assetCommand.Parameters.AddWithValue("@id", asset.id);
                                     assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
 
