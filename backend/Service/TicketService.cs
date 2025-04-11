@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using qrmanagement.backend.Context;
+using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.DTO.AssetMove;
 using qrmanagement.backend.DTO.Ticket;
 using qrmanagement.backend.Models;
@@ -14,12 +15,13 @@ namespace qrmanagement.backend.Services{
         private readonly AppDBContext _context;
         private readonly IAssetMoveRepository _moveRepo;
         private readonly ITicketRepository _ticketRepo;
-
+        private readonly IAssetRepository _assetRepo;
         private readonly ILogger<TicketService> _logger;
-        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository, ILogger<TicketService> logger){
+        public TicketService(AppDBContext context, IAssetMoveRepository moveRepository, ITicketRepository ticketRepository, IAssetRepository assetRepository, ILogger<TicketService> logger){
             _moveRepo = moveRepository;
             _context = context;
             _ticketRepo = ticketRepository;
+            _assetRepo = assetRepository;
             _logger = logger;
         }
 
@@ -94,6 +96,13 @@ namespace qrmanagement.backend.Services{
                         _logger.LogDebug("ID = \n"+item.id.ToString());
                         _logger.LogDebug("Status = \n"+item.moveStatus);
                     }
+                   var ticketData = await _ticketRepo.GetTicketById(ticket.ticketNumber);
+                    var newLocation = assetmovelist.Select(asset => new UpdateAssetDTO {
+                        id = asset.assetNumber,
+                        locationId = ticketData.branchDestination
+                    }).ToList();
+
+                    await _assetRepo.UpdateLocations(newLocation);
                     var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
                         assetMoveId = assetmove.id,

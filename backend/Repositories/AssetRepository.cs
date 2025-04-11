@@ -367,6 +367,63 @@ namespace qrmanagement.backend.Repositories{
             }    
         }
 
+        public async Task<int> UpdateLocations(IEnumerable<UpdateAssetDTO> assets){
+            _logger.LogDebug("Updating asset data");
+
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        try{
+                                string updateQuery = @"
+                                UPDATE 
+                                    Assets
+                                SET
+                                    locationId = @locationId
+                                WHERE
+                                    id = @id
+                            ";
+
+                            using (var assetCommand = new SqlCommand(updateQuery, connection, transaction)){
+                                foreach (var asset in assets)
+                                {
+                                    assetCommand.Parameters.AddWithValue("@id", asset.id);
+                                    assetCommand.Parameters.AddWithValue("@locationId", asset.locationId);
+
+                                    rowsAffected += await assetCommand.ExecuteNonQueryAsync();
+                                }
+                            }
+
+                            _logger.LogDebug("Successfuly updated asset");
+                            transaction.Commit();
+                        }
+                        catch (Exception ex){
+                            transaction.Rollback();
+                            _logger.LogError(ex, "An error occurred while updating asset. Rollback.");
+                            throw;
+                        }
+                    }
+                }     
+
+                _logger.LogDebug("Asset successfully updated");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while updating asset");    
+            }
+            catch (Exception ex){
+                _logger.LogError(ex, "An error occurred while updating asset.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }
+        }
+        
         public async Task<int> DeleteAsset(string id){
             _logger.LogDebug("Deleting asset from the database");
 
