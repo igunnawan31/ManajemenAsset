@@ -97,7 +97,6 @@ const DetailRequestAssetMasuk = () => {
                 setIsRejectModalOpen(false);
                 setConfirmationMessage("Ticket has been rejected.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/requestassetmasuk");
             } catch (err) {
                 setConfirmationMessage("Error rejecting ticket. Please try again.");
                 setShowConfirmationModal(true);
@@ -131,7 +130,6 @@ const DetailRequestAssetMasuk = () => {
                 setIsAcceptModalOpen(false);
                 setConfirmationMessage("Ticket has been approved.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/requestassetmasuk");
             } catch (err) {
                 setConfirmationMessage("Error approving ticket. Please try again.");
                 setShowConfirmationModal(true);
@@ -265,15 +263,12 @@ const DetailRequestAssetMasuk = () => {
                     <div className="bg-white p-6 rounded-md shadow-lg w-[30rem] text-center">
                         <h2 className="text-lg font-bold mb-4 text-[#202B51]">Confirmation</h2>
                         <p className="text-gray-700">{confirmationMessage}</p>
-                        <div className="mt-4">
+                        <div className="mt-4 flex justify-center gap-4">
                             <button
                                 className="px-4 py-2 bg-[#202B51] text-white rounded-md hover:bg-opacity-90"
-                                onClick={() => {
-                                    setShowConfirmationModal(false);
-                                    router.push("/dashboard/requestassetmasuk");
-                                }}
+                                onClick={() => router.push("/dashboard/requestassetmasuk")}
                             >
-                                OK
+                                Back to List
                             </button>
                         </div>
                     </div>

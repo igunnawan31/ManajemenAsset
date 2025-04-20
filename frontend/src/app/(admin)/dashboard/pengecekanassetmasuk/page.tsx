@@ -51,6 +51,15 @@ const PengecekanAssetMasukPage = () => {
     const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
 
+    const [currentPageNotDelivery, setCurrentPageNotDelivery] = useState<number>(1);
+    const [currentPageOnGoing, setCurrentPageOnGoing] = useState<number>(1);
+    const [currentPageAccept, setCurrentPageAccept] = useState<number>(1);
+    const paginateData = (data: Ticket[], page: number): Ticket[] => {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return data.slice(start, end);
+    };
+
     const columns = [
         { key: "ticketNumber", label: "ticketNumber", alwaysVisible: true },
         { key: "branchOrigin", label: "Branch Origin", alwaysVisible: true },
@@ -125,27 +134,33 @@ const PengecekanAssetMasukPage = () => {
     }, []);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then((data: Ticket[]) => {
-                setTickets(data);
-                setNotStarted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.branchDestination === users?.userBranch));
-                setInProgress(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.branchDestination === users?.userBranch));
-                setCompleted(data.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.branchDestination === users?.userBranch));
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setError('Failed to fetch data. Please try again later.');
-                setLoading(false);
-            });
+        if (userBranch) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+                .then((response) => {
+                    if (!response.ok) {
+                        return response.text().then((text) => {
+                            throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then((data: Ticket[]) => {
+                    const filteredData = data.filter(ticket => 
+                        ticket.branchDestination === userBranch
+                    );
+
+                    setTickets(filteredData);
+                    setNotStarted(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started" && ticket.branchDestination === users?.userBranch));
+                    setInProgress(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "In_Progress" && ticket.branchDestination === users?.userBranch));
+                    setCompleted(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Completed" && ticket.branchDestination === users?.userBranch));
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                    setError('Failed to fetch data. Please try again later.');
+                    setLoading(false);
+                });
+        }
     }, [userBranch]);
 
     useEffect(() => {
@@ -210,20 +225,53 @@ const PengecekanAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {notStarted.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={notStarted}
-                                    actions={[
-                                        {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
-                            ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
-                            )}
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(filteredTickets.length > 0 ? filteredTickets : notStarted, currentPageNotDelivery)}
+                                        actions={[
+                                            {
+                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageNotDelivery === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageNotDelivery - 1)}
+                                            disabled={currentPageNotDelivery === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="flex justify-center space-x-2">
+                                            {Array.from({ length: Math.ceil(notStarted.length / itemsPerPage) }, (_, index) => (
+                                                <button
+                                                    key={index + 1}
+                                                    onClick={() => setCurrentPageNotDelivery(index + 1)}
+                                                    className={`px-4 py-2 mx-1 rounded ${currentPageNotDelivery === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageNotDelivery === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageNotDelivery + 1)}
+                                            disabled={currentPageNotDelivery === totalPages}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                    </>
+                                ) : (
+                                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                )}
                         </div>
                     </div>
                 )}
@@ -233,17 +281,50 @@ const PengecekanAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {inProgress.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={inProgress}
-                                    actions={[
-                                        {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/accepttiket/${row.ticketNumber}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(inProgress, currentPageOnGoing)}
+                                        actions={[
+                                            {
+                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                href: (row) => `/dashboard/pengecekanassetmasuk/accepttiket/${row.ticketNumber}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageOnGoing === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageOnGoing - 1)}
+                                            disabled={currentPageOnGoing === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="flex justify-center space-x-2">
+                                            {Array.from({ length: Math.ceil(inProgress.length / itemsPerPage) }, (_, index) => (
+                                                <button
+                                                    key={index + 1}
+                                                    onClick={() => setCurrentPageOnGoing(index + 1)}
+                                                    className={`px-4 py-2 mx-1 rounded ${currentPageOnGoing === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageOnGoing === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageOnGoing + 1)}
+                                            disabled={currentPageOnGoing === totalPages}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                             )}
@@ -256,17 +337,50 @@ const PengecekanAssetMasukPage = () => {
                         <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
                         <div className="mt-5">
                             {completed.length > 0 ? (
-                                <DataTable
-                                    columns={columns}
-                                    data={completed}
-                                    actions={[
-                                        {
-                                            label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
-                                            className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
-                                        },
-                                    ]}
-                                />
+                                <>
+                                    <DataTable
+                                        columns={columns}
+                                        data={paginateData(completed, currentPageAccept)}
+                                        actions={[
+                                            {
+                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                                className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
+                                            },
+                                        ]}
+                                    />
+                                    <div className="mt-5 flex justify-center items-center">
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageAccept === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageAccept - 1)}
+                                            disabled={currentPageAccept === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="flex justify-center space-x-2">
+                                            {Array.from({ length: Math.ceil(completed.length / itemsPerPage) }, (_, index) => (
+                                                <button
+                                                    key={index + 1}
+                                                    onClick={() => setCurrentPageAccept(index + 1)}
+                                                    className={`px-4 py-2 mx-1 rounded ${currentPageAccept === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageAccept === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChange(currentPageAccept + 1)}
+                                            disabled={currentPageAccept === totalPages}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                             )}

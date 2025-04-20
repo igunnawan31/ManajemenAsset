@@ -263,7 +263,7 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageTiket === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageTiket === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
                                         onClick={() => handlePageChange(currentPageTiket + 1)}
                                         disabled={currentPageTiket === totalPages}
@@ -319,7 +319,7 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageReject === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageReject === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
                                         onClick={() => handlePageChange(currentPageReject + 1)}
                                         disabled={currentPageReject === totalPages}
@@ -375,7 +375,7 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageAccept === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageAccept === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
                                         onClick={() => handlePageChange(currentPageAccept + 1)}
                                         disabled={currentPageAccept === totalPages}
