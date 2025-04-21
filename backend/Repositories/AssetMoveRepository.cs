@@ -287,7 +287,7 @@ namespace qrmanagement.backend.Repositories{
         }
 
 
-        public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber){
+        public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber, string ticketType){
             _logger.LogDebug("Adding assetMove to the database.");
 
             int rowsAffected=0;
@@ -308,7 +308,7 @@ namespace qrmanagement.backend.Repositories{
                                 using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
                                     assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
-                                    assetMoveCommand.Parameters.AddWithValue("@moveStatus", AssetMoveStatus.Draft.ToString());
+                                    assetMoveCommand.Parameters.AddWithValue("@moveStatus", ticketType);
                                     assetMoveCommand.Parameters.AddWithValue("createdOn", DateTime.Now);
 
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();

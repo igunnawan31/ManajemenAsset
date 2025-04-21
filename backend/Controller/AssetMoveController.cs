@@ -54,14 +54,14 @@ namespace qrmanagement.backend.Controllers{
             return Ok(moves);
         }
 
-        [HttpPost("create")]
-        public async Task <IActionResult> AddAssetMove ([FromBody] IEnumerable<string> assetNumbers, [FromQuery] string ticketNumber){
-            int row = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber);
-            if(row == 0){
-                return BadRequest("Failed while creating assetmove");
-            }
-            return Ok(new {statusCode = 200, message = "Assetmove Created Successfully"});        
-        }
+        // [HttpPost("create")]
+        // public async Task <IActionResult> AddAssetMove ([FromBody] IEnumerable<string> assetNumbers, [FromQuery] string ticketNumber){
+        //     int row = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber);
+        //     if(row == 0){
+        //         return BadRequest("Failed while creating assetmove");
+        //     }
+        //     return Ok(new {statusCode = 200, message = "Assetmove Created Successfully"});        
+        // }
 
         [HttpPut("bulk-update")]
         public async Task <IActionResult> UpdateAssetMoveStatuses ([FromBody] IEnumerable<UpdateAssetMoveStatusDTO> assets){
