@@ -12,5 +12,6 @@ namespace qrmanagement.backend.Repositories{
         Task <int> UpdateTicketMoveStatus(UpdateTicketStatusDTO ticket);
         Task <int> UpdateTicketApprovalStatus(UpdateTicketStatusDTO ticket);
         Task <int> DeleteTicket(string id);
+        Task <int> Delete(string id);
     }
 }

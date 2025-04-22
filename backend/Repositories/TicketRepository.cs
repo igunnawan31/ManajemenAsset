@@ -727,5 +727,59 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal Server Error");
             } 
         }
+
+        public async Task <int> Delete(string id){
+            _logger.LogDebug("Deleting ticket from the database");
+
+            int rowsAffected = 0;
+            try
+            {
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = await connection.BeginTransactionAsync()){ 
+                        try
+                        {
+                            string deleteTicketQuery = @"
+                                DELETE FROM
+                                    Tickets
+                                WHERE
+                                    ticketNumber = @id
+                            ";
+
+
+                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
+                                ticketCommand.Parameters.AddWithValue("@id", id);
+
+                                rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
+                            }
+                            _logger.LogDebug("Successfuly deleted Ticket");
+                            transaction.Commit();    
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
+                        }
+                    }
+                }
+
+                _logger.LogDebug("Ticket successfully deleted.");
+                return rowsAffected;          
+            }
+            catch (SqlException sqlEx){
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while deleting ticket");    
+            }
+            catch (Exception ex){
+                _logger.LogError(ex, "An error occurred while deleting ticket.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            } 
+        }
     }
 }

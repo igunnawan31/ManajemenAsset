@@ -36,28 +36,38 @@ namespace qrmanagement.backend.Services{
             return $"TN-{ticketNumPart}-{datePart}";
         }
 
-        public async Task<bool> CreateTicketWithAssetsAsync(CreateTicketDTO ticket, string ticketNumber, IEnumerable<string> assetNumbers)
+        public async Task<(bool isSuccess, string? errorMessage)> CreateTicketWithAssetsAsync(CreateTicketDTO ticket, string ticketNumber, IEnumerable<string> assetNumbers)
         {
-            int rowsAffectedTicket = await _ticketRepo.AddTicket(ticket, ticketNumber);
-            if (rowsAffectedTicket == 0) return false;
-
-            int rowsAffectedMove;
-            string status;
-            foreach (var asset in assetNumbers)
+            try
             {
-                _logger.LogInformation("AN woy: "+asset);
-                status = await _moveRepo.GetAssetLastStatus(asset);
-                if(status == "Missing" || status == "Moving" || status == "Waiting" || status == "Pending"){
-                    await _ticketRepo.DeleteTicket(ticketNumber);
-                    return false;
+                int rowsAffectedTicket = await _ticketRepo.AddTicket(ticket, ticketNumber);
+                if (rowsAffectedTicket == 0) return (false, "Failed to add ticket to database.");
+
+                foreach (var asset in assetNumbers)
+                {
+                    var status = await _moveRepo.GetAssetLastStatus(asset);
+                    if(status == "Missing" || status == "Moving" || status == "Waiting" || status == "Pending"){
+                        await _ticketRepo.Delete(ticketNumber);
+                        return (false, $"Asset {asset} has invalid status: {status}");
+                    }
                 }
+
+                int rowsAffectedMove = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber, ticket.approvalStatus);
+                if (rowsAffectedMove == 0)
+                {
+                    await _ticketRepo.Delete(ticketNumber);
+                    return (false, "Failed to assign assets to the ticket.");
+                }
+
+                return (true, null);
             }
-            rowsAffectedMove = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber, ticket.approvalStatus);
-            if (rowsAffectedMove == 0) {
-                await _ticketRepo.DeleteTicket(ticketNumber);
-                return false;
-            }return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in CreateTicketWithAssetsAsync");
+                return (false, ex.Message);
+            }
         }
+
 
         public async Task<bool> TicketApproval(UpdateTicketStatusDTO ticket)
         {

@@ -86,9 +86,9 @@ namespace qrmanagement.backend.Controllers{
         [HttpPost("create")]
         public async Task<ActionResult> CreateTicket ([FromBody] CreateTicketDTO ticketDTO){
             var ticketNumber = await _ticketService.GenerateTicketNumberAsync(ticketDTO.dateRequested);
-            bool success = await _ticketService.CreateTicketWithAssetsAsync(ticketDTO, ticketNumber, ticketDTO.assetNumbers);
+            var (success, errorMessage) = await _ticketService.CreateTicketWithAssetsAsync(ticketDTO, ticketNumber, ticketDTO.assetNumbers);
             if(!success){
-                return BadRequest("Failed while creating ticket");
+                return BadRequest(new { statusCode = 400, message = errorMessage ?? "Failed to create ticket." });
             }
             return Ok(new {statusCode = 200, message = "Ticket Created Successfully"});
         }
