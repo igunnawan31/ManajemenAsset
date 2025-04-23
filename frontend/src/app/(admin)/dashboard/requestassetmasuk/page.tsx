@@ -52,6 +52,10 @@ const RequestAssetMasukPage = () => {
     const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
 
+    const [filteredTiketMasuk, setFilteredTiketMasuk] = useState<Ticket[]>(tiketMasuk);
+    const [filteredDitolak, setFilteredDitolak] = useState<Ticket[]>(ditolak);
+    const [filteredDiterima, setFilteredDiterima] = useState<Ticket[]>(diterima);
+
     const [currentPageTiket, setCurrentPageTiket] = useState<number>(1);
     const [currentPageReject, setCurrentPageReject] = useState<number>(1);
     const [currentPageAccept, setCurrentPageAccept] = useState<number>(1);
@@ -135,59 +139,64 @@ const RequestAssetMasukPage = () => {
     }, []);
 
     useEffect(() => {
-            if (userBranch) {
-                console.log("branch user", userBranch);
-                fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
-                .then((response) => {
-                    if (!response.ok) {
-                        return response.text().then((text) => {
-                            throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then((data: Ticket[]) => {
-                    const filteredData = data.filter(ticket => 
-                        ticket.branchDestination === userBranch
-                    );
-    
-                    console.log("Fetched data:", filteredData);
-                    setTickets(filteredData);
-                    setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
-                    setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
-                    setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                    setError('Failed to fetch data. Please try again later.');
-                    setLoading(false);
-                });
+        if (userBranch) {
+            console.log("branch user", userBranch);
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then((data: Ticket[]) => {
+                const filteredData = data.filter(ticket => 
+                    ticket.branchDestination === userBranch
+                );
+
+                console.log("Fetched data:", filteredData);
+                setTickets(filteredData);
+                setTiketMasuk(filteredData.filter(ticket => ticket.approvalStatus === "Pending" && ticket.moveStatus === "Not_Started" && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setDitolak(filteredData.filter(ticket => ticket.approvalStatus === "Rejected" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setDiterima(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.moveStatus === "Not_Started"  && ticket.receivedBy == users?.userBranch && ticket.branchDestination === users?.userBranch));
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setError('Failed to fetch data. Please try again later.');
+                setLoading(false);
+            });
             }
         }, [userBranch]);
 
-    useEffect(() => {
-        let filtered = tickets;
-    
-        if (searchQuery.trim()) {
-            filtered = filtered.filter((ticket) =>
-                ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                ticket.branchOrigin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                ticket.branchDestination.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                ticket.approvalStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
-    
-        Object.keys(selectedFilters).forEach((filterType) => {
-            const filterValue = selectedFilters[filterType];
-            if (filterValue) {
-                filtered = filtered.filter((user) => (user as any)[filterType] === filterValue);
+        useEffect(() => {
+            const filterTickets = (tickets: Ticket[]) => {
+            let filtered = [...tickets];
+            
+            if (searchQuery.trim()) {
+                filtered = filtered.filter((ticket) =>
+                    ticket.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    ticket.approvalStatus.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    ticket.moveStatus.toLowerCase().includes(searchQuery.toLowerCase())
+                );
             }
-        });
-    
-        setFilteredTickets(filtered);
-    }, [searchQuery, selectedFilters, tickets]);
+        
+            Object.keys(selectedFilters).forEach((filterType) => {
+                const filterValue = selectedFilters[filterType];
+                if (filterValue) {
+                    filtered = filtered.filter((ticket) => (ticket as any)[filterType] === filterValue);
+                }
+            });
+        
+            return filtered;
+            };
+        
+            setFilteredTiketMasuk(filterTickets(tiketMasuk));
+            setFilteredDitolak(filterTickets(ditolak));
+            setFilteredDiterima(filterTickets(diterima));
+            
+        }, [searchQuery, selectedFilters, tiketMasuk, ditolak, diterima]);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -202,10 +211,21 @@ const RequestAssetMasukPage = () => {
     const currentTickets = filteredTickets.slice(indexOfFirstItem, indexOfLastItem);
   
     const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
-  
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+    const totalPagesTiketMasuk = Math.ceil(tiketMasuk.length / itemsPerPage);
+    const totalPagesDitolak = Math.ceil(ditolak.length / itemsPerPage);
+    const totalPagesDiterima = Math.ceil(diterima.length / itemsPerPage);
+    
+    const handlePageChangeTiketMasuk = (page: number) => {
+        setCurrentPageTiket(page);
     };
+
+    const handlePageChangeReject = (page: number) => {
+        setCurrentPageReject(page);
+    }
+
+    const handlePageChangeAccept = (page: number) => {
+        setCurrentPageAccept(page);
+    }
 
     return (
         <div className="w-full max-h-full px-8 py-24">
@@ -225,13 +245,13 @@ const RequestAssetMasukPage = () => {
 
                 {activeTab === "tiketmasuk" && (
                     <div className="mt-5">
-                        <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                        <Search placeholder="Cari Ticket Number / Branch Origin / Branch Destination / Approval Status / ..." onSearch={handleSearch} />
                         <div className="mt-5">
-                            {tiketMasuk.length > 0 ? (
+                            {filteredTiketMasuk.length > 0 ? (
                                 <>
                                     <DataTable
                                         columns={columns}
-                                        data={paginateData(tiketMasuk, currentPageTiket)}
+                                        data={paginateData(filteredTiketMasuk, currentPageTiket)}
                                         actions={[
                                             {
                                                 label: <IoArrowForwardCircle className="text-[#202B51] text-2xl" />,
@@ -241,39 +261,43 @@ const RequestAssetMasukPage = () => {
                                         ]}
                                     />
                                     <div className="mt-5 flex justify-center items-center">
-                                    <button
-                                        className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageTiket === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
-                                        }`}
-                                        onClick={() => handlePageChange(currentPageTiket - 1)}
-                                        disabled={currentPageTiket === 1}
-                                    >
-                                        Previous
-                                    </button>
-                                    <div className="flex justify-center space-x-2">
-                                        {Array.from({ length: Math.ceil(tiketMasuk.length / itemsPerPage) }, (_, index) => (
-                                            <button
-                                                key={index + 1}
-                                                onClick={() => setCurrentPageTiket(index + 1)}
-                                                className={`px-4 py-2 mx-1 rounded ${currentPageTiket === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
-                                            >
-                                                {index + 1}
-                                            </button>
-                                        ))}
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageTiket === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChangeTiketMasuk(currentPageTiket - 1)}
+                                            disabled={currentPageTiket === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="flex justify-center space-x-2">
+                                            {Array.from({ length: Math.ceil(tiketMasuk.length / itemsPerPage) }, (_, index) => (
+                                                <button
+                                                    key={index + 1}
+                                                    onClick={() => setCurrentPageTiket(index + 1)}
+                                                    className={`px-4 py-2 mx-1 rounded ${currentPageTiket === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 text-black"}`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button
+                                            className={`px-4 py-2 mx-1 rounded ${
+                                                currentPageTiket === totalPagesTiketMasuk ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            }`}
+                                            onClick={() => handlePageChangeTiketMasuk(currentPageTiket + 1)}
+                                            disabled={currentPageTiket === totalPagesTiketMasuk}
+                                        >
+                                            Next
+                                        </button>
                                     </div>
-                                    <button
-                                        className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageTiket === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
-                                        }`}
-                                        onClick={() => handlePageChange(currentPageTiket + 1)}
-                                        disabled={currentPageTiket === totalPages}
-                                    >
-                                        Next
-                                    </button>
-                                </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                    {searchQuery || Object.keys(selectedFilters).length > 0 
+                                    ? "No available data at this moment" 
+                                    : "No data available"}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -281,13 +305,16 @@ const RequestAssetMasukPage = () => {
 
                 {activeTab === "ditolak" && (
                     <div className="mt-5">
-                        <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                        <Search placeholder="Cari Ticket Number / Branch Origin / Branch Destination / Approval Status / ..." onSearch={handleSearch} />
                         <div className="mt-5">
-                            {ditolak.length > 0 ? (
+                            {filteredDitolak.length > 0 ? (
                                 <>
                                     <DataTable
                                         columns={columns}
-                                        data={paginateData(ditolak, currentPageReject)}
+                                        data={paginateData(
+                                            filteredDitolak.length > 0 ? filteredDitolak : ditolak, 
+                                            currentPageReject
+                                        )}
                                         actions={[
                                             {
                                                 label: <IoEyeSharp className="text-[#202B51]" />,
@@ -299,9 +326,9 @@ const RequestAssetMasukPage = () => {
                                     <div className="mt-5 flex justify-center items-center">
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageReject === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageReject === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageReject - 1)}
+                                        onClick={() => handlePageChangeReject(currentPageReject - 1)}
                                         disabled={currentPageReject === 1}
                                     >
                                         Previous
@@ -319,17 +346,21 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageReject === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            currentPageReject === totalPagesDitolak ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageReject + 1)}
-                                        disabled={currentPageReject === totalPages}
+                                        onClick={() => handlePageChangeReject(currentPageReject + 1)}
+                                        disabled={currentPageReject === totalPagesDitolak}
                                     >
                                         Next
                                     </button>
                                 </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                    {searchQuery || Object.keys(selectedFilters).length > 0 
+                                    ? "No available data at this moment" 
+                                    : "No data available"}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -337,13 +368,16 @@ const RequestAssetMasukPage = () => {
 
                 {activeTab === "diterima" && (
                     <div className="mt-5">
-                        <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />
+                        <Search placeholder="Cari Ticket Number / Branch Origin / Branch Asset / Approval Status / ..." onSearch={handleSearch} />
                         <div className="mt-5">
-                            {diterima.length > 0 ? (
+                            {filteredDiterima.length > 0 ? (
                                 <>
                                     <DataTable
                                         columns={columns}
-                                        data={paginateData(diterima, currentPageAccept)}
+                                        data={paginateData(
+                                            filteredDiterima.length > 0 ? filteredDiterima : diterima, 
+                                            currentPageAccept
+                                        )}
                                         actions={[
                                             {
                                                 label: <IoEyeSharp className="text-[#202B51]" />,
@@ -355,9 +389,9 @@ const RequestAssetMasukPage = () => {
                                     <div className="mt-5 flex justify-center items-center">
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageAccept === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageAccept === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageAccept - 1)}
+                                        onClick={() => handlePageChangeAccept(currentPageAccept - 1)}
                                         disabled={currentPageAccept === 1}
                                     >
                                         Previous
@@ -375,17 +409,21 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageAccept === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
+                                            currentPageAccept === totalPagesDiterima ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageAccept + 1)}
-                                        disabled={currentPageAccept === totalPages}
+                                        onClick={() => handlePageChangeAccept(currentPageAccept + 1)}
+                                        disabled={currentPageAccept === totalPagesDiterima}
                                     >
                                         Next
                                     </button>
                                 </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                    {searchQuery || Object.keys(selectedFilters).length > 0 
+                                    ? "No available data at this moment" 
+                                    : "No data available"}
+                                </div>
                             )}
                         </div>
                     </div>

@@ -204,10 +204,20 @@ const RequestOutboundPage = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentTickets = filteredTickets.slice(indexOfFirstItem, indexOfLastItem);
   
-    const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+    const totalPagesCreate = Math.ceil((filteredTickets.length > 0 ? filteredTickets.length : createRequest.length) / itemsPerPage);
+    const totalPagesDraft = Math.ceil(draft.length / itemsPerPage);
+    const totalPagesDelivery = Math.ceil(delivery.length / itemsPerPage);
   
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+    const handlePageChangeCreate = (page: number) => {
+        setCurrentPageCreate(page);
+    };
+    
+    const handlePageChangeDraft = (page: number) => {
+        setCurrentPageDraft(page);
+    };
+    
+    const handlePageChangeDelivery = (page: number) => {
+        setCurrentPageDelivery(page);
     };
 
     return (
@@ -253,9 +263,9 @@ const RequestOutboundPage = () => {
                                 <div className="mt-5 flex justify-center items-center">
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageCreate === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageCreate === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageCreate - 1)}
+                                        onClick={() => handlePageChangeCreate(currentPageCreate - 1)}
                                         disabled={currentPageCreate === 1}
                                     >
                                         Previous
@@ -273,10 +283,10 @@ const RequestOutboundPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageCreate === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageCreate === totalPagesCreate ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageCreate + 1)}
-                                        disabled={currentPageCreate === totalPages}
+                                        onClick={() => handlePageChangeCreate(currentPageCreate + 1)}
+                                        disabled={currentPageCreate === totalPagesCreate}
                                     >
                                         Next
                                     </button>
@@ -320,9 +330,9 @@ const RequestOutboundPage = () => {
                                 <div className="mt-5 flex justify-center items-center">
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageDraft === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageDraft === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageDraft - 1)}
+                                        onClick={() => handlePageChangeDraft(currentPageDraft - 1)}
                                         disabled={currentPageDraft === 1}
                                     >
                                         Previous
@@ -340,10 +350,10 @@ const RequestOutboundPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageDraft === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageDraft === totalPagesDraft ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageDraft + 1)}
-                                        disabled={currentPageDraft === totalPages}
+                                        onClick={() => handlePageChangeDraft(currentPageDraft + 1)}
+                                        disabled={currentPageDraft === totalPagesDraft}
                                     >
                                         Next
                                     </button>
@@ -377,7 +387,7 @@ const RequestOutboundPage = () => {
                                         className={`px-4 py-2 mx-1 rounded ${
                                             currentPageDelivery === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageDelivery - 1)}
+                                        onClick={() => handlePageChangeDelivery(currentPageDelivery - 1)}
                                         disabled={currentPageDelivery === 1}
                                     >
                                         Previous
@@ -395,10 +405,10 @@ const RequestOutboundPage = () => {
                                     </div>
                                     <button
                                         className={`px-4 py-2 mx-1 rounded ${
-                                            currentPageDelivery === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                            currentPageDelivery === totalPagesDelivery ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
                                         }`}
-                                        onClick={() => handlePageChange(currentPageDelivery + 1)}
-                                        disabled={currentPageDelivery === totalPages}
+                                        onClick={() => handlePageChangeDelivery(currentPageDelivery + 1)}
+                                        disabled={currentPageDelivery === totalPagesDelivery}
                                     >
                                         Next
                                     </button>
