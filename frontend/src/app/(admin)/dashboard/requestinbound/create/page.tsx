@@ -170,17 +170,17 @@ const CreateRequestInbound = () => {
                 body: JSON.stringify(payload),
             });
     
-            const result = await response.json();
+            const contentType = response.headers.get("content-type");
     
-            if (!response.ok) {
-                throw new Error(result.message || "Failed to create ticket");
+            let result;
+            if (contentType && contentType.includes("application/json")) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text);
             }
-            console.log("Response Status:", response.status);
-
-            console.log("Server Response:", result);
     
             if (!response.ok) {
-                console.error("Backend Error:", result.message || "Unknown error");
                 throw new Error(result.message || "Failed to create ticket");
             }
     
@@ -189,11 +189,6 @@ const CreateRequestInbound = () => {
             router.push("/dashboard/requestinbound");
         } catch (err: any) {
             console.error("Error submitting form:", err);
-            console.error("Error details:", {
-                message: err.message,
-                stack: err.stack,
-                response: err.response,
-            });
             setError(err.message || "An error occurred while creating the ticket.");
         }
     };

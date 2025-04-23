@@ -142,7 +142,7 @@ const UserManagement = () => {
                         <div className="mt-5 flex justify-center items-center">
                             <button
                                 className={`px-4 py-2 mx-1 rounded ${
-                                    currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                    currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                 }`}
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
@@ -153,7 +153,7 @@ const UserManagement = () => {
                                 <button
                                     key={index}
                                     className={`px-4 py-2 mx-1 rounded ${
-                                        currentPage === index + 1 ? "bg-blue-700 text-white" : "bg-gray-200 hover:bg-gray-400"
+                                        currentPage === index + 1 ? "bg-[#202B51] text-white" : "bg-gray-200 hover:bg-gray-400"
                                     }`}
                                     onClick={() => handlePageChange(index + 1)}
                                 >
@@ -162,7 +162,7 @@ const UserManagement = () => {
                             ))}
                             <button
                                 className={`px-4 py-2 mx-1 rounded ${
-                                    currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-700"
+                                    currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
                                 }`}
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}

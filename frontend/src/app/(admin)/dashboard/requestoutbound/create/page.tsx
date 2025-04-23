@@ -156,7 +156,7 @@ const CreateRequestOutboundPage = () => {
             approvalStatus: data.approvalStatus || "Pending",
             assetNumbers: data.assetNumbers || confirmedAssets.map(asset => asset.id),
             requestedBy: users?.userBranch,
-            receivedBy: data.branchDestination,
+            receivedBy: data.branchDestination ? parseInt(data.branchDestination, 10) : null,
         };
     
         console.log("Submitting Payload:", payload);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 // import { IoCaretForward } from "react-icons/io5";
 import { IoCaretForward, IoCaretDown, IoMenu, IoClose } from "react-icons/io5";
@@ -97,6 +97,42 @@ const menuInput = [
 const Menu = () => {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        closeMobileMenu();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "auto";
+    };
+  }, [isMobileMenuOpen]);
+
+  const handleMenuClick = (title: string) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleMenuItemClick = () => {
+    closeMobileMenu();
+  };
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -110,175 +146,170 @@ const Menu = () => {
     };
   }, [isMobileMenuOpen]);
 
-  const handleMenuClick = (title: string) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  };
-
   return (
     <div className="text-sm poppins">
       <div className="flex lg:hidden items-center mb-4 justify-center mr-2">
-        <button onClick={() => setIsMobileMenuOpen(true)} className="text-gray-500 focus:outline-none">
-          <IoMenu className="w-6 h-6" />
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          className="text-gray-500 focus:outline-none"
+        >
+          {isMobileMenuOpen ? <IoClose className="w-6 h-6" /> : <IoMenu className="w-6 h-6" />}
         </button>
       </div>
-
-      {isMobileMenuOpen && (
-        <div className="h-full w-1/2 absolute top-[4.5rem] pb-32 left-0 inset-20 bg-gray-800 z-50 flex flex-col p-6 lg:hidden overflow-y-auto">
-          <div className="flex bg-gray-800 p-6 flex-col">
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="absolute top-6 right-10 text-white focus:outline-none"
-            >
-              <IoClose className="w-8 h-8" />
-            </button>
-            <div className="flex flex-col gap-6 text-lg mt-10">
-              {menuDashboards.map((menu) => (
-                <div key={menu.title}>
-                  <div
-                    className="flex justify-between items-center cursor-pointer text-white font-bold"
-                    onClick={() => handleMenuClick(menu.title)}
-                  >
-                    <span>{menu.title}</span>
-                    <IoCaretForward
-                      className={`transition-transform duration-300 ${
-                        openMenus[menu.title] ? "rotate-90" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                  {openMenus[menu.title] && (
-                    <div className="ml-4 flex flex-col gap-2 mt-5">
-                      {menu.items.map((item) => (
-                        <Link
-                          href={item.href}
-                          key={item.label}
-                          className="text-white hover:bg-gray-700 p-2 rounded"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+      {/* Mobile Menu */}
+      <div
+        ref={mobileMenuRef}
+        className={`fixed top-[4.5rem] left-0 h-[calc(100vh-4.5rem)] w-3/4 bg-gray-800 z-50 flex flex-col p-6 lg:hidden overflow-y-auto transition-all duration-500 transform ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}>
+        <div className="flex flex-col gap-6 text-lg mt-4">
+          {menuDashboards.map((menu) => (
+            <div key={menu.title}>
+              <div
+                className="flex justify-between items-center cursor-pointer text-white font-bold"
+                onClick={() => handleMenuClick(menu.title)}
+              >
+                <span>{menu.title}</span>
+                <IoCaretForward
+                  className={`transition-transform duration-300 ${
+                    openMenus[menu.title] ? "rotate-90" : "rotate-0"
+                  }`}
+                />
+              </div>
+              {openMenus[menu.title] && (
+                <div className="ml-4 flex flex-col gap-2 mt-3">
+                  {menu.items.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="text-white hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+                      onClick={handleMenuItemClick}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
                 </div>
-              ))}
-              {menuInbound.map((menu) => (
-                <div key={menu.title}>
-                  <div
-                    className="flex justify-between items-center cursor-pointer text-white font-bold"
-                    onClick={() => handleMenuClick(menu.title)}
-                  >
-                    <span>{menu.title}</span>
-                    <IoCaretForward
-                      className={`transition-transform duration-300 ${
-                        openMenus[menu.title] ? "rotate-90" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                  {openMenus[menu.title] && (
-                    <div className="ml-4 flex flex-col gap-2 mt-5">
-                      {menu.items.map((item) => (
-                        <Link
-                          href={item.href}
-                          key={item.label}
-                          className="text-white hover:bg-gray-700 p-2 rounded"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {menuOutbound.map((menu) => (
-                <div key={menu.title}>
-                  <div
-                    className="flex justify-between items-center cursor-pointer text-white font-bold"
-                    onClick={() => handleMenuClick(menu.title)}
-                  >
-                    <span>{menu.title}</span>
-                    <IoCaretForward
-                      className={`transition-transform duration-300 ${
-                        openMenus[menu.title] ? "rotate-90" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                  {openMenus[menu.title] && (
-                    <div className="ml-4 flex flex-col gap-2 mt-5">
-                      {menu.items.map((item) => (
-                        <Link
-                          href={item.href}
-                          key={item.label}
-                          className="text-white hover:bg-gray-700 p-2 rounded"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {menuRequest.map((menu) => (
-                <div key={menu.title}>
-                  <div
-                    className="flex justify-between items-center cursor-pointer text-white font-bold"
-                    onClick={() => handleMenuClick(menu.title)}
-                  >
-                    <span>{menu.title}</span>
-                    <IoCaretForward
-                      className={`transition-transform duration-300 ${
-                        openMenus[menu.title] ? "rotate-90" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                  {openMenus[menu.title] && (
-                    <div className="ml-4 flex flex-col gap-2 mt-5">
-                      {menu.items.map((item) => (
-                        <Link
-                          href={item.href}
-                          key={item.label}
-                          className="text-white hover:bg-gray-700 p-2 rounded"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {menuInput.map((menu) => (
-                <div key={menu.title}>
-                  <div
-                    className="flex justify-between items-center cursor-pointer text-white font-bold"
-                    onClick={() => handleMenuClick(menu.title)}
-                  >
-                    <span>{menu.title}</span>
-                    <IoCaretForward
-                      className={`transition-transform duration-300 ${
-                        openMenus[menu.title] ? "rotate-90" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                  {openMenus[menu.title] && (
-                    <div className="ml-4 flex flex-col gap-2 mt-5">
-                      {menu.items.map((item) => (
-                        <Link
-                          href={item.href}
-                          key={item.label}
-                          className="text-white hover:bg-gray-700 p-2 rounded"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              )}
             </div>
-          </div>
+          ))}
+          {menuInbound.map((menu) => (
+            <div key={menu.title}>
+              <div
+                className="flex justify-between items-center cursor-pointer text-white font-bold"
+                onClick={() => handleMenuClick(menu.title)}
+              >
+                <span>{menu.title}</span>
+                <IoCaretForward
+                  className={`transition-transform duration-300 ${
+                    openMenus[menu.title] ? "rotate-90" : "rotate-0"
+                  }`}
+                />
+              </div>
+              {openMenus[menu.title] && (
+                <div className="ml-4 flex flex-col gap-2 mt-3">
+                  {menu.items.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="text-white hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+                      onClick={handleMenuItemClick}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {menuOutbound.map((menu) => (
+            <div key={menu.title}>
+              <div
+                className="flex justify-between items-center cursor-pointer text-white font-bold"
+                onClick={() => handleMenuClick(menu.title)}
+              >
+                <span>{menu.title}</span>
+                <IoCaretForward
+                  className={`transition-transform duration-300 ${
+                    openMenus[menu.title] ? "rotate-90" : "rotate-0"
+                  }`}
+                />
+              </div>
+              {openMenus[menu.title] && (
+                <div className="ml-4 flex flex-col gap-2 mt-5">
+                  {menu.items.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="text-white hover:bg-gray-700 p-2 rounded"
+                      onClick={handleMenuItemClick}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {menuRequest.map((menu) => (
+            <div key={menu.title}>
+              <div
+                className="flex justify-between items-center cursor-pointer text-white font-bold"
+                onClick={() => handleMenuClick(menu.title)}
+              >
+                <span>{menu.title}</span>
+                <IoCaretForward
+                  className={`transition-transform duration-300 ${
+                    openMenus[menu.title] ? "rotate-90" : "rotate-0"
+                  }`}
+                />
+              </div>
+              {openMenus[menu.title] && (
+                <div className="ml-4 flex flex-col gap-2 mt-5">
+                  {menu.items.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="text-white hover:bg-gray-700 p-2 rounded"
+                      onClick={handleMenuItemClick}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {menuInput.map((menu) => (
+            <div key={menu.title}>
+              <div
+                className="flex justify-between items-center cursor-pointer text-white font-bold"
+                onClick={() => handleMenuClick(menu.title)}
+              >
+                <span>{menu.title}</span>
+                <IoCaretForward
+                  className={`transition-transform duration-300 ${
+                    openMenus[menu.title] ? "rotate-90" : "rotate-0"
+                  }`}
+                />
+              </div>
+              {openMenus[menu.title] && (
+                <div className="ml-4 flex flex-col gap-2 mt-5">
+                  {menu.items.map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="text-white hover:bg-gray-700 p-2 rounded"
+                      onClick={handleMenuItemClick}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+      </div>
       
       <div className={`${isMobileMenuOpen ? "block" : "hidden"} lg:block bg-white lg:bg-transparent`}>
         {menuDashboards.map((menu) => (
