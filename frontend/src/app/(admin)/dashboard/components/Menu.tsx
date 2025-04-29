@@ -93,11 +93,70 @@ const menuInput = [
   },
 ];
 
+type UserResponseDTO = {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userBranch: string;
+  userPhone: string;
+  userRole: string;
+  userSubRole: string;
+};
+
+interface Branch {
+  branchId: string;
+  branchName: string;
+}
+
 
 const Menu = () => {
+  const [users, setUser] = useState<UserResponseDTO | null>(null);
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasParentId, setHasParentId] = useState<boolean | null>(null);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserAndBranchData = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          setError("No user ID found. Please log in.");
+          setLoading(false);
+          return;
+        }
+
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`);
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+        setUser(userData);
+
+        if (userData.userBranch) {
+          const branchResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/by-id/${userData.userBranch}`);
+          if (!branchResponse.ok) throw new Error("Failed to fetch branch data");
+          
+          const branchData = await branchResponse.json();
+          setHasParentId(branchData.parentId !== null && branchData.parentId !== undefined);
+        }
+
+        const branchesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/index`);
+        if (branchesResponse.ok) {
+          const branchesData = await branchesResponse.json();
+          setBranches(branchesData);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+        setHasParentId(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndBranchData();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -279,7 +338,7 @@ const Menu = () => {
               )}
             </div>
           ))}
-          {menuInput.map((menu) => (
+          {hasParentId === false && menuInput.map((menu) => (
             <div key={menu.title}>
               <div
                 className="flex justify-between items-center cursor-pointer text-white font-bold"
@@ -444,7 +503,7 @@ const Menu = () => {
           </div>
         ))}
 
-        {menuInput.map((menu) => (
+        {hasParentId === false && menuInput.map((menu) => (
           <div className="flex flex-col gap-2 bg-[#171F39]" key={menu.title}>
             <div
               className="flex justify-between items-center"

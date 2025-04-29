@@ -227,7 +227,7 @@ const RequestOutboundPage = () => {
                 <div className="flex justify-end items-end">
                     <Link href="/dashboard/requestoutbound/create">
                         <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
-                            <span className="text-white font-sans font-bold">Create New Request Outbound</span>
+                            <span className="text-white font-poppins font-bold">Create New Request Outbound</span>
                         </button>
                     </Link>
                 </div>

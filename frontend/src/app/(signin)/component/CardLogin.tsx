@@ -73,9 +73,9 @@ const CardLogin = () => {
             localStorage.setItem("userSubRole", data.subRole);
             localStorage.setItem("userId", data.userId);
     
-            console.log("Token:", data.token); // Debugging
-            console.log("SubRole:", data.subRole); // Debugging
-            console.log("UserId:", data.userId); // Debugging
+            console.log("Token:", data.token);
+            console.log("SubRole:", data.subRole);
+            console.log("UserId:", data.userId); 
     
             if (data.subRole === "Kepala_Gudang") {
                 console.log("Redirecting to /dashboard");

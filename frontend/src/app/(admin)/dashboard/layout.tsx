@@ -79,8 +79,13 @@ export default function AdminLayout({
               <div className="sticky top-0 bg-[#202B51] z-10 p-4">
                   <Link href="/dashboard" className="flex items-center justify-center gap-2 xl:justify-start">
                       <div className="flex items-center gap-2 justify-start">
-                          <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
-                              {/* <Image src={"/message.png"} alt="" width={10} height={10}></Image> */}
+                          <div className="bg-white opacity-40 p-1 hidden lg:block">
+                            <Image 
+                              src="/image002.png"
+                              width={80} 
+                              height={10} 
+                              alt="Astra International"
+                            />
                           </div>
                           <div className="font-sans">
                           <span className="hidden xl:block text-sm text-white font-bold">
@@ -99,7 +104,7 @@ export default function AdminLayout({
               </div>
           </div>
 
-          <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] h-screen overflow-y-auto">
+          <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[90%] bg-[#F7F8FA] h-screen overflow-y-auto">
               <NavbarAdmin />
               {children}
           </div>

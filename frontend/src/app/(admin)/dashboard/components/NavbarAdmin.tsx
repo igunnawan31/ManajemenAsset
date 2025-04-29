@@ -43,7 +43,15 @@ const NavbarAdmin = () => {
 
     return (
         <div className="bg-white shadow-sm fixed w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%]">
-            <div className="flex justify-end items-center p-4 bg-[#202B51]">
+            <div className="flex justify-between lg:justify-end items-center p-4 bg-[#202B51]">
+                <div className="bg-white opacity-40 p-1 lg:hidden block">
+                    <Image 
+                        src="/image002.png"
+                        width={80} 
+                        height={10} 
+                        alt="Astra International"
+                    />
+                </div>
                 <div className="flex items-center gap-4 pr-8">
                     <div className="relative cursor-pointer">
                         <IoNotifications size={32} className="text-white" />
@@ -58,7 +66,6 @@ const NavbarAdmin = () => {
                             <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
                                 <ul className="py-2 text-sm text-gray-700 poppins">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={goToProfile}>Profile</li>
-                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={logout}>Logout</li>
                                 </ul>
                             </div>
