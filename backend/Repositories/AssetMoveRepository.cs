@@ -266,6 +266,7 @@ namespace qrmanagement.backend.Repositories{
                             }
                             else
                             {
+                                _logger.LogDebug("No asset status found. Adding default status.");
                                 return "Arrived";
                             }
                         }
@@ -286,6 +287,56 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
+        public async Task<int> AddAssetMoveLog(string assetNumber){
+            _logger.LogDebug("Adding assetMoveLog to the database.");
+
+            int rowsAffected=0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = await connection.BeginTransactionAsync()){
+                        try{
+                            string insertAssetMove = @"
+                                INSERT INTO AssetMoves 
+                                    (ticketNumber, assetNumber, moveStatus, createdOn)
+                                VALUES
+                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn);
+                            ";
+                            using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
+                                assetMoveCommand.Parameters.AddWithValue("@ticketNumber", "DEFAULTSTATUS");
+                                assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
+                                assetMoveCommand.Parameters.AddWithValue("@moveStatus", "Arrived");
+                                assetMoveCommand.Parameters.AddWithValue("createdOn", DateTime.Now);
+
+                                rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
+                                
+                                _logger.LogDebug("Successfully added assetmove.");
+                            }
+                            await transaction.CommitAsync();
+                            return rowsAffected;
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            _logger.LogError(ex, "Transaction rolled back due to an error.");
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError($"An SQL error occurred: {sqlEx.Message}");
+                throw new Exception("An error occurred while creating assetmove");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating assetmove");
+                throw new Exception("Internal Server Error");
+            }
+        }
 
         public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber, string ticketType){
             _logger.LogDebug("Adding assetMove to the database.");

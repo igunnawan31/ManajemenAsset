@@ -47,6 +47,7 @@ builder.Services.AddScoped<IKecamatanRepository, KecamatanRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IAssetMoveRepository, AssetMoveRepository>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<JwtService>();
 
 builder.Logging.ClearProviders();

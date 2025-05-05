@@ -32,6 +32,8 @@ namespace qrmanagement.backend.Repositories{
                             kotaId
                         FROM 
                             Kecamatans
+                        WHERE
+                            kecamatanId != -1
                     ";
 
                     _logger.LogDebug("Executing query");

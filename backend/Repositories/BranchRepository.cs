@@ -39,6 +39,8 @@ namespace qrmanagement.backend.Repositories{
                             parentId
                         FROM 
                             Branches
+                        WHERE
+                            branchId != -1
                     ";
 
                     _logger.LogDebug("Executing query: {Query}", query);

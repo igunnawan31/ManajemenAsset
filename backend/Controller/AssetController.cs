@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using qrmanagement.backend.DTO.Asset;
+using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
+using qrmanagement.backend.Services;
+
 
 namespace qrmanagement.backend.Controllers{
     [Route("api/asset")]
     [ApiController]
     public class AssetController : ControllerBase{
         private readonly IAssetRepository _assetRepo;
+        private readonly AssetService _assetService;
         private readonly ILogger<AssetController> _logger;
-        public AssetController(IAssetRepository assetRepository, ILogger<AssetController> logger){
+        public AssetController(IAssetRepository assetRepository, ILogger<AssetController> logger, AssetService assetService){
+            _assetService = assetService;
             _assetRepo = assetRepository;
             _logger = logger;
         }
@@ -61,9 +66,9 @@ namespace qrmanagement.backend.Controllers{
 
         [HttpPost("create")]
         public async Task<IActionResult> AddAsset([FromForm] CreateAssetDTO asset){
-            int row = await _assetRepo.AddAsset(asset);
-            if(row == 0){
-                return BadRequest("Failed while creating asset");
+            var (success, errorMessage) = await _assetService.CreateAssetWithMovesAsync(asset);
+            if(!success){
+                return BadRequest(new {statusCode = 400, message = errorMessage});
             }
             return Ok(new {statusCode = 200, message = "Asset Created Successfully"});
         }

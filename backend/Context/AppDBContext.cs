@@ -25,6 +25,7 @@ namespace qrmanagement.backend.Context{
                     .HasForeignKey(a => a.kotaId);
                 
                 entity.HasData(
+                    new Kota{kotaId = -1, kotaName = "DEFAULT"},
                     new Kota{kotaId = 1, kotaName = "Jakarta Utara"},
                     new Kota{kotaId = 2, kotaName = "Jakarta Pusat"},
                     new Kota{kotaId = 101, kotaName = "Jakarta Selatan"},
@@ -43,6 +44,7 @@ namespace qrmanagement.backend.Context{
                     .HasForeignKey(a => a.kotaId);
 
                 entity.HasData(
+                    new Kecamatan{kecamatanId = -1, kecamatanName = "DEFAULT", kotaId=-1},
                     new Kecamatan{kecamatanId = 1, kecamatanName = "Tanjung Priok", kotaId=1},
                     new Kecamatan{kecamatanId = 2, kecamatanName = "Senen", kotaId=2}, 
                     new Kecamatan{kecamatanId = 201, kecamatanName = "Menteng", kotaId = 101},
@@ -77,6 +79,7 @@ namespace qrmanagement.backend.Context{
                     .OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasData(
+                    new Branch{branchId = -1, branchName = "DEFAULT", branchEmail = "DEFAULT", branchPhone = "DEFAULT", branchLocation = "DEFAULT", parentId = null, kecamatanId=-1, kotaId=-1},
                     new Branch{branchId = 1, branchName = "Astra International", branchEmail = "astraInternational@ai.astra.co.id", branchPhone = "1234567890123", branchLocation = "Jakarta Utara", parentId = null, kecamatanId=1, kotaId=1},
                     new Branch{branchId = 2, branchName = "Astragraphia Information Technology", branchEmail = "ag.it@ai.astra.co.id", branchPhone = "1234567890321", branchLocation = "Jakarta Pusat", parentId = 1, kecamatanId=2, kotaId=2},
                     new Branch{branchId = 3, branchName = "Branch Jakarta", branchEmail = "jakarta@company.com", branchPhone = "+62123456789", branchLocation = "Jl. Sudirman No. 1, Jakarta", parentId = 1, kecamatanId = 201, kotaId = 101 },
@@ -137,6 +140,7 @@ namespace qrmanagement.backend.Context{
                     .OnDelete(DeleteBehavior.NoAction); 
                 
                 entity.HasData(
+                    new Ticket{ticketNumber = "DEFAULTSTATUS", branchOrigin = -1, branchDestination = -1, requestedBy = -1, receivedBy = -1, dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = ticketMoveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)},
                     new Ticket{ticketNumber = "TN-001-070225", branchOrigin = 1, branchDestination = 2, requestedBy = 2, receivedBy = 1, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = ticketMoveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)},
                     new Ticket{ticketNumber = "TN-002-070225", branchOrigin = 2, branchDestination = 1, requestedBy = 1, receivedBy = 2, outboundDate = DateOnly.ParseExact("01-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), inboundDate = DateOnly.ParseExact("05-02-2025", "d-M-yyyy", CultureInfo.InvariantCulture), dateRequested = DateOnly.ParseExact("28-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture), approvalStatus = approvalStatus.Approved, moveStatus = ticketMoveStatus.Completed, dateApproved = DateOnly.ParseExact("30-01-2025", "d-M-yyyy", CultureInfo.InvariantCulture)},
                     new Ticket{ticketNumber = "TN-003-070225", branchOrigin = 2, branchDestination = 1, requestedBy = 1, receivedBy = 2, outboundDate = new DateOnly(2025, 3, 1),inboundDate = new DateOnly(2025, 3, 3),dateRequested = new DateOnly(2025, 2, 25),dateApproved = new DateOnly(2025, 2, 26),approvalStatus = approvalStatus.Approved,moveStatus = ticketMoveStatus.Completed},

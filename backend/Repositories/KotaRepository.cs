@@ -30,6 +30,8 @@ namespace qrmanagement.backend.Repositories{
                             kotaName
                         FROM 
                             Kotas
+                        WHERE
+                            kotaId != -1
                     ";
 
                     _logger.LogDebug("Executing query");
