@@ -50,6 +50,15 @@ namespace qrmanagement.backend.Controllers{
             return Ok(assets);
         }
 
+        [HttpGet("available")]
+        public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> GetAvailableAsset(){
+            var assets = await _assetRepo.GetAvailableAsset();
+            if(assets == null){
+                return NotFound();
+            }
+            return Ok(assets);
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> AddAsset([FromForm] CreateAssetDTO asset){
             int row = await _assetRepo.AddAsset(asset);
