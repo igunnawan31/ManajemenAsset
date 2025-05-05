@@ -250,6 +250,64 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
+        public async Task<IEnumerable<AssetResponseDTO>> GetAvailableAsset(){
+            try{
+                var assetList = new List<AssetResponseDTO>();
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                _logger.LogDebug("Connection string retrieved");
+
+                using (SqlConnection connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+                    _logger.LogDebug("Database connection opened.");
+
+                    string query = @"
+                        SELECT DISTINCT
+                            a.id,
+                            a.name,
+                            a.locationId,
+                            a.assetType,
+                            a.itemStatus,
+                            a.imagePath
+                        FROM 
+                            Assets a
+                        JOIN
+                            AssetMoves am ON a.id = am.AssetNumber
+                        WHERE
+                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' 
+                    ";
+
+                    _logger.LogDebug("Executing query");
+                    using (SqlCommand command = new SqlCommand(query, connection)){
+                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                            _logger.LogDebug("Query executed successfully. Reading data...");
+
+                            while (await reader.ReadAsync()){
+                                AssetResponseDTO asset = new AssetResponseDTO{
+                                    id = reader.GetString(0),
+                                    name = reader.GetString(1),
+                                    locationId = reader.GetInt32(2),
+                                    assetType = reader.GetString(3),
+                                    itemStatus = reader.GetString(4),
+                                    imagePath = reader.GetString(5)
+                                };
+                                assetList.Add(asset);
+                            }
+                        }
+                    }
+
+                }
+                return assetList;
+            }
+            catch (SqlException sqlEx){
+                _logger.LogError($"An error occured: {sqlEx.Message}");
+                throw new Exception("An error occured while retrieving asset data from the database");
+            }
+            catch (Exception ex){
+                _logger.LogError($"An error occured: {ex.Message}");
+                throw new Exception("Internal server error");
+            }
+        }
+
         public async Task<int> AddAsset(CreateAssetDTO asset) {
             _logger.LogDebug("Adding asset to the database.");
 
