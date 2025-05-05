@@ -33,6 +33,13 @@ type UserResponseDTO = {
     userSubRole: string;
 };
 
+interface AssetMove {
+    id : string 
+    ticketNumber: string 
+    assetNumber: string 
+    moveStatus: string 
+}
+
 const CreateRequestInbound = () => {
     const [users, setUsers] = useState<UserResponseDTO | null>(null);
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -120,11 +127,23 @@ const CreateRequestInbound = () => {
             if (!selectedBranch) return;
     
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${selectedBranch}`);
-                if (!response.ok) throw new Error("Failed to fetch assets");
+                const [assetsRes, movesRes] = await Promise.all([
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${selectedBranch}`),
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/index`)
+                ]);
     
-                const data = await response.json();
-                setAssets(data);
+                if (!assetsRes.ok || !movesRes.ok) throw new Error("Failed to fetch data");
+    
+                const assetsData: Asset[] = await assetsRes.json();
+                const movesData: AssetMove[] = await movesRes.json();
+    
+                const movedAssetIds = movesData
+                    .filter( move => move.moveStatus !== "Waiting" && move.moveStatus !== "Moving")
+                    .map(move => move.assetNumber);
+    
+                const availableAssets = assetsData.filter(asset => !movedAssetIds.includes(asset.id));
+    
+                setAssets(availableAssets);
             } catch (err) {
                 console.error("Error fetching assets:", err);
             }

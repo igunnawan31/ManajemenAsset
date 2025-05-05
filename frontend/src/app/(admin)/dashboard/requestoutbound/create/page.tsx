@@ -33,6 +33,13 @@ type UserResponseDTO = {
     userSubRole: string;
 };
 
+interface AssetMove {
+    id : string 
+    ticketNumber: string 
+    assetNumber: string 
+    moveStatus: string 
+}
+
 const CreateRequestOutboundPage = () => {
     const [users, setUsers] = useState<UserResponseDTO | null>(null);
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -120,11 +127,23 @@ const CreateRequestOutboundPage = () => {
             if (!users?.userBranch) return;
     
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${users.userBranch}`);
-                if (!response.ok) throw new Error("Failed to fetch assets");
+                const [assetsRes, movesRes] = await Promise.all([
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${users.userBranch}`),
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/index`)                    
+                ]);
+
+                if (!assetsRes.ok || !movesRes.ok) throw new Error("Failed to fetch assets");
     
-                const data = await response.json();
-                setAssets(data);
+                const assetsData: Asset[] = await assetsRes.json();
+                const movesData: AssetMove[] = await movesRes.json();
+                
+                const movedAssetIds = movesData
+                    .filter( move => move.moveStatus !== "Waiting" && move.moveStatus !== "Moving")
+                    .map(move => move.assetNumber);
+    
+                const availableAssets = assetsData.filter(asset => !movedAssetIds.includes(asset.id));
+    
+                setAssets(availableAssets);
             } catch (err) {
                 console.error("Error fetching assets:", err);
             }
@@ -203,7 +222,7 @@ const CreateRequestOutboundPage = () => {
     
     return (
         <div className="px-8 py-24 w-full max-h-full poppins">
-            <Upper title="Create Request Inbound" />
+            <Upper title="Create Request Outbound" />
 
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
                 <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
