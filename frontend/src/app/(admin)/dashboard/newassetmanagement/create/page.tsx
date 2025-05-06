@@ -7,6 +7,8 @@ import Upper from "../../components/Upper";
 import { useState, useEffect, useRef } from "react";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
+import PopUpModal from "../../components/PopUpModal";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
 const assetSchema = z.object({
     id: z.string().min(1, "Asset id is required"),
@@ -22,6 +24,8 @@ const CreatePageNewAsset = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [modalType, setModalType] = useState<"success" | "error" | null>(null);
+    const [modalMessage, setModalMessage] = useState<string>("");
     const router = useRouter();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -30,7 +34,8 @@ const CreatePageNewAsset = () => {
         handleSubmit, 
         formState: { errors },
         setValue,
-        watch
+        watch,
+        reset
     } = useForm({
         resolver: zodResolver(assetSchema),
     });
@@ -110,12 +115,14 @@ const CreatePageNewAsset = () => {
             }
     
             const result = await response.json();
-            setSuccess("Asset created successfully!");
-            router.push("/dashboard/newassetmanagement");
+            setModalType("success");
+            setModalMessage("Asset created successfully!");
+            setSuccess(null);
+            return;
             
         } catch (err: any) {
-            console.error("Error creating asset:", err);
-            setError(err.message || "An error occurred while creating the asset");
+            setModalType("error");
+            setModalMessage(err.message || "An error occurred while creating the asset");
         } finally {
             setLoading(false);
         }
@@ -125,8 +132,8 @@ const CreatePageNewAsset = () => {
         <div className="px-8 py-24 w-full max-h-full">
             <Upper title="Create Asset Management" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
-                {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>}
-                {success && <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">{success}</div>}
+            {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>}
+            {success && <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">{success}</div>}
 
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -234,6 +241,49 @@ const CreatePageNewAsset = () => {
                     </div>
                 </form>
             </div>
+            {modalType === "success" && (
+                <PopUpModal
+                    title="Success"
+                    message={modalMessage}
+                    icon={<IoCheckmarkCircleSharp className="text-green-500" />}
+                    actions={
+                    <>
+                        <button
+                            onClick={() => {
+                                setModalType(null);
+                                setQrCode("");
+                                reset();
+                        }}
+                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                            Create Another Asset
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard/newassetmanagement")}
+                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Go to Asset Management
+                        </button>
+                    </>
+                    }
+                />
+            )}
+
+            {modalType === "error" && (
+                <PopUpModal
+                    title="Error"
+                    message={modalMessage}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                    <button
+                        onClick={() => setModalType(null)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Close
+                    </button>
+                    }
+                />
+            )}
         </div>
     );
 };
