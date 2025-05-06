@@ -38,6 +38,8 @@ namespace qrmanagement.backend.Repositories{
                             rejectReason
                         FROM 
                             Tickets
+                        WHERE
+                            ticketNumber != 'DEFAULTSTATUS'
                     ";
 
                     _logger.LogDebug("Executing query");

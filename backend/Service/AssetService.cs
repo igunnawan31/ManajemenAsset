@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using qrmanagement.backend.Context;
 using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.DTO.AssetMove;
-using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
 
