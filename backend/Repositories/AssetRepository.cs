@@ -250,7 +250,7 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<IEnumerable<AssetResponseDTO>> GetAvailableAsset(){
+        public async Task<IEnumerable<AssetResponseDTO>> GetAvailableAsset(int locationId){
             try{
                 var assetList = new List<AssetResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -273,7 +273,7 @@ namespace qrmanagement.backend.Repositories{
                         JOIN
                             AssetMoves am ON a.id = am.AssetNumber
                         WHERE
-                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' 
+                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' AND a.locationId = @locationId
                     ";
 
                     _logger.LogDebug("Executing query");

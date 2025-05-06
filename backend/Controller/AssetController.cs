@@ -22,7 +22,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> Index(){
             var assets = await _assetRepo.GetAllAsset();
             if(assets == null){
-                return NotFound();
+                return NotFound(new {statusCode = 404, message = "No asset found"});
             }
             _logger.LogDebug("Berhasil");
             return Ok(assets);
@@ -32,7 +32,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<ActionResult<AssetResponseDTO>> GetAssetById(string id){
             var asset = await _assetRepo.GetAssetById(id);
             if(asset == null){
-                return NotFound();
+                return NotFound(new {statusCode = 404, message = "No asset found"});
             }
             return Ok(asset);
         }
@@ -41,7 +41,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> GetAssetByBranchId(int id){
             var assets = await _assetRepo.GetAssetByLocationId(id);
             if(assets == null){
-                return NotFound();
+                return NotFound(new {statusCode = 404, message = "No asset found"});
             }
             return Ok(assets);
         }
@@ -50,16 +50,22 @@ namespace qrmanagement.backend.Controllers{
         public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> GetAssetByTicketNumber(string id){
             var assets = await _assetRepo.GetAssetByTicketNumber(id);
             if(assets == null){
-                return NotFound();
+                return NotFound(new {statusCode = 404, message = "No asset found"});
             }
             return Ok(assets);
         }
 
-        [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> GetAvailableAsset(){
-            var assets = await _assetRepo.GetAvailableAsset();
+        [HttpGet("available/{locationId}")]
+        public async Task<ActionResult<IEnumerable<AssetResponseDTO>>> GetAvailableAsset(int locationId){
+            if(locationId == 0){
+                return BadRequest(new {statusCode = 400, message = "Location ID cannot be 0"});
+            }
+            if(locationId < 0){
+                return BadRequest(new {statusCode = 400, message = "Location ID cannot be negative"});
+            }
+            var assets = await _assetRepo.GetAvailableAsset(locationId);
             if(assets == null){
-                return NotFound();
+                return NotFound(new {statusCode = 404, message = "No available asset found"});
             }
             return Ok(assets);
         }
@@ -77,7 +83,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<IActionResult> UpdateAsset([FromForm] UpdateAssetDTO asset){
             int row = await _assetRepo.UpdateAsset(asset);
             if(row == 0){
-                return BadRequest("Failed while updating asset");
+                return BadRequest(new {statusCode = 400, message = "Failed while updating asset"});
             }
             return Ok( new {StatusCode = 200, message = "Asset Updated Successfully"});
         }
@@ -86,7 +92,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<IActionResult> DeleteAsset([FromBody] string id){
             int row = await _assetRepo.DeleteAsset(id);
             if(row == 0){
-                return BadRequest("Failed while deleting asset");
+                return BadRequest(new {StatusCode = 400, message = "Failed while deleting asset"});
             }
             return Ok(new {StatusCode = 200, message = "Asset Deleted Successfully"});
         }
