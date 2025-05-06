@@ -273,11 +273,12 @@ namespace qrmanagement.backend.Repositories{
                         JOIN
                             AssetMoves am ON a.id = am.AssetNumber
                         WHERE
-                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' AND a.locationId = @locationId
+                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' AND a.locationId = @id
                     ";
 
                     _logger.LogDebug("Executing query");
                     using (SqlCommand command = new SqlCommand(query, connection)){
+                        command.Parameters.AddWithValue("@id", locationId);
                         using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
