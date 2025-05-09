@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import PopUpModal from "../../components/PopUpModal";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
 
 interface Asset {
@@ -53,6 +55,8 @@ const CreateRequestInbound = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [modalType, setModalType] = useState<"success" | "error" | null>(null);
+    const [modalMessage, setModalMessage] = useState<string>("");
 
     const ticketSchema = z.object({
         branchOrigin: z.string().min(1, "Branch origin is required"),
@@ -124,28 +128,21 @@ const CreateRequestInbound = () => {
 
     useEffect(() => {
         const fetchAssets = async () => {
-            if (!selectedBranch) return;
+            if (!selectedBranch) {
+                console.log("No selectedBranch, skipping fetchAssets");
+                return;
+            }
     
+            console.log("Fetching assets for branch:", selectedBranch);
             try {
-                const [assetsRes, movesRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${selectedBranch}`),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/index`)
-                ]);
-    
-                if (!assetsRes.ok || !movesRes.ok) throw new Error("Failed to fetch data");
-    
-                const assetsData: Asset[] = await assetsRes.json();
-                const movesData: AssetMove[] = await movesRes.json();
-    
-                const movedAssetIds = movesData
-                    .filter( move => move.moveStatus !== "Waiting" && move.moveStatus !== "Moving")
-                    .map(move => move.assetNumber);
-    
-                const availableAssets = assetsData.filter(asset => !movedAssetIds.includes(asset.id));
-    
-                setAssets(availableAssets);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/available/${selectedBranch}`);
+                if (!response.ok) throw new Error(`Failed to fetch assets: ${response.status}`);
+        
+                const data = await response.json();
+                setAssets(data);
             } catch (err) {
                 console.error("Error fetching assets:", err);
+                setError("Failed to fetch assets.");
             }
         };
     
@@ -160,11 +157,12 @@ const CreateRequestInbound = () => {
         setConfirmedAssets((prev) => prev.filter(asset => asset.id !== assetId));
     };
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(ticketSchema),
     });
 
     const onSubmit = async (data: any) => {
+        setLoading(true);
         setError(null);
         setSuccess(null);
     
@@ -203,12 +201,14 @@ const CreateRequestInbound = () => {
                 throw new Error(result.message || "Failed to create ticket");
             }
     
-            console.log("Ticket created successfully:", result);
-            setSuccess("Ticket created successfully!");
-            router.push("/dashboard/requestinbound");
+            setModalType("success");
+            setModalMessage("Asset created successfully!");
+            setSuccess(null);
         } catch (err: any) {
-            console.error("Error submitting form:", err);
-            setError(err.message || "An error occurred while creating the ticket.");
+            setModalType("error");
+            setModalMessage(err.message || "An error occurred while creating the asset");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -221,9 +221,6 @@ const CreateRequestInbound = () => {
 
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
                 <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-
-                    {/* Request Ticket */}
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                         <div>
                         <label className="block text-sm font-medium text-gray-700">Branch Origin</label>
@@ -239,7 +236,7 @@ const CreateRequestInbound = () => {
                             >
                                 <option value="">Select Branch</option>
                                 {branches
-                                    .filter(branch => branch.branchId !== users?.userBranch) // Filter out user's branch
+                                    .filter(branch => branch.branchId !== users?.userBranch)
                                     .map((branch) => (
                                         <option key={branch.branchId} value={branch.branchId}>
                                             {branch.branchName}
@@ -350,6 +347,48 @@ const CreateRequestInbound = () => {
                 onConfirm={handleConfirmSelection}
                 assets={assets}
             />
+            {modalType === "success" && (
+                <PopUpModal
+                    title="Success"
+                    message={modalMessage}
+                    icon={<IoCheckmarkCircleSharp className="text-green-500" />}
+                    actions={
+                    <>
+                        <button
+                            onClick={() => {
+                                setModalType(null);
+                                reset();
+                        }}
+                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                            Create Another Ticket
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard/requestinbound")}
+                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Go to Request Inbound
+                        </button>
+                    </>
+                    }
+                />
+            )}
+
+            {modalType === "error" && (
+                <PopUpModal
+                    title="Error"
+                    message={modalMessage}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                    <button
+                        onClick={() => setModalType(null)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Close
+                    </button>
+                    }
+                />
+            )}
         </div>
     );
 };

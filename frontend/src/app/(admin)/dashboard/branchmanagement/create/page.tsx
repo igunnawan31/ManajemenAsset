@@ -6,6 +6,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PopUpModal from "../../components/PopUpModal";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
 interface Kota {
     kotaId: string;
@@ -34,7 +36,20 @@ const CreatePageBranch = () => {
     const [selectedKota, setSelectedKota] = useState<string>("");     
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [modalType, setModalType] = useState<"success" | "error" | null>(null);
+    const [modalMessage, setModalMessage] = useState<string>("");
     const router = useRouter();
+
+    const { 
+        register, 
+        handleSubmit, 
+        formState: { errors },
+        setValue,
+        reset
+    } = useForm({
+        resolver: zodResolver(branchSchema),
+    });
 
     useEffect(() => {
         const fetchKotas = async () => {
@@ -65,11 +80,12 @@ const CreatePageBranch = () => {
     }, []);
 
     const onSubmit = async (data: any) => {
+        setLoading(true);
         setError(null);
         setSuccess(null);
     
         try {
-            console.log("Submitting Data:", data); // Log before submitting
+            console.log("Submitting Data:", data);
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/create`, {
                 method: "POST",
                 headers: {
@@ -79,28 +95,23 @@ const CreatePageBranch = () => {
             });
     
             const result = await response.json();
-            console.log("API Response:", result);
     
             if (!response.ok) {
+                const errorData = await response.text();
                 throw new Error(result.message || "Failed to create branch");
             }
 
-            setSuccess("Branch created successfully!");
-            router.push("dashboard/branchmanagement/")
+            setModalType("success");
+            setModalMessage("Asset created successfully!");
+            setSuccess(null);
+            return;
         } catch (err: any) {
-            console.error("Error during submission:", err);
-            setError(err.message || "An error occurred.");
+            setModalType("error");
+            setModalMessage(err.message || "An error occurred while creating the asset");
+        } finally {
+            setLoading(false);
         }
     };    
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        setValue,
-    } = useForm({
-        resolver: zodResolver(branchSchema),
-    });
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
@@ -145,9 +156,9 @@ const CreatePageBranch = () => {
                                 className="mt-1 p-2 border w-full rounded-md"
                                 onChange={(e) => {
                                     const selectedValue = e.target.value;
-                                    setSelectedKota(selectedValue);  // Update selectedKota
-                                    setValue("kotaId", selectedValue);  // Update form state
-                                    setValue("kecamatanId", ""); // Reset kecamatan when Kota changes
+                                    setSelectedKota(selectedValue); 
+                                    setValue("kotaId", selectedValue);  
+                                    setValue("kecamatanId", ""); 
                                 }}
                             >
                                 <option value="">Select Kota</option>
@@ -202,6 +213,48 @@ const CreatePageBranch = () => {
                 {error && <p className="text-red-500 mt-4">{error}</p>}
                 {success && <p className="text-green-500 mt-4">{success}</p>}
             </div>
+            {modalType === "success" && (
+                <PopUpModal
+                    title="Success"
+                    message={modalMessage}
+                    icon={<IoCheckmarkCircleSharp className="text-green-500" />}
+                    actions={
+                    <>
+                        <button
+                            onClick={() => {
+                                setModalType(null);
+                                reset();
+                        }}
+                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                            Create Another Branch
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard/branchmanagement")}
+                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Go to Branch Management
+                        </button>
+                    </>
+                    }
+                />
+            )}
+
+            {modalType === "error" && (
+                <PopUpModal
+                    title="Error"
+                    message={modalMessage}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                    <button
+                        onClick={() => setModalType(null)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Close
+                    </button>
+                    }
+                />
+            )}
         </div>
     );
 };

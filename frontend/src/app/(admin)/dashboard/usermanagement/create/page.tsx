@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Upper from "../../components/Upper";
 import { useState, useEffect } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import PopUpModal from "../../components/PopUpModal";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
 enum Role {
     Cabang = "Cabang",
@@ -39,11 +42,25 @@ const CreatePageUser = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [modalType, setModalType] = useState<"success" | "error" | null>(null);
+    const [modalMessage, setModalMessage] = useState<string>("");
+    const router = useRouter();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm({
+        resolver: zodResolver(userSchema),
+    });
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
+    
     useEffect(() => {
         const fetchBranches = async () => {
             try {
@@ -58,15 +75,8 @@ const CreatePageUser = () => {
         fetchBranches();
     }, []);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
-        resolver: zodResolver(userSchema),
-    });
-
     const onSubmit = async (data: any) => {
+        setLoading(true);
         setError(null);
         setSuccess(null);
         console.log("data", data)
@@ -83,12 +93,19 @@ const CreatePageUser = () => {
             const result = await response.json();
             
             if (!response.ok) {
+                const errorData = await response.text();
                 throw new Error(result.message || "Failed to create user");
             }
 
-            setSuccess("User created successfully!");
+            setModalType("success");
+            setModalMessage("Asset created successfully!");
+            setSuccess(null);
+            return;
         } catch (err: any) {
-            setError(err.message || "An error occurred.");
+            setModalType("error");
+            setModalMessage(err.message || "An error occurred while creating the asset");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -188,9 +205,9 @@ const CreatePageUser = () => {
                         <div className="relative">
                             <label className="block text-sm font-medium text-gray-700">Password</label>
                             <input
-                                type={showPassword ? "text" : "password"} // Dynamic type
+                                type={showPassword ? "text" : "password"} 
                                 {...register("password")}
-                                className="mt-1 p-2 border w-full rounded-md pr-10" // Added padding for icon space
+                                className="mt-1 p-2 border w-full rounded-md pr-10"
                                 placeholder="Enter password"
                             />
                             <button
@@ -215,6 +232,48 @@ const CreatePageUser = () => {
                 {error && <p className="text-red-500 mt-4">{error}</p>}
                 {success && <p className="text-green-500 mt-4">{success}</p>}
             </div>
+            {modalType === "success" && (
+                <PopUpModal
+                    title="Success"
+                    message={modalMessage}
+                    icon={<IoCheckmarkCircleSharp className="text-green-500" />}
+                    actions={
+                    <>
+                        <button
+                            onClick={() => {
+                                setModalType(null);
+                                reset();
+                        }}
+                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                            Create Another User
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard/usermanagement")}
+                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Go to User Management
+                        </button>
+                    </>
+                    }
+                />
+            )}
+
+            {modalType === "error" && (
+                <PopUpModal
+                    title="Error"
+                    message={modalMessage}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                    <button
+                        onClick={() => setModalType(null)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Close
+                    </button>
+                    }
+                />
+            )}
         </div>
     );
 };
