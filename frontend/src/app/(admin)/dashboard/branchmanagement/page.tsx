@@ -5,7 +5,8 @@ import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import PopUpModal from "../components/PopUpModal";
 
 
 interface Branch {
@@ -24,10 +25,11 @@ const BranchManagement = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 5;
 
-    // For Deletting
+    const [branchToDelete, setBranchToDelete] = useState<Branch | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
     const [branch, setBranch] = useState<Branch | null>(null);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
     const columns = [
         { key: "branchId", label: "No", alwaysVisible: true },
@@ -75,6 +77,39 @@ const BranchManagement = () => {
         
         setCurrentPage(1);
         setFilteredBranches(filtered);
+    };
+
+    const confirmDelete = (branch: Branch) => {
+        setBranchToDelete(branch);
+        setShowDeletePopup(true);
+    };
+    
+    const handleDeleteConfirmed = async () => {
+        if (!branchToDelete) return;
+    
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(parseInt(branchToDelete.branchId)),
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete branch. ${errorText}`);
+            }
+    
+            setBranches(prev => prev.filter(branch => branch.branchId !== branchToDelete.branchId));
+            setFilteredBranches(prev => prev.filter(branch => branch.branchId !== branchToDelete.branchId));
+            setDeleteSuccess(`Branch "${branchToDelete.branchName}" deleted successfully.`);
+        } catch (error) {
+            alert("Failed to delete the branch.");
+        } finally {
+            setShowDeletePopup(false);
+            setBranchToDelete(null);
+        }
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -128,7 +163,7 @@ const BranchManagement = () => {
                                     },
                                     {
                                         label: <IoTrash className="text-red-700" />,
-                                        onClick: (row) => console.log("Delete user:", row.branchId),
+                                        onClick: (row) => confirmDelete(row as Branch),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                 ]}
@@ -169,6 +204,44 @@ const BranchManagement = () => {
                         <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                     )}
             </div>
+            {showDeletePopup && branchToDelete && (
+                <PopUpModal
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete branch "${branchToDelete.branchName}"?`}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                        <>
+                            <button
+                                onClick={() => setShowDeletePopup(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirmed}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </>
+                    }
+                />
+            )}
+            {deleteSuccess && (
+                <PopUpModal
+                    title="Success"
+                    message={deleteSuccess}
+                    icon={<IoEyeSharp className="text-green-500" />}
+                    actions={
+                        <button
+                            onClick={() => setDeleteSuccess(null)}
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                            OK
+                        </button>
+                    }
+                />
+            )}
         </div>
     );
 }

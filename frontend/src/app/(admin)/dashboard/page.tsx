@@ -168,8 +168,12 @@ const Dashboard = () => {
             .then((data: Asset[]) => {
                 setAssets(data);
             })
+            .catch((err) => {
+                console.error("Error fetching assets:", err);
+                setError("Failed to fetch asset data.");
+            });
         }
-    })
+    }, [userBranch]);
     
     useEffect(() => {
         const inbound = tickets.filter(
