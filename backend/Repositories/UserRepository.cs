@@ -223,5 +223,109 @@ namespace qrmanagement.backend.Repositories
                 throw new Exception("Internal Server Error");
             }
         }
+
+        public async Task<int> UpdateUser(UpdateUser user)
+        {
+            _logger.LogDebug("Updating user in the database.");
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        try {
+                            string updateUserQuery;
+                            updateUserQuery = @"
+                                UPDATE 
+                                    Users
+                                SET
+                                    userName = @userName,
+                                    userEmail = @userEmail,
+                                    userBranch = @userBranch,
+                                    userPhone = @userPhone,
+                                    userRole = @userRole,
+                                    userSubRole = @userSubRole
+                                WHERE 
+                                    userId = @userId
+                            ";
+                            
+                            using (var command = new SqlCommand(updateUserQuery, connection, transaction)){
+                                command.Parameters.AddWithValue("@userId", user.userId);
+                                command.Parameters.AddWithValue("@userName", user.userName);
+                                command.Parameters.AddWithValue("@userEmail", user.userEmail);
+                                command.Parameters.AddWithValue("@userBranch", user.userBranch);
+                                command.Parameters.AddWithValue("@userPhone", user.userPhone);
+                                command.Parameters.AddWithValue("@userRole", user.userRole);
+                                command.Parameters.AddWithValue("@userSubRole", user.userSubRole);
+                                rowsAffected = await command.ExecuteNonQueryAsync();
+                            }
+                            _logger.LogDebug("Successfuly updated user");
+                            transaction.Commit();
+                        }
+                        catch (SqlException sqlEx){
+                            transaction.Rollback();
+                            _logger.LogError($"An error occured: {sqlEx.Message}");
+                            throw new Exception("An error occured while updating user");    
+                        }
+                    }
+                }
+
+                _logger.LogDebug("User successfully updated.");
+                return rowsAffected;
+            }
+            catch (Exception ex){
+                _logger.LogError(ex, "An error occurred while updating user.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }
+        }
+        public async Task<int> DeleteUser(int id)
+        {
+            _logger.LogDebug("Deleting user from the database.");
+            int rowsAffected = 0;
+            try{
+                var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+                using (var connection = new SqlConnection(connectionString)){
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction()){
+                        try{
+                            string deleteUserQuery;
+                            deleteUserQuery = @"
+                                DELETE FROM 
+                                    Users
+                                WHERE 
+                                    userId = @userId
+                            ";
+                            
+                            using (var command = new SqlCommand(deleteUserQuery, connection, transaction)){
+                                command.Parameters.AddWithValue("@userId", id);
+                                rowsAffected = await command.ExecuteNonQueryAsync();
+                            }
+                            _logger.LogDebug("Successfuly deleted user");
+                            transaction.Commit();
+                        }
+                        catch (SqlException sqlEx){
+                            transaction.Rollback();
+                            _logger.LogError($"An error occured: {sqlEx.Message}");
+                            throw new Exception("An error occured while deleting user");    
+                        }
+                    }
+                }
+
+                _logger.LogDebug("User successfully deleted.");
+                return rowsAffected;
+            }
+            catch (Exception ex){
+                _logger.LogError(ex, "An error occurred while deleting user.");
+                _logger.LogError("Stacktrace:");
+                _logger.LogError(ex.StackTrace);
+
+                throw new Exception("Internal Server Error");
+            }
+        }
     }
 }
