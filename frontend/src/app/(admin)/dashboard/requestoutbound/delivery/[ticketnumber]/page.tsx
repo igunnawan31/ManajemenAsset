@@ -120,7 +120,6 @@ const DetailRequestOutboundDelivery = () => {
                 setIsAcceptModalOpen(false);
                 setConfirmationMessage("Ticket has been delivered.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/requestoutbound");
             } catch (err) {
                 setConfirmationMessage("Error delivered ticket. Please try again.");
                 setShowConfirmationModal(true);
@@ -160,7 +159,6 @@ const DetailRequestOutboundDelivery = () => {
                 setIsRejectModalOpen(false);
                 setConfirmationMessage("Ticket has been Canceled.");
                 setShowConfirmationModal(true);
-                router.push("/dashboard/requestoutbound");
             } catch (err) {
                 setConfirmationMessage("Error Canceling ticket. Please try again.");
                 setShowConfirmationModal(true);

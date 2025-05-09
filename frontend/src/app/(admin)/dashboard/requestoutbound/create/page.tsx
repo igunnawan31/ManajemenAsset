@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import PopUpModal from "../../components/PopUpModal";
+import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
 
 interface Asset {
@@ -53,6 +55,8 @@ const CreateRequestOutboundPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [modalType, setModalType] = useState<"success" | "error" | null>(null);
+    const [modalMessage, setModalMessage] = useState<string>("");
 
     const ticketSchema = z.object({
         branchOrigin: z.string().min(1, "Branch origin is required"),
@@ -77,6 +81,7 @@ const CreateRequestOutboundPage = () => {
                 if (!response.ok) throw new Error("Failed to fetch user data");
     
                 const data = await response.json();
+                console.log("User data from API:", data);
                 setUsers(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An unknown error occurred");
@@ -123,34 +128,23 @@ const CreateRequestOutboundPage = () => {
     }, []);
 
     useEffect(() => {
+        if (!users?.userBranch || !branches.length) return;
+    
         const fetchAssets = async () => {
-            if (!users?.userBranch) return;
-    
             try {
-                const [assetsRes, movesRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-branch/${users.userBranch}`),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/index`)                    
-                ]);
-
-                if (!assetsRes.ok || !movesRes.ok) throw new Error("Failed to fetch assets");
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/available/${users.userBranch}`);
+                if (!response.ok) throw new Error(`Failed to fetch assets: ${response.status}`);
     
-                const assetsData: Asset[] = await assetsRes.json();
-                const movesData: AssetMove[] = await movesRes.json();
-                
-                const movedAssetIds = movesData
-                    .filter( move => move.moveStatus !== "Waiting" && move.moveStatus !== "Moving")
-                    .map(move => move.assetNumber);
-    
-                const availableAssets = assetsData.filter(asset => !movedAssetIds.includes(asset.id));
-    
-                setAssets(availableAssets);
+                const data = await response.json();
+                setAssets(data);
             } catch (err) {
                 console.error("Error fetching assets:", err);
+                setError("Failed to fetch assets.");
             }
         };
     
         fetchAssets();
-    }, [users?.userBranch]);
+    }, [users?.userBranch, branches]);
 
     const handleConfirmSelection = (selectedAssets: Asset[]) => {
         setConfirmedAssets(selectedAssets);
@@ -160,11 +154,12 @@ const CreateRequestOutboundPage = () => {
         setConfirmedAssets((prev) => prev.filter(asset => asset.id !== assetId));
     };
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(ticketSchema),
     });
 
     const onSubmit = async (data: any) => {
+        setLoading(true);
         setError(null);
         setSuccess(null);
     
@@ -203,17 +198,14 @@ const CreateRequestOutboundPage = () => {
                 throw new Error(result.message || "Failed to create ticket");
             }
     
-            console.log("Ticket created successfully:", result);
-            setSuccess("Ticket created successfully!");
-            router.push("/dashboard/requestoutbound");
+            setModalType("success");
+            setModalMessage("Asset created successfully!");
+            setSuccess(null);
         } catch (err: any) {
-            console.error("Error submitting form:", err);
-            console.error("Error details:", {
-                message: err.message,
-                stack: err.stack,
-                response: err.response,
-            });
-            setError(err.message || "An error occurred while creating the ticket.");
+            setModalType("error");
+            setModalMessage(err.message || "An error occurred while creating the asset");
+        } finally {
+            setLoading(false);
         }
     };
 

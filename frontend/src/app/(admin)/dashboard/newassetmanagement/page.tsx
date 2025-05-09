@@ -103,7 +103,6 @@ const NewAssetManagement = () => {
             filtered = filtered.filter((asset) =>
                 asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                asset.locationId.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 asset.assetType.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 asset.itemStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
