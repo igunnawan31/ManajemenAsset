@@ -250,7 +250,7 @@ namespace qrmanagement.backend.Repositories{
                         WHERE
                             assetNumber = @assetNumber
                         ORDER BY
-                            createdOn DESC
+                            updatedOn DESC
                     ";
 
                     _logger.LogDebug("Executing query");
@@ -300,15 +300,16 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertAssetMove = @"
                                 INSERT INTO AssetMoves 
-                                    (ticketNumber, assetNumber, moveStatus, createdOn)
+                                    (ticketNumber, assetNumber, moveStatus, createdOn, updatedOn)
                                 VALUES
-                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn);
+                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn, @updatedOn);
                             ";
                             using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
                                 assetMoveCommand.Parameters.AddWithValue("@ticketNumber", "DEFAULTSTATUS");
                                 assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
                                 assetMoveCommand.Parameters.AddWithValue("@moveStatus", "Arrived");
                                 assetMoveCommand.Parameters.AddWithValue("createdOn", DateTime.Now);
+                                assetMoveCommand.Parameters.AddWithValue("updatedOn", DateTime.Now);
 
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                 
@@ -351,9 +352,9 @@ namespace qrmanagement.backend.Repositories{
                         try{
                             string insertAssetMove = @"
                                 INSERT INTO AssetMoves 
-                                    (ticketNumber, assetNumber, moveStatus, createdOn)
+                                    (ticketNumber, assetNumber, moveStatus, createdOn, updatedOn)
                                 VALUES
-                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn);
+                                    (@ticketNumber, @assetNumber, @moveStatus, @createdOn, @updatedOn);
                             ";
                             foreach (var assetNumber in assetNumbers){
                                 using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
@@ -361,6 +362,7 @@ namespace qrmanagement.backend.Repositories{
                                     assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@moveStatus", ticketType);
                                     assetMoveCommand.Parameters.AddWithValue("createdOn", DateTime.Now);
+                                    assetMoveCommand.Parameters.AddWithValue("updatedOn", DateTime.Now);
 
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                     
@@ -407,7 +409,8 @@ namespace qrmanagement.backend.Repositories{
                                 UPDATE 
                                     AssetMoves
                                 SET
-                                    moveStatus = @moveStatus
+                                    moveStatus = @moveStatus,
+                                    updatedOn = @updatedOn
                                 WHERE
                                     id = @assetMoveId
                             ";
@@ -415,6 +418,7 @@ namespace qrmanagement.backend.Repositories{
                                 using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction)){
                                     assetMoveCommand.Parameters.AddWithValue("@moveStatus", asset.status);
                                     assetMoveCommand.Parameters.AddWithValue("@assetMoveId", asset.assetMoveId);
+                                    assetMoveCommand.Parameters.AddWithValue("@updatedOn", DateTime.Now);
                                     
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                 }
@@ -465,12 +469,14 @@ namespace qrmanagement.backend.Repositories{
                                     AssetMoves
                                 SET
                                     moveStatus = @moveStatus
+                                    updatedOn = @updatedOn
                                 WHERE
                                     id = @assetMoveId
                             ";
                             using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction)){
                                 assetMoveCommand.Parameters.AddWithValue("@moveStatus", asset.status);
                                 assetMoveCommand.Parameters.AddWithValue("@assetMoveId", asset.assetMoveId);
+                                assetMoveCommand.Parameters.AddWithValue("@updatedOn", DateTime.Now);
                                 
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                             }

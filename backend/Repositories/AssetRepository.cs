@@ -205,16 +205,18 @@ namespace qrmanagement.backend.Repositories{
 
                     string query = @"
                         SELECT
-                            id,
-                            name,
-                            locationId,
-                            assetType,
-                            itemStatus,
-                            imagePath
+                            a.id,
+                            a.name,
+                            a.locationId,
+                            a.assetType,
+                            a.itemStatus,
+                            a.imagePath
                         FROM 
-                            Assets
+                            Assets a
+                        JOIN 
+                            AssetMoves am ON a.id = am.assetNumber
                         WHERE
-                            ticketNumber = @id
+                            am.ticketNumber = @id
                     ";
 
                     _logger.LogDebug("Executing query");
@@ -261,19 +263,25 @@ namespace qrmanagement.backend.Repositories{
                     _logger.LogDebug("Database connection opened.");
 
                     string query = @"
-                        SELECT DISTINCT
+                        SELECT
                             a.id,
                             a.name,
                             a.locationId,
                             a.assetType,
                             a.itemStatus,
-                            a.imagePath
-                        FROM 
-                            Assets a
-                        JOIN
-                            AssetMoves am ON a.id = am.AssetNumber
-                        WHERE
-                            a.itemStatus = 'Active' AND am.moveStatus = 'Arrived' AND a.locationId = @id
+                            am.moveStatus,
+                            am.updatedOn
+                        FROM Assets a
+                        JOIN (
+                            SELECT *
+                            FROM (
+                                SELECT *,
+                                    ROW_NUMBER() OVER (PARTITION BY AssetNumber ORDER BY updatedOn DESC) AS rn
+                                FROM AssetMoves
+                            ) AS ranked
+                            WHERE rn = 1 AND (moveStatus = 'Arrived' OR moveStatus = 'Draft')
+                        ) AS am ON a.id = am.AssetNumber
+                        WHERE a.itemStatus = 'Active' AND a.locationId = @id
                     ";
 
                     _logger.LogDebug("Executing query");

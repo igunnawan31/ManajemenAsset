@@ -428,7 +428,7 @@ namespace qrmanagement.backend.Repositories{
                             using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
                                 checkMoveCommand.Parameters.AddWithValue("@id", ticket.ticketNumber);
                                 using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
-                                    if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
+                                    if (await reader.ReadAsync()) 
                                     {
                                         if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft)){
                                             throw new Exception("Ticket has been sent. Cannot be updated");
@@ -638,7 +638,7 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal Server Error");
             }
         }
-        public async Task <int> DeleteTicket(string id){
+        public async Task <int> DeleteTicketWithValidation(string id){
             _logger.LogDebug("Deleting ticket from the database");
 
             int rowsAffected = 0;
@@ -730,7 +730,7 @@ namespace qrmanagement.backend.Repositories{
             } 
         }
 
-        public async Task <int> Delete(string id){
+        public async Task <int> DeleteWithoutValidation(string id){
             _logger.LogDebug("Deleting ticket from the database");
 
             int rowsAffected = 0;

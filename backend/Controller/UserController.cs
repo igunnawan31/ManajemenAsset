@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using qrmanagement.backend.DTO.User;
+using qrmanagement.backend.Models;
 using qrmanagement.backend.Repositories;
 
 namespace qrmanagement.backend.Controllers{
@@ -44,5 +45,29 @@ namespace qrmanagement.backend.Controllers{
             return Ok(new {statusCode = 200, message = "user Created Successfully"});
         }
 
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromForm] UpdateUser user){
+            var existingUser = await _userRepo.GetUserById(id);
+            if(existingUser == null){
+                return NotFound();
+            }
+            int row = await _userRepo.UpdateUser(user);
+            if(row == 0){
+                return BadRequest("Failed while updating user");
+            }
+            return Ok(new {statusCode = 200, message = "user Updated Successfully"});
+        }
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteUser(int id){
+            var existingUser = await _userRepo.GetUserById(id);
+            if(existingUser == null){
+                return NotFound();
+            }
+            int row = await _userRepo.DeleteUser(id);
+            if(row == 0){
+                return BadRequest("Failed while deleting user");
+            }
+            return Ok(new {statusCode = 200, message = "user Deleted Successfully"});
+        }
     }
 }

@@ -10,5 +10,7 @@ namespace qrmanagement.backend.Repositories
         Task<IEnumerable<UserResponseDTO>> GetAllUsers();
         Task<UserResponseDTO> GetUserById(int id);
         Task <int> AddUser(UserRequestDTO user);
+        Task <int> UpdateUser(UpdateUser user);
+        Task <int> DeleteUser(int id);
     }
 }

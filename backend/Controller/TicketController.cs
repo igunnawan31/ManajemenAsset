@@ -122,7 +122,7 @@ namespace qrmanagement.backend.Controllers{
         // }
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteTicket([FromBody] string id){
-            int row = await _ticketRepo.DeleteTicket(id);
+            int row = await _ticketRepo.DeleteTicketWithValidation(id);
             if(row == 0){
                 return BadRequest("Failed while deleting ticket");
             }
@@ -133,7 +133,7 @@ namespace qrmanagement.backend.Controllers{
         public async Task<IActionResult> TicketApproval([FromBody] UpdateTicketStatusDTO ticket){
             bool success = await _ticketService.TicketApproval(ticket);
             if(!success){
-                return BadRequest("Failed while updating ticket approval");
+                return BadRequest(new {statusCode = 400, message = "Failed while updating ticket approval status"});
             }
             return Ok(new {statusCode = 200, message = "Ticket approval updated Successfully"});
         }

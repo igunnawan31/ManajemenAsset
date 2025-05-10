@@ -15,6 +15,8 @@ namespace qrmanagement.backend.Models{
         public required AssetMoveStatus moveStatus {get; set;}
         [Required]
         public required DateTime createdOn {get; set;}
+        [Required]
+        public required DateTime updatedOn {get; set;}
         [ForeignKey("ticketNumber")]
         public Ticket ticket {get; set;} = null!;
         [ForeignKey("assetNumber")]

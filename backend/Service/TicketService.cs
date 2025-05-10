@@ -47,7 +47,7 @@ namespace qrmanagement.backend.Services{
                 {
                     var status = await _moveRepo.GetAssetLastStatus(asset);
                     if(status == "Missing" || status == "Moving" || status == "Waiting" || status == "Pending"){
-                        await _ticketRepo.Delete(ticketNumber);
+                        await _ticketRepo.DeleteWithoutValidation(ticketNumber);
                         return (false, $"Asset {asset} has invalid status: {status}");
                     }
                 }
@@ -55,7 +55,7 @@ namespace qrmanagement.backend.Services{
                 int rowsAffectedMove = await _moveRepo.AddAssetMove(assetNumbers, ticketNumber, ticket.approvalStatus);
                 if (rowsAffectedMove == 0)
                 {
-                    await _ticketRepo.Delete(ticketNumber);
+                    await _ticketRepo.DeleteWithoutValidation(ticketNumber);
                     return (false, "Failed to assign assets to the ticket.");
                 }
 
@@ -71,26 +71,53 @@ namespace qrmanagement.backend.Services{
 
         public async Task<bool> TicketApproval(UpdateTicketStatusDTO ticket)
         {
-            int rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
             string status;
             if(ticket.status == "Rejected"){
                 status = "Rejected";
             }
-            else{
+            else if (ticket.status == "Approved"){
                 status = "Waiting";
             }
-            var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
-            
-            if (assetmovelist != null && assetmovelist.Any())
-            {
-                var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
-                {
-                    assetMoveId = assetmove.id,
-                    status = status
-                }).ToList();
-
-                await _moveRepo.UpdateAssetMoveStatuses(list);
+            else{
+                status = "Pending";
             }
+            var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
+            foreach (var item in assetmovelist)
+            {
+                _logger.LogDebug("ID = \n"+item.id.ToString());
+                _logger.LogDebug("Status = \n"+item.moveStatus);
+            }
+            if(status == "Pending"){
+                // Check if every asset is available 
+                foreach (var asset in assetmovelist)
+                {
+                    _logger.LogDebug("Checking asset {assetNumber} for ticket {ticketNumber}", asset.assetNumber, ticket.ticketNumber);
+                    var assetStatus = await _moveRepo.GetAssetLastStatus(asset.assetNumber);
+                    if(assetStatus == "Missing" || assetStatus == "Moving" || assetStatus == "Waiting" || assetStatus == "Pending"){
+                        _logger.LogError("Asset {assetNumber} has invalid status: {status}", asset.assetNumber, assetStatus);
+                        UpdateTicketStatusDTO tempTicket = new UpdateTicketStatusDTO
+                        {
+                            ticketNumber = ticket.ticketNumber,
+                            status = "Draft"
+                        };
+                        await _ticketRepo.UpdateTicketApprovalStatus(tempTicket);
+                        return false;
+                    }
+                }
+                _logger.LogDebug("All assets are available for ticket {ticketNumber}", ticket.ticketNumber);            
+            }
+            if (assetmovelist == null || !assetmovelist.Any()){
+                _logger.LogDebug("Ticket {ticketNumber} has no asset moves", ticket.ticketNumber);
+                return false;
+            }
+            var list = assetmovelist!.Select(assetmove => new UpdateAssetMoveStatusDTO
+            {
+                assetMoveId = assetmove.id,
+                status = status
+            }).ToList();
+
+            int rowsAffectedTicket = await _moveRepo.UpdateAssetMoveStatuses(list);
+            rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
             return rowsAffectedTicket > 0;
         }
 
@@ -134,6 +161,39 @@ namespace qrmanagement.backend.Services{
             }
             return rowsAffectedTicket > 0;
         }
+
+        // public async Task<bool> TicketPublish(string ticketNumber)
+        // {
+        //     var ticket = await _ticketRepo.GetTicketById(ticketNumber);
+        //     if (ticket == null)
+        //     {
+        //         return false;
+        //     }
+
+        //     int rowsAffected;
+        //     var assetlist = await _moveRepo.GetAssetMoveByTN(ticketNumber);
+        //     if (assetmovelist != null && assetmovelist.Any())
+        //     {
+        //         var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+        //         {
+        //             assetMoveId = assetmove.id,
+        //             status = "Pending"
+        //         }).ToList();
+
+        //         rowsAffected = await _moveRepo.UpdateAssetMoveStatuses(list);
+        //     }
+
+        //     rowsAffected = await _ticketRepo.UpdateTicketMoveStatus(new UpdateTicketStatusDTO
+        //     {
+        //         ticketNumber = ticketNumber,
+        //         status = "Pending"
+        //     });
+        //     if (rowsAffected == 0)
+        //     {
+        //         return false;
+        //     }
+        //     return true;
+        // }
     }
 }
 
