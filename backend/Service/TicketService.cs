@@ -162,38 +162,27 @@ namespace qrmanagement.backend.Services{
             return rowsAffectedTicket > 0;
         }
 
-        // public async Task<bool> TicketPublish(string ticketNumber)
-        // {
-        //     var ticket = await _ticketRepo.GetTicketById(ticketNumber);
-        //     if (ticket == null)
-        //     {
-        //         return false;
-        //     }
-
-        //     int rowsAffected;
-        //     var assetlist = await _moveRepo.GetAssetMoveByTN(ticketNumber);
-        //     if (assetmovelist != null && assetmovelist.Any())
-        //     {
-        //         var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
-        //         {
-        //             assetMoveId = assetmove.id,
-        //             status = "Pending"
-        //         }).ToList();
-
-        //         rowsAffected = await _moveRepo.UpdateAssetMoveStatuses(list);
-        //     }
-
-        //     rowsAffected = await _ticketRepo.UpdateTicketMoveStatus(new UpdateTicketStatusDTO
-        //     {
-        //         ticketNumber = ticketNumber,
-        //         status = "Pending"
-        //     });
-        //     if (rowsAffected == 0)
-        //     {
-        //         return false;
-        //     }
-        //     return true;
-        // }
+        public async Task<(bool isPublishable, string? err)> CheckTicket(string ticketNumber)
+        {
+            var ticket = await _ticketRepo.GetTicketById(ticketNumber);
+            if(ticket == null){
+                return (false, "Ticket not found");
+            }
+            if(ticket.approvalStatus == "Rejected" || ticket.approvalStatus == "Approved" || ticket.approvalStatus == "Pending"){
+                return (false, "Ticket has been published");
+            }
+            var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticketNumber);
+            foreach (var asset in assetmovelist)
+                {
+                    _logger.LogDebug("Checking asset {assetNumber} for ticket {ticketNumber}", asset.assetNumber, ticketNumber);
+                    var assetStatus = await _moveRepo.GetAssetLastStatus(asset.assetNumber);
+                    if(assetStatus == "Missing" || assetStatus == "Moving" || assetStatus == "Waiting" || assetStatus == "Pending"){
+                        _logger.LogError("Asset {assetNumber} has invalid status: {status}", asset.assetNumber, assetStatus);
+                        return (false, "Asset " + asset.assetNumber + " has invalid status: " + assetStatus);
+                    }
+                }
+            return (true, "Ticket publishable");
+        }
     }
 }
 

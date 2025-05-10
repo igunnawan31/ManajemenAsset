@@ -137,5 +137,14 @@ namespace qrmanagement.backend.Controllers{
             }
             return Ok(new {statusCode = 200, message = "Ticket approval updated Successfully"});
         }
+
+        [HttpGet("check")]
+        public async Task<IActionResult> CheckTicket([FromQuery] string id){
+            var (isPublishable, msg) = await _ticketService.CheckTicket(id);
+            if(!isPublishable){
+                return BadRequest(new {statusCode = 400, message = msg});
+            }
+            return Ok(new {statusCode = 200, message = "Ticket publishable"});
+        }
     }
 }
