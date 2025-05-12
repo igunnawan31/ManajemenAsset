@@ -45,7 +45,7 @@ namespace qrmanagement.backend.Controllers{
             return Ok(new {statusCode = 200, message = "user Created Successfully"});
         }
 
-        [HttpPut("update/{id}")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateUser(int id, [FromForm] UpdateUser user){
             var existingUser = await _userRepo.GetUserById(id);
             if(existingUser == null){
@@ -57,8 +57,8 @@ namespace qrmanagement.backend.Controllers{
             }
             return Ok(new {statusCode = 200, message = "user Updated Successfully"});
         }
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(int id){
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser([FromBody] int id){
             var existingUser = await _userRepo.GetUserById(id);
             if(existingUser == null){
                 return NotFound();
