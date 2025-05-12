@@ -43,8 +43,7 @@ const EditUserPage = () => {
             setLoading(false);
             return;
         }
-
-        // Fetch user by ID
+        
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userid}`)
             .then((res) => {
                 if (!res.ok) throw new Error("User not found");
@@ -60,7 +59,6 @@ const EditUserPage = () => {
                 setLoading(false);
             });
 
-        // Fetch all branches
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/index`)
             .then((res) => res.json())
             .then((data) => setBranches(data))
