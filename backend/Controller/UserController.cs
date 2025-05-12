@@ -46,8 +46,8 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateUser(int id, [FromForm] UpdateUser user){
-            var existingUser = await _userRepo.GetUserById(id);
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUser user){
+            var existingUser = await _userRepo.GetUserById(user.userId);
             if(existingUser == null){
                 return NotFound();
             }
