@@ -243,6 +243,8 @@ namespace qrmanagement.backend.Repositories{
                                 branchName = @branchName, 
                                 branchEmail = @branchEmail,
                                 branchPhone = @branchPhone,
+                                kotaId = @kotaId,
+                                kecamatanId = @kecamatanId,
                                 branchLocation = @branchLocation,
                                 parentId = @parentId
                             WHERE
@@ -254,6 +256,8 @@ namespace qrmanagement.backend.Repositories{
                             branchCommand.Parameters.AddWithValue("@branchName", branch.branchName);
                             branchCommand.Parameters.AddWithValue("@branchEmail", branch.branchEmail);
                             branchCommand.Parameters.AddWithValue("@branchPhone", branch.branchPhone);
+                            branchCommand.Parameters.AddWithValue("@kotaId", branch.kotaId);
+                            branchCommand.Parameters.AddWithValue("@kecamatanId", branch.kecamatanId);
                             branchCommand.Parameters.AddWithValue("@branchLocation", branch.branchLocation);
                             branchCommand.Parameters.AddWithValue("@parentId", branch.parentId);
 
