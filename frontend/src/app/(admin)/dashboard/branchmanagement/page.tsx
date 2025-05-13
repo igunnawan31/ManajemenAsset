@@ -5,7 +5,7 @@ import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 import PopUpModal from "../components/PopUpModal";
 
 
@@ -231,7 +231,7 @@ const BranchManagement = () => {
                 <PopUpModal
                     title="Success"
                     message={deleteSuccess}
-                    icon={<IoEyeSharp className="text-green-500" />}
+                    icon={<IoCheckmarkCircle className="text-green-500" />}
                     actions={
                         <button
                             onClick={() => setDeleteSuccess(null)}

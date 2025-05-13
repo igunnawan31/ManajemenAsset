@@ -90,73 +90,102 @@ const EditBranchPage = () => {
     const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const kotaId = Number(e.target.value);
         const filtered = kecamatans.filter(k => k.kotaId === kotaId);
+        const selectedKota = kotas.find(k => k.kotaId === kotaId);
         
         setFilteredKecamatans(filtered);
         setBranch(prev => prev ? { 
-            ...prev, 
-            kotaId,
-            kecamatanId: 0
+          ...prev, 
+          kotaId,
+          kecamatanId: 0,
+          branchLocation: selectedKota ? `${prev.branchLocation.split(',')[0]}, ${selectedKota.kotaName}` : prev.branchLocation
         } : null);
-    };
+      };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-    
-        setBranch(prev => prev ? {
-            ...prev,
-            [name]: name === "kecamatanId" || name === "kotaId" ? Number(value) : value
-        } : null);
+        
+        setBranch(prev => {
+            if (!prev) return null;
+            
+            const newValue = name === "kecamatanId" || name === "kotaId" || name === "parentId" 
+                ? value === "" ? null : Number(value)
+                : value;
+            
+            return {
+                ...prev,
+                [name]: newValue
+            };
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-    
+      
         if (!branch) {
             setError("Branch data is missing");
             setLoading(false);
             return;
         }
-    
+      
+        // Enhanced client-side validation
+        if (
+            !branch.branchName?.trim() || 
+            !branch.branchEmail?.trim() || 
+            !branch.branchPhone?.trim() ||
+            !branch.kotaId ||
+            !branch.kecamatanId
+        ) {
+            setModalType("error");
+            setModalMessage("Please fill all required fields");
+            setLoading(false);
+            return;
+        }
+      
         try {
             const selectedKota = kotas.find(k => k.kotaId === branch.kotaId);
-            if (!selectedKota) {
-                throw new Error("Selected kota not found");
+            const selectedKecamatan = kecamatans.find(k => k.kecamatanId === branch.kecamatanId);
+        
+            if (!selectedKota || !selectedKecamatan) {
+                throw new Error("Selected location data not found");
             }
-    
+        
+            // Construct payload with proper types and validation
             const payload = {
                 branchId: branch.branchId,
-                branchName: branch.branchName,
-                branchEmail: branch.branchEmail,
-                branchPhone: branch.branchPhone,
-                branchLocation: selectedKota.kotaName,
+                branchName: branch.branchName.trim(),
+                branchEmail: branch.branchEmail.trim(),
+                branchPhone: branch.branchPhone.trim(),
+                branchLocation: `${selectedKecamatan.kecamatanName}, ${selectedKota.kotaName}`,
                 kotaId: branch.kotaId,
                 kecamatanId: branch.kecamatanId,
                 parentId: branch.parentId === null ? null : Number(branch.parentId)
             };
-    
-            console.log("Sending payload:", payload);
+      
+            console.log("Submitting payload:", payload);
             
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/update`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
+                "Content-Type": "application/json",
                 },
                 body: JSON.stringify(payload),
             });
-    
+      
+            const responseData = await response.json();
+            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to update branch");
+                console.error("Backend validation errors:", responseData.errors);
+                throw new Error(responseData.message || "Failed to update branch");
             }
-    
+        
             setModalType("success");
             setModalMessage("Branch updated successfully!");
         } catch (err: any) {
             console.error("Update error:", err);
             setModalType("error");
-            setModalMessage(err.message || "Error updating branch");
+            setModalMessage(err.message || "Error updating branch. Please check all fields.");
         } finally {
             setLoading(false);
         }

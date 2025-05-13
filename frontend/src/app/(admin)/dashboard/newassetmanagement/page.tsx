@@ -6,7 +6,8 @@ import Search from "../components/Search";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import PopUpModal from "../components/PopUpModal";
 
 interface Asset {
     id: string;
@@ -30,9 +31,12 @@ const NewAssetManagement = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [branches, setBranches] = useState<Record<string, string>>({});
 
+    const [assetToDelete, setAssetToDelete] = useState<Asset | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+
     const [newAsset, setNewAsset] = useState<Asset | null>(null);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/index`)
@@ -116,6 +120,39 @@ const NewAssetManagement = () => {
         setCurrentPage(1);
     }, [newAssets, searchQuery, statusFilter]);
 
+    const confirmDelete = (asset: Asset) => {
+        setAssetToDelete(asset);
+        setShowDeletePopup(true);
+    };
+    
+    const handleDeleteConfirmed = async () => {
+        if (!assetToDelete) return;
+    
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(parseInt(assetToDelete.id)),
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete asset. ${errorText}`);
+            }
+    
+            setNewAssets(prev => prev.filter(asset => asset.id !== assetToDelete.id));
+            setFilteredAssets(prev => prev.filter(asset => asset.id !== assetToDelete.id));
+            setDeleteSuccess(`Asset "${assetToDelete.name}" deleted successfully.`);
+        } catch (error) {
+            alert("Failed to delete the asset.");
+        } finally {
+            setShowDeletePopup(false);
+            setAssetToDelete(null);
+        }
+    };
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentAssets = filteredAssets.slice(indexOfFirstItem, indexOfLastItem);
@@ -172,7 +209,7 @@ const NewAssetManagement = () => {
                             },
                             {
                                 label: <IoTrash className="text-red-700" />,
-                                onClick: (row) => console.log("Delete user:", row.Id),
+                                onClick: (row) => confirmDelete(row as Asset),
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                         ]}
@@ -212,6 +249,44 @@ const NewAssetManagement = () => {
                     </button>
                 </div>
             </div>
+            {showDeletePopup && assetToDelete && (
+                <PopUpModal
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete branch "${assetToDelete.name}"?`}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                        <>
+                            <button
+                                onClick={() => setShowDeletePopup(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirmed}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </>
+                    }
+                />
+            )}
+            {deleteSuccess && (
+                <PopUpModal
+                    title="Success"
+                    message={deleteSuccess}
+                    icon={<IoCheckmarkCircle className="text-green-500" />}
+                    actions={
+                        <button
+                            onClick={() => setDeleteSuccess(null)}
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                            OK
+                        </button>
+                    }
+                />
+            )}
         </div>
     );
 }

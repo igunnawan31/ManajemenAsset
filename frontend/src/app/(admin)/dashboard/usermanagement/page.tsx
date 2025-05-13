@@ -5,7 +5,8 @@ import DataTable from "../components/DataTable";
 import Search from "../components/Search";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import PopUpModal from "../components/PopUpModal";
 
 
 interface User {
@@ -26,10 +27,11 @@ const UserManagement = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const itemsPerPage = 5;
 
-    // For Deletting 
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
     const columns = [
         { label: "id", key: "userId", alwaysVisible: true   },
@@ -86,6 +88,39 @@ const UserManagement = () => {
         setFilteredUsers(filtered);
     };
 
+    const confirmDelete = (user: User) => {
+        setUserToDelete(user);
+        setShowDeletePopup(true);
+    };
+    
+    const handleDeleteConfirmed = async () => {
+        if (!userToDelete) return;
+    
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(parseInt(userToDelete.userId)),
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete branch. ${errorText}`);
+            }
+    
+            setUsers(prev => prev.filter(user => user.userId !== userToDelete.userId));
+            setFilteredUsers(prev => prev.filter(user => user.userId !== userToDelete.userId));
+            setDeleteSuccess(`User "${userToDelete.userName}" deleted successfully.`);
+        } catch (error) {
+            alert("Failed to delete the branch.");
+        } finally {
+            setShowDeletePopup(false);
+            setUserToDelete(null);
+        }
+    };
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
@@ -134,7 +169,7 @@ const UserManagement = () => {
                                 },
                                 {
                                     label: <IoTrash className="text-red-700" />,
-                                    onClick: (row) => console.log("Delete user:", row.userId),
+                                    onClick: (row) => confirmDelete(row as User),
                                     className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                 },
                             ]}
@@ -175,6 +210,44 @@ const UserManagement = () => {
                     <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                 )}
             </div>
+            {showDeletePopup && userToDelete && (
+                <PopUpModal
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete branch "${userToDelete.userName}"?`}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                        <>
+                            <button
+                                onClick={() => setShowDeletePopup(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirmed}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </>
+                    }
+                />
+            )}
+            {deleteSuccess && (
+                <PopUpModal
+                    title="Success"
+                    message={deleteSuccess}
+                    icon={<IoCheckmarkCircle className="text-green-500" />}
+                    actions={
+                        <button
+                            onClick={() => setDeleteSuccess(null)}
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                            OK
+                        </button>
+                    }
+                />
+            )}
         </div>
     );
 }
