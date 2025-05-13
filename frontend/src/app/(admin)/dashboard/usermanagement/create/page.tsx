@@ -79,7 +79,6 @@ const CreatePageUser = () => {
         setLoading(true);
         setError(null);
         setSuccess(null);
-        console.log("data", data)
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
@@ -98,12 +97,12 @@ const CreatePageUser = () => {
             }
 
             setModalType("success");
-            setModalMessage("Asset created successfully!");
+            setModalMessage("User created successfully!");
             setSuccess(null);
             return;
         } catch (err: any) {
             setModalType("error");
-            setModalMessage(err.message || "An error occurred while creating the asset");
+            setModalMessage(err.message || "An error occurred while creating the user");
         } finally {
             setLoading(false);
         }

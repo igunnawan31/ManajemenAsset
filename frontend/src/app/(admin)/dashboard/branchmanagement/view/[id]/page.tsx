@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Upper from "../../../components/Upper"; // Adjust path if needed
+import Upper from "../../../components/Upper";
 
 interface Branch {
     branchId: string;
@@ -10,49 +10,90 @@ interface Branch {
     branchPhone: string;
     branchEmail: string;
     branchLocation: string;
+    kotaId: number;
+    kecamatanId: number;
 }
 
-const AssetView = () => {
+interface Kecamatan {
+    kecamatanId: number;
+    kecamatanName: string;
+    kotaId: number; 
+}
+
+interface Kota {
+    kotaId: number;  
+    kotaName: string;
+}
+
+const BranchView = () => {
     const { id } = useParams();
     const router = useRouter();
     const [branch, setBranch] = useState<Branch | null>(null);
+    const [kotaName, setKotaName] = useState<string>("Loading...");
+    const [kecamatanName, setKecamatanName] = useState<string>("Loading...");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!id) return;
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/by-id/${id}`)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Asset not found");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setBranch(data);
+        const fetchData = async () => {
+            try {
+                const branchResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/by-id/${id}`);
+                if (!branchResponse.ok) throw new Error("Branch not found");
+                const branchData = await branchResponse.json();
+
+                const processedBranch = {
+                    ...branchData,
+                    kotaId: Number(branchData.kotaId),
+                    kecamatanId: Number(branchData.kecamatanId)
+                };
+                setBranch(processedBranch);
+
+                const [kotaResponse, kecamatanResponse] = await Promise.all([
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/kota/index`),
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/kecamatan/index`)
+                ]);
+
+                const kotaData = await kotaResponse.json();
+                const kecamatanData = await kecamatanResponse.json();
+
+                const matchedKota = kotaData.find((kota: Kota) => kota.kotaId === processedBranch.kotaId);
+                setKotaName(matchedKota ? matchedKota.kotaName : "Not found");
+
+                const matchedKecamatan = kecamatanData.find(
+                    (kecamatan: Kecamatan) => kecamatan.kecamatanId === processedBranch.kecamatanId
+                );
+                setKecamatanName(matchedKecamatan ? matchedKecamatan.kecamatanName : "Not found");
+
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching asset:", error);
-                setError("Asset not found.");
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setError("Failed to load branch details.");
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchData();
     }, [id]);
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
+    if (!branch) return <div className="text-center mt-10">Branch not found</div>;
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
-            <Upper title="View Asset Details" />
+            <Upper title="View Branch Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-bold text-[#202B51]">{branch?.branchName}</h2>
-                <p><strong>ID:</strong> {branch?. branchId}</p>
-                <p><strong>Branch:</strong> {branch?.branchName}</p>
-                <p><strong>Asset Type:</strong> {branch?.branchEmail}</p>
-                <p><strong>Status:</strong> {branch?.branchPhone}</p>
-                <p><strong>Status:</strong> {branch?.branchLocation}</p>
+                <h2 className="text-xl font-bold text-[#202B51]">{branch.branchName}</h2>
+                <p><strong>ID:</strong> {branch.branchId}</p>
+                <p><strong>Branch:</strong> {branch.branchName}</p>
+                <p><strong>Email Branch:</strong> {branch.branchEmail}</p>
+                <p><strong>Phone Branch:</strong> {branch.branchPhone}</p>
+                <p><strong>Branch Location:</strong> {branch.branchLocation}</p>
+                <p><strong>Kota:</strong> {kotaName}</p>
+                <p><strong>Kecamatan:</strong> {kecamatanName}</p>
+
                 <button
                     onClick={() => router.back()}
                     className="mt-5 bg-[#202B51] text-white px-4 py-2 rounded-lg"
@@ -64,4 +105,4 @@ const AssetView = () => {
     );
 };
 
-export default AssetView;
+export default BranchView;

@@ -81,6 +81,10 @@ namespace qrmanagement.backend.Controllers{
 
         [HttpPut("update")]
         public async Task<IActionResult> UpdateAsset([FromForm] UpdateAssetDTO asset){
+            var existingAsset = await _assetRepo.GetAssetById(asset.id);
+            if (existingAsset == null) {
+                return NotFound();
+            }
             int row = await _assetRepo.UpdateAsset(asset);
             if(row == 0){
                 return BadRequest(new {statusCode = 400, message = "Failed while updating asset"});

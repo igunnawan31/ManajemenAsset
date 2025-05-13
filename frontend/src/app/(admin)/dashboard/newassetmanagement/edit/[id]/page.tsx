@@ -6,35 +6,24 @@ import Upper from "../../../components/Upper";
 import PopUpModal from "../../../components/PopUpModal";
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 
-interface User {
-    userId: string;
-    userName: string;
-    userEmail: string;
-    userBranch: string;
-    userPhone: string;
-    userRole: string;
-    userSubRole: string;
+interface Asset {
+    id: string;
+    name: string;
+    locationId: string;
+    assetType: string;
+    itemStatus: string;
 }
 
-enum Role {
-    Cabang = "Cabang",
-    Pusat = "Pusat",
-}
-
-enum SubRole {
-    Kepala_Gudang = "Kepala_Gudang",
-    PIC_Gudang = "PIC_Gudang",
-}
 
 interface Branch {
     branchId: string;
     branchName: string;
 }
 
-const EditUserPage = () => {
-    const { userid } = useParams();
+const EditAssetPage = () => {
+    const { id } = useParams();
     const router = useRouter();
-    const [user, setUser] = useState<User | null>(null);
+    const [asset, setAsset] = useState<Asset | null>(null);
     const [branches, setBranches] = useState<Branch[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -43,24 +32,24 @@ const EditUserPage = () => {
     const [success, setSuccess] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!userid) {
-            setError("User ID is missing.");
+        if (!id) {
+            setError("Asset ID is missing.");
             setLoading(false);
             return;
         }
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userid}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/by-id/${id}`)
             .then((res) => {
-                if (!res.ok) throw new Error("User not found");
+                if (!res.ok) throw new Error("Asset not found");
                 return res.json();
             })
             .then((data) => {
-                setUser(data);
+                setAsset(data);
                 setLoading(false);
             })
             .catch((err) => {
                 console.error(err);
-                setError("Failed to fetch user");
+                setError("Failed to fetch asset");
                 setLoading(false);
             });
 
@@ -68,13 +57,13 @@ const EditUserPage = () => {
             .then((res) => res.json())
             .then((data) => setBranches(data))
             .catch((err) => console.error("Error fetching branches:", err));
-    }, [userid]);
+    }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setUser((prevUser) => {
-            if (!prevUser) return prevUser;
-            return { ...prevUser, [name]: value };
+        setAsset((prevAsset) => {
+            if (!prevAsset) return prevAsset;
+            return { ...prevAsset, [name]: value };
         });
     };
 
@@ -84,39 +73,37 @@ const EditUserPage = () => {
         setError(null);
         setSuccess(null);
     
-        if (!user) {
-            setError("User data is missing");
+        if (!asset) {
+            setError("Asset data is missing");
             setLoading(false);
             return;
         }
     
         try {
             const formData = new FormData();
-            formData.append("userId", user.userId);
-            formData.append("userName", user.userName);
-            formData.append("userEmail", user.userEmail);
-            formData.append("userBranch", user.userBranch);
-            formData.append("userPhone", user.userPhone);
-            formData.append("userRole", user.userRole);
-            formData.append("userSubRole", user.userSubRole);
+            formData.append("id", asset.id);
+            formData.append("name", asset.name);
+            formData.append("locationId", asset.locationId);
+            formData.append("assetType", asset.assetType);
+            formData.append("itemStatus", asset.itemStatus);
     
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/update/${userid}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/update`, {
                 method: "PUT",
                 body: formData,
             });
     
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to update user");
+                throw new Error(errorData.message || "Failed to update asset");
             }
     
             setModalType("success");
-            setModalMessage("User updated successfully!");
+            setModalMessage("Asset updated successfully!");
             setSuccess(null);
             return;
         } catch (err: any) {
             setModalType("error");
-            setModalMessage(err.message || "Error Updating User");
+            setModalMessage(err.message || "Error Updating Asset");
         } finally {
             setLoading(false);
         }
@@ -124,47 +111,37 @@ const EditUserPage = () => {
     
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
-    if (error || !user) return <div className="text-center text-red-500 mt-10">{error}</div>;
+    if (error || !asset) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
         <div className="px-8 py-24 w-full max-h-full">
-            <Upper title="Edit User" />
+            <Upper title="Edit Asset" />
             <form onSubmit={handleSubmit} className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">User ID</label>
+                    <label className="block text-sm font-medium text-gray-700">Asset ID</label>
                     <input
                         type="text"
-                        name="userId"
-                        value={user.userId}
+                        name="id"
+                        value={asset.id}
                         readOnly
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-slate-300"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label className="block text-sm font-medium text-gray-700">Nama Asset</label>
                     <input
                         type="text"
-                        name="userName"
-                        value={user.userName}
+                        name="name"
+                        value={asset.name}
                         onChange={handleChange}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        name="userEmail"
-                        value={user.userEmail}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Branch</label>
+                    <label className="block text-sm font-medium text-gray-700">Lokasi Aset</label>
                     <select
-                        name="userBranch"
-                        value={user.userBranch}
+                        name="locationId"
+                        value={asset.locationId}
                         onChange={handleChange}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
                     >
@@ -177,46 +154,33 @@ const EditUserPage = () => {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Phone</label>
-                    <input
-                        type="text"
-                        name="userPhone"
-                        value={user.userPhone}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <label className="block text-sm font-medium text-gray-700">Tipe Aset</label>
                     <select
-                        name="userRole"
-                        value={user.userRole}
+                        name="assetType"
+                        value={asset.assetType}
                         onChange={handleChange}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
                     >
-                        <option value="">-- Select Role --</option>
-                        {Object.values(Role).map((role) => (
-                            <option key={role} value={role}>
-                                {role}
-                            </option>
-                        ))}
+                        <option value="">-- Select Asset Type --</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Vehicles">Vehicles</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Office Equipment">Office Equipment</option>
                     </select>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Sub Role</label>
+                    <label className="block text-sm font-medium text-gray-700">Status Aset</label>
                     <select
-                        name="userSubRole"
-                        value={user.userSubRole}
+                        name="itemStatus"
+                        value={asset.itemStatus}
                         onChange={handleChange}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
                     >
-                        <option value="">-- Select Sub Role --</option>
-                        {Object.values(SubRole).map((subrole) => (
-                            <option key={subrole} value={subrole}>
-                                {subrole.replace("_", " ")}
-                            </option>
-                        ))}
+                        <option value="">-- Select Item Status --</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
                     </select>
                 </div>
 
@@ -244,10 +208,10 @@ const EditUserPage = () => {
                     actions={
                     <>
                         <button
-                            onClick={() => router.push("/dashboard/usermanagement")}
+                            onClick={() => router.push("/dashboard/newassetmanagement")}
                             className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                         >
-                            Go to User Management
+                            Go to Asset Management
                         </button>
                     </>
                     }
@@ -273,4 +237,4 @@ const EditUserPage = () => {
     );
 };
 
-export default EditUserPage;
+export default EditAssetPage;
