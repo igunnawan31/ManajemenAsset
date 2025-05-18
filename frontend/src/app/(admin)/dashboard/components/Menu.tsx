@@ -17,10 +17,6 @@ const menuDashboards = [
         label: "Asset Dashboard",
         href: "/dashboard/assetdashboard",
       },
-      {
-        label: "Pengelolaan Asset",
-        href: "/dashboard/pengelolaanaset",
-      },
     ],
   },
 ];
@@ -237,16 +233,23 @@ const Menu = () => {
               </div>
               {openMenus[menu.title] && (
                 <div className="ml-4 flex flex-col gap-2 mt-3">
-                  {menu.items.map((item) => (
-                    <Link
-                      href={item.href}
-                      key={item.label}
-                      className="text-white hover:bg-gray-700 p-2 rounded transition-colors duration-200"
-                      onClick={handleMenuItemClick}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+                  {menu.items
+                    .filter((item) => {
+                      if (item.label === "Asset Dashboard" && hasParentId === false) {
+                        return false;
+                      }
+                      return true;
+                    })
+                    .map((item) => (
+                      <Link
+                        href={item.href}
+                        key={item.label}
+                        className="text-white hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+                        onClick={handleMenuItemClick}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
                 </div>
               )}
             </div>
@@ -388,22 +391,27 @@ const Menu = () => {
                 <IoCaretForward className="w-3 h-3 text-white mx-4" />
               </span>
             </div>
+
             {openMenus[menu.title] && (
               <div className="flex flex-col gap-2 mx-4">
-                {menu.items.map((item) => (
-                  <Link
-                    href={item.href}
-                    key={item.label}
-                    className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
-                  >
-                    <span className="hidden lg:block">{item.label}</span>
-                  </Link>
-                ))}
+                {menu.items
+                  .filter((item) => {
+                    if (item.label === "Asset Dashboard" && hasParentId === false) return false;
+                    return true;
+                  })
+                  .map((item) => (
+                    <Link
+                      href={item.href}
+                      key={item.label}
+                      className="flex items-center justify-center lg:justify-start hover:bg-gray-700 p-2 rounded text-white font-light py-4 poppins"
+                    >
+                      <span className="hidden lg:block">{item.label}</span>
+                    </Link>
+                  ))}
               </div>
             )}
           </div>
         ))}
-
         {menuInbound.map((menu) => (
           <div className="flex flex-col gap-2 bg-[#171F39]" key={menu.title}>
             <div

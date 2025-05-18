@@ -18,15 +18,15 @@ const Search: React.FC<SearchProps> = ({ placeholder = "Search...", onSearch }) 
   };
 
   return (
-    <div className=" flex h-14 poppins">
+    <div className="relative w-full">
+      <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
       <input
         type="text"
-        className="w-full poppins py-2 pl-10 text-sm outline-none rounded-lg border border-[#202B51] font-sans"
+        className="w-full h-12 pl-10 pr-4 text-sm rounded-lg border border-[#202B51] outline-none font-sans"
         placeholder={placeholder}
         value={query}
         onChange={handleChange}
       />
-      <IoSearch className="absolute left-3 top-[1.2rem] h-5 w-5 text-gray-500" />
     </div>
   );
 };
