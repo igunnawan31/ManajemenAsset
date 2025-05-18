@@ -62,6 +62,7 @@ const DraftUpdateRequestInbound = () => {
     const [assets, setAssets] = useState<Asset[]>([]);
     const [confirmedAssets, setConfirmedAssets] = useState<Asset[]>([]);
     const [assetMoves, setAssetMoves] = useState<AssetMove[]>([]);
+    const [selectedOriginBranch, setSelectedOriginBranch] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -77,12 +78,9 @@ const DraftUpdateRequestInbound = () => {
                 if (!response.ok) throw new Error("Failed to fetch user data");
 
                 const data = await response.json();
-                console.log("User data from API:", data);
                 setUsers(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An unknown error occurred");
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -166,19 +164,17 @@ const DraftUpdateRequestInbound = () => {
             }
         };
 
-        if (ticketnumber) {
-            fetchAssetMoves();
-        }
+        fetchAssetMoves();
     }, [ticketnumber]);
 
     useEffect(() => {
-        if (!users?.userBranch || !branches.length) return;
+        if (!selectedOriginBranch || !branches.length) return;
     
         const fetchAvailableAssets = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/available/${users.userBranch}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/available/${selectedOriginBranch}`);
                 if (!response.ok) throw new Error(`Failed to fetch available assets`);
-    
+
                 const data: Asset[] = await response.json();
                 
                 const availableAssets = data.filter(asset => 
@@ -192,30 +188,42 @@ const DraftUpdateRequestInbound = () => {
         };
     
         fetchAvailableAssets();
-    }, [users?.userBranch, branches, confirmedAssets]);
+    }, [selectedOriginBranch, branches, confirmedAssets]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setTicket((prevTicket) => {
-            if (!prevTicket) return prevTicket;
-            return { ...prevTicket, [name]: value };
-        });
-    }
+    const handleBranchOriginChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newBranchId = Number(e.target.value);
+
+        const filteredAssets = confirmedAssets.filter(
+            (asset) => asset.locationId === String(newBranchId)
+        );
+
+        setSelectedOriginBranch(newBranchId);
+        setTicket(prev => prev ? { ...prev, branchOrigin: newBranchId } : prev);
+        setConfirmedAssets(filteredAssets);
+    };
 
     const handleConfirmSelection = (newSelectedAssets: Asset[]) => {
         const updatedAssets = [...confirmedAssets, ...newSelectedAssets];
-        
         const uniqueAssets = updatedAssets.filter(
             (asset, index, self) => index === self.findIndex(a => a.id === asset.id)
         );
-        
         setConfirmedAssets(uniqueAssets);
         setIsPopupOpen(false);
     };
 
+    const handleSelectAsset = (asset: Asset) => {
+        if (String(asset.locationId) !== String(ticket?.branchOrigin)) {
+            return;
+        }
+        setConfirmedAssets((prevAssets) => {
+            if (prevAssets.find(a => a.id === asset.id)) return prevAssets;
+            return [...prevAssets, asset];
+        });
+    };
+
     const handleRemoveAsset = (assetId: string) => {
         setConfirmedAssets(prev => prev.filter(asset => asset.id !== assetId));
-    }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -248,8 +256,6 @@ const DraftUpdateRequestInbound = () => {
                 status: "Pending"
             };
 
-            console.log("Submitting payload:", payload);
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/approval`, {
                 method: "POST",
                 headers: {
@@ -258,20 +264,15 @@ const DraftUpdateRequestInbound = () => {
                 body: JSON.stringify(payload),
             });
 
-            console.log("Response status:", response.status);
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                console.error("Error details:", errorData);
                 throw new Error(errorData.message || "Failed to update ticket");
             }
 
             const result = await response.json();
-            console.log("Success response:", result);
-            
             setModalType("success");
             setModalMessage(result.message || "Ticket and assets updated successfully!");
         } catch (err: any) {
-            console.error("Submission error:", err);
             setModalType("error");
             setModalMessage(err.message || "Error updating ticket and assets");
         } finally {
@@ -286,53 +287,51 @@ const DraftUpdateRequestInbound = () => {
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
     if (error || !ticket) return <div className="text-center text-red-500 mt-10">{error}</div>;
-    
 
     return (
         <div className="px-8 py-24 w-full max-h-full poppins mb-24">
-            <Upper title="Edit Detail Request Outbound" />
+            <Upper title="Edit Detail Request Inbound" />
             <form onSubmit={handleSubmit} className="mt-5 bg-white p-6 rounded-lg shadow-md space-y-4">
-                <div className="mt-5">
-                    Detail Ticket
-                </div>
+                <div className="mt-5">Detail Ticket</div>
+                
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Ticket Number</label>
                     <input
                         type="text"
-                        defaultValue={ticket?.ticketNumber}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5] bg-gray-200"
+                        value={ticket.ticketNumber}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
                         disabled
                         readOnly
                     />
                 </div>
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Branch Origin</label>
-                    <input
-                        type="text"
-                        name="branchOrigin"
-                        defaultValue={getBranchName(ticket!.branchOrigin)}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5] bg-gray-200"
-                        disabled
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                        Branch Destination
-                    </label>
                     <select
-                        name="branchDestination"
-                        value={ticket.branchDestination}
-                        onChange={handleChange}
+                        name="branchOrigin"
+                        value={ticket?.branchOrigin ?? ""}
+                        onChange={handleBranchOriginChange}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                    >
+                        >
                         {branch.map((b) => (
                             <option key={b.branchId} value={b.branchId}>
-                                {b.branchName}
+                            {b.branchName}
                             </option>
                         ))}
                     </select>
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Branch Destination</label>
+                    <input
+                        type="text"
+                        value={getBranchName(ticket.branchDestination)}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
+                        disabled
+                        readOnly
+                    />
+                </div>
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Select Assets</label>
                     <button
@@ -375,63 +374,59 @@ const DraftUpdateRequestInbound = () => {
                     onConfirm={handleConfirmSelection}
                     assets={assets}
                 />
-                <div className="mt-5">
-                    Status
-                </div>
+
+                <div className="mt-5">Status</div>
+                
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
                         Outbound Date / Tanggal Pengiriman
                     </label>
                     <input
                         type="date"
-                        name="outboundDate"
-                        defaultValue={ticket.outboundDate}
+                        value={ticket?.outboundDate ?? ""}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
                         disabled
                         readOnly
                     />
-                    </div>
+                </div>
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
                         Inbound Date / Tanggal Penerimaan
                     </label>
                     <input
                         type="date"
-                        name="inboundDate"
-                        defaultValue={ticket.inboundDate}
+                        value={ticket.inboundDate}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
                         disabled
                         readOnly
                     />
                 </div>
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
                         Approval Status
                     </label>
                     <input
-                        name="approvalStatus"
                         value={ticket.approvalStatus}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
                         disabled
                         readOnly
-                    >
-                    </input>
+                    />
                 </div>
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
                         Move Status
                     </label>
                     <input
-                        type="text"
-                        name="moveStatus"
                         value={ticket.moveStatus}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-gray-200"
                         disabled
                         readOnly
                     />
                 </div>
-                
-                {/* Submit button */}
+
                 <div className="flex justify-end mt-6">
                     <button
                         type="submit"
@@ -442,20 +437,19 @@ const DraftUpdateRequestInbound = () => {
                     </button>
                 </div>
             </form>
+
             {modalType === "success" && (
                 <PopUpModal
                     title="Success"
                     message={modalMessage}
                     icon={<IoCheckmarkCircleSharp className="text-green-500" />}
                     actions={
-                    <>
                         <button
-                            onClick={() => router.push("/dashboard/requestoutbound")}
+                            onClick={() => router.push("/dashboard/requestinbound")}
                             className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                         >
-                            Go to Request Outbound
+                            Go to Request Inbound
                         </button>
-                    </>
                     }
                 />
             )}
@@ -466,17 +460,17 @@ const DraftUpdateRequestInbound = () => {
                     message={modalMessage}
                     icon={<IoCloseCircleSharp className="text-red-500" />}
                     actions={
-                    <button
-                        onClick={() => setModalType(null)}
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                    >
-                        Close
-                    </button>
+                        <button
+                            onClick={() => setModalType(null)}
+                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                        >
+                            Close
+                        </button>
                     }
                 />
             )}
         </div>
-    )
-}
+    );
+};
 
 export default DraftUpdateRequestInbound;

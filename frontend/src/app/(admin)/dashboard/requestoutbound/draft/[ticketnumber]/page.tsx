@@ -431,7 +431,6 @@ const DraftUpdateRequestOutbound = () => {
                     />
                 </div>
                 
-                {/* Submit button */}
                 <div className="flex justify-end mt-6">
                     <button
                         type="submit"
