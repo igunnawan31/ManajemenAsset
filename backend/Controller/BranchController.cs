@@ -43,7 +43,7 @@ namespace qrmanagement.backend.Controllers{
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateBranch([FromForm] UpdateBranchDTO branch){
+        public async Task<IActionResult> UpdateBranch([FromBody] UpdateBranchDTO branch){
             int row = await _branchRepo.UpdateBranch(branch);
             if(row == 0){
                 return BadRequest("Failed while updating branch");

@@ -344,6 +344,48 @@ const CreateRequestOutboundPage = () => {
                 onConfirm={handleConfirmSelection}
                 assets={assets}
             />
+            {modalType === "success" && (
+                <PopUpModal
+                    title="Success"
+                    message={modalMessage}
+                    icon={<IoCheckmarkCircleSharp className="text-green-500" />}
+                    actions={
+                    <>
+                        <button
+                            onClick={() => {
+                                setModalType(null);
+                                reset();
+                        }}
+                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                            Create Another Ticket
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard/requestoutbound")}
+                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Go to Request Outbound
+                        </button>
+                    </>
+                    }
+                />
+            )}
+
+            {modalType === "error" && (
+                <PopUpModal
+                    title="Error"
+                    message={modalMessage}
+                    icon={<IoCloseCircleSharp className="text-red-500" />}
+                    actions={
+                    <button
+                        onClick={() => setModalType(null)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Close
+                    </button>
+                    }
+                />
+            )}
         </div>
     );
 };

@@ -153,33 +153,42 @@ const EditBranchPage = () => {
         
             // Construct payload with proper types and validation
             const payload = {
-                branchId: branch.branchId,
+                branchId: Number(branch.branchId),
                 branchName: branch.branchName.trim(),
                 branchEmail: branch.branchEmail.trim(),
                 branchPhone: branch.branchPhone.trim(),
-                branchLocation: `${selectedKecamatan.kecamatanName}, ${selectedKota.kotaName}`,
                 kotaId: branch.kotaId,
                 kecamatanId: branch.kecamatanId,
+                branchLocation: `${selectedKecamatan.kecamatanName}, ${selectedKota.kotaName}`,
                 parentId: branch.parentId === null ? null : Number(branch.parentId)
             };
       
             console.log("Submitting payload:", payload);
             
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/update`, {
+            const response = await fetch("http://localhost:5199/api/branch/update", {
                 method: "PUT",
                 headers: {
-                "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(payload),
             });
-      
-            const responseData = await response.json();
-            
+
+            const contentType = response.headers.get("content-type");
+
             if (!response.ok) {
-                console.error("Backend validation errors:", responseData.errors);
-                throw new Error(responseData.message || "Failed to update branch");
+                let message = "Update failed";
+
+                if (contentType?.includes("application/json")) {
+                    const data = await response.json();
+                    message = data.message || message;
+                } else {
+                    const text = await response.text();
+                    message = text || message;
+                }
+
+                throw new Error(message);
             }
-        
+
             setModalType("success");
             setModalMessage("Branch updated successfully!");
         } catch (err: any) {

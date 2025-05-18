@@ -255,7 +255,7 @@ const RequestOutboundPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestoutbound/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -312,12 +312,12 @@ const RequestOutboundPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestoutbound/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestoutbound/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                         {
                                             label: <IoReaderSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestoutbound/edit/${row.userId}`,
+                                            href: (row) => `/dashboard/requestoutbound/draft/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                         {

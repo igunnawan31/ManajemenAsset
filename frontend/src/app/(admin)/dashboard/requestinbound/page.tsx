@@ -303,12 +303,12 @@ const RequestInboundPage = () => {
                                     actions={[
                                         {
                                             label: <IoEyeSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestinbound/view/${row.id}`,
+                                            href: (row) => `/dashboard/requestinbound/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                         {
                                             label: <IoReaderSharp className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestinbound/edit/${row.userId}`,
+                                            href: (row) => `/dashboard/requestinbound/draft/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                         {
