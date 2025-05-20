@@ -243,8 +243,8 @@ const RequestAssetKeluarPage = () => {
                                     data={ditolak}
                                     actions={[
                                         {
-                                            label: <IoCheckmarkCircle className="text-[#202B51]" />,
-                                            href: (row) => `/dashboard/requestassetkeluar/accepttiket/${row.id}`,
+                                            label: <IoEyeSharp className="text-[#202B51]" />,
+                                            href: (row) => `/dashboard/requestassetkeluar/view/${row.ticketNumber}`,
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}

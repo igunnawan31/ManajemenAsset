@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Upper from "../components/Upper";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
-import { IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
+import { IoCheckmarkCircle, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 
 interface Ticket {
     ticketNumber: string;
@@ -232,7 +232,7 @@ const PengecekanAssetMasukPage = () => {
                                         actions={[
                                             {
                                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                                href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.id}`,
+                                                href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.ticketNumber}`,
                                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                             },
                                         ]}
@@ -287,7 +287,7 @@ const PengecekanAssetMasukPage = () => {
                                         data={paginateData(inProgress, currentPageOnGoing)}
                                         actions={[
                                             {
-                                                label: <IoEyeSharp className="text-[#202B51]" />,
+                                                label: <IoCheckmarkCircle className="text-[#202B51]" />,
                                                 href: (row) => `/dashboard/pengecekanassetmasuk/accepttiket/${row.ticketNumber}`,
                                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                             },
@@ -344,7 +344,7 @@ const PengecekanAssetMasukPage = () => {
                                         actions={[
                                             {
                                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                                href: (row) => `/dashboard/requestassetmasuk/view/${row.id}`,
+                                                href: (row) => `/dashboard/pengecekanassetmasuk/view/${row.ticketNumber}`,
                                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                             },
                                         ]}
