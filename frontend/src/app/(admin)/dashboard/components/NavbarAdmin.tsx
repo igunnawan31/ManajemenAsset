@@ -53,9 +53,6 @@ const NavbarAdmin = () => {
                     />
                 </div>
                 <div className="flex items-center gap-4 pr-8">
-                    <div className="relative cursor-pointer">
-                        <IoNotifications size={32} className="text-white" />
-                    </div>
                     <div className="relative" ref={dropdownRef}>
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsDropdownMenuOpen(!isDropdownMenuOpen)}>
                             <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
