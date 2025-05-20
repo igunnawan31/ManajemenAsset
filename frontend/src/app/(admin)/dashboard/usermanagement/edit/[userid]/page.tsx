@@ -100,7 +100,7 @@ const EditUserPage = () => {
             formData.append("userRole", user.userRole);
             formData.append("userSubRole", user.userSubRole);
     
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/update/${userid}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/update`, {
                 method: "PUT",
                 body: formData,
             });
