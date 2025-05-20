@@ -119,7 +119,7 @@ const CreatePageUser = () => {
                             <input
                                 type="text"
                                 {...register("userName")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter username"
                             />
                             {errors.userName?.message && (
@@ -131,7 +131,7 @@ const CreatePageUser = () => {
                             <input
                                 type="email"
                                 {...register("userEmail")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter email"
                             />
                             {errors.userEmail?.message && (
@@ -142,7 +142,7 @@ const CreatePageUser = () => {
                             <label className="block text-sm font-medium text-gray-700">Branch</label>
                             <select
                                 {...register("userBranch")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                             >
                                 <option value="">Select Branch</option>
                                 {branches.map((branch) => (
@@ -160,7 +160,7 @@ const CreatePageUser = () => {
                             <input
                                 type="text"
                                 {...register("userPhone")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter phone number"
                             />
                             {errors.userPhone?.message && (
@@ -171,7 +171,7 @@ const CreatePageUser = () => {
                             <label className="block text-sm font-medium text-gray-700">Role</label>
                             <select
                                 {...register("userRole")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                             >
                                 <option value="">Select Role</option>
                                 {Object.values(Role).map((role) => (
@@ -188,7 +188,7 @@ const CreatePageUser = () => {
                             <label className="block text-sm font-medium text-gray-700">SubRole</label>
                             <select
                                 {...register("userSubRole")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                             >
                                 <option value="">Select SubRole</option>
                                 {Object.values(SubRole).map((subRole) => (
@@ -206,7 +206,7 @@ const CreatePageUser = () => {
                             <input
                                 type={showPassword ? "text" : "password"} 
                                 {...register("password")}
-                                className="mt-1 p-2 border w-full rounded-md pr-10"
+                                className="mt-1 p-2 border w-full rounded-md pr-10 border-[#202BA5]"
                                 placeholder="Enter password"
                             />
                             <button
@@ -223,7 +223,7 @@ const CreatePageUser = () => {
                     </div>
                     <button
                         type="submit"
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+                        className="mt-4 px-4 py-2 bg-[#202BA5] text-white rounded-md"
                     >
                         Submit
                     </button>

@@ -58,15 +58,77 @@ const UserView = () => {
     return (
         <div className="px-8 py-24 w-full max-h-full">
             <Upper title="View User Details" />
-            <div className="mt-5 bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-bold text-[#202B51]">{user?.userName}</h2>
-                <p><strong>ID:</strong> {user?.userId}</p>
-                <p><strong>Name:</strong> {user?.userName}</p>
-                <p><strong>Email:</strong> {user?.userEmail}</p>
-                <p><strong>Branch:</strong> {user?.userBranch}</p>
-                <p><strong>Phone:</strong> {user?.userPhone}</p>
-                <p><strong>Role:</strong> {user?.userRole}</p>
-                <p><strong>Sub Role:</strong> {user?.userSubRole}</p>
+            <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">ID User</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userId}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Username</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userName}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Email User</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userEmail}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">User Branch</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userBranch}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone User</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userPhone}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Role User</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userRole}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Sub Role User</label>
+                    <input
+                        type="text"
+                        defaultValue={user?.userSubRole}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
                 <button
                     onClick={() => router.back()}
                     className="mt-5 bg-[#202B51] text-white px-4 py-2 rounded-lg"

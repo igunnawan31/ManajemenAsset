@@ -50,6 +50,10 @@ const CreateRequestOutboundPage = () => {
     const [selectedBranch, setSelectedBranch] = useState<string>("");
     const [requestDate, setRequestDate] = useState<string>(new Date().toISOString().split("T")[0]);
     const router = useRouter();
+    const [fieldErrors, setFieldErrors] = useState({
+        branchDestination: false,
+        assets: false,
+    });
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -159,6 +163,26 @@ const CreateRequestOutboundPage = () => {
     });
 
     const onSubmit = async (data: any) => {
+        const hasBranchDestination = selectedBranch && selectedBranch !== "";
+        const hasAssets = confirmedAssets.length > 0;
+
+        if (!hasBranchDestination || !hasAssets) {
+            setFieldErrors({
+                branchDestination: !hasBranchDestination,
+                assets: !hasAssets,
+            });
+            setModalType("error");
+            setModalMessage(
+                !hasBranchDestination && !hasAssets
+                    ? "Please select a branch destination and at least one asset."
+                    : !hasBranchDestination
+                    ? "Please select a branch destination."
+                    : "Please select at least one asset."
+            );
+            return;
+        }
+
+        setFieldErrors({ branchDestination: false, assets: false });
         setLoading(true);
         setError(null);
         setSuccess(null);
@@ -232,11 +256,10 @@ const CreateRequestOutboundPage = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Branch Destination</label>
                             <select
-                                className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                                {...register("branchDestination", {
-                                    validate: (value) => 
-                                        value !== users?.userBranch || "Cannot select your own branch as Destination"
-                                })}
+                                className={`mt-1 p-2 w-full rounded-md border ${
+                                    fieldErrors.branchDestination ? "border-red-500" : "border-[#202BA5]"
+                                }`}
+                                {...register("branchDestination")}
                                 onChange={(e) => {
                                     setSelectedBranch(e.target.value);
                                 }}
@@ -253,6 +276,11 @@ const CreateRequestOutboundPage = () => {
                             {errors.branchDestination?.message && (
                                 <p className="text-red-500 text-xs mt-2">
                                     {String(errors.branchDestination.message)}
+                                </p>
+                            )}
+                            {fieldErrors.branchDestination && (
+                                <p className="text-red-500 text-xs mt-2">
+                                    Branch destination is required.
                                 </p>
                             )}
                         </div>
@@ -292,6 +320,11 @@ const CreateRequestOutboundPage = () => {
                                     </div>
                                 ))}
                             </div>
+                        )}
+                        {fieldErrors.assets && (
+                            <p className="text-red-500 text-xs mt-2">
+                                Please select at least one asset.
+                            </p>
                         )}
                     </div>
 

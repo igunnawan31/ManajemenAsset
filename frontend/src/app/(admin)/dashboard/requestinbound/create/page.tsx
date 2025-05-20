@@ -50,6 +50,10 @@ const CreateRequestInbound = () => {
     const [selectedBranch, setSelectedBranch] = useState<string>("");
     const [requestDate, setRequestDate] = useState<string>(new Date().toISOString().split("T")[0]);
     const router = useRouter();
+    const [fieldErrors, setFieldErrors] = useState({
+        branchOrigin: false,
+        assets: false,
+    });
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -162,6 +166,26 @@ const CreateRequestInbound = () => {
     });
 
     const onSubmit = async (data: any) => {
+        const hasBranchOrigin = selectedBranch && selectedBranch !== "";
+        const hasAssets = confirmedAssets.length > 0;
+
+        if (!hasBranchOrigin || !hasAssets) {
+            setFieldErrors({
+                branchOrigin: !hasBranchOrigin,
+                assets: !hasAssets,
+            });
+            setModalType("error");
+            setModalMessage(
+                !hasBranchOrigin && !hasAssets
+                    ? "Please select a branch destination and at least one asset."
+                    : !hasBranchOrigin
+                    ? "Please select a branch destination."
+                    : "Please select at least one asset."
+            );
+            return;
+        }
+
+        setFieldErrors({ branchOrigin: false, assets: false });
         setLoading(true);
         setError(null);
         setSuccess(null);
@@ -248,6 +272,11 @@ const CreateRequestInbound = () => {
                                     {String(errors.branchOrigin.message)}
                                 </p>
                             )}
+                            {fieldErrors.branchOrigin && (
+                                <p className="text-red-500 text-xs mt-2">
+                                    Branch origin is required.
+                                </p>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Branch Destination</label>
@@ -295,6 +324,11 @@ const CreateRequestInbound = () => {
                                     </div>
                                 ))}
                             </div>
+                        )}
+                        {fieldErrors.assets && (
+                            <p className="text-red-500 text-xs mt-2">
+                                Please select at least one asset.
+                            </p>
                         )}
                     </div>
 

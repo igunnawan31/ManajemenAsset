@@ -84,16 +84,77 @@ const BranchView = () => {
     return (
         <div className="px-8 py-24 w-full max-h-full">
             <Upper title="View Branch Details" />
-            <div className="mt-5 bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-bold text-[#202B51]">{branch.branchName}</h2>
-                <p><strong>ID:</strong> {branch.branchId}</p>
-                <p><strong>Branch:</strong> {branch.branchName}</p>
-                <p><strong>Email Branch:</strong> {branch.branchEmail}</p>
-                <p><strong>Phone Branch:</strong> {branch.branchPhone}</p>
-                <p><strong>Branch Location:</strong> {branch.branchLocation}</p>
-                <p><strong>Kota:</strong> {kotaName}</p>
-                <p><strong>Kecamatan:</strong> {kecamatanName}</p>
-
+            <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">ID Branch</label>
+                    <input
+                        type="text"
+                        defaultValue={branch.branchId}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Branch Name</label>
+                    <input
+                        type="text"
+                        defaultValue={branch.branchName}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Email Branch</label>
+                    <input
+                        type="text"
+                        defaultValue={branch.branchEmail}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone Branch</label>
+                    <input
+                        type="text"
+                        defaultValue={branch.branchPhone}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Kota</label>
+                    <input
+                        type="text"
+                        defaultValue={kotaName}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Kecamatan</label>
+                    <input
+                        type="text"
+                        defaultValue={kecamatanName}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Alamat</label>
+                    <input
+                        type="text"
+                        defaultValue={branch.branchLocation}
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
+                        disabled
+                        readOnly
+                    />
+                </div>
                 <button
                     onClick={() => router.back()}
                     className="mt-5 bg-[#202B51] text-white px-4 py-2 rounded-lg"

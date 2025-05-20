@@ -124,7 +124,7 @@ const CreatePageBranch = () => {
                             <input
                                 type="text"
                                 {...register("branchName")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter Branch Name"
                             />
                             {errors.branchName && <p className="text-red-500 text-xs mt-2">{errors.branchName.message?.toString()}</p>}
@@ -134,7 +134,7 @@ const CreatePageBranch = () => {
                             <input
                                 type="email"
                                 {...register("branchEmail")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter Branch Email"
                             />
                             {errors.branchEmail && <p className="text-red-500 text-xs mt-2">{errors.branchEmail.message?.toString()}</p>}
@@ -144,7 +144,7 @@ const CreatePageBranch = () => {
                             <input
                                 type="text"
                                 {...register("branchPhone")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter Branch Phone Number"
                             />
                             {errors.branchPhone && <p className="text-red-500 text-xs mt-2">{errors.branchPhone.message?.toString()}</p>}
@@ -153,7 +153,7 @@ const CreatePageBranch = () => {
                             <label className="block text-sm font-medium text-gray-700">Kota</label>
                             <select
                                 {...register("kotaId")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 onChange={(e) => {
                                     const selectedValue = e.target.value;
                                     setSelectedKota(selectedValue); 
@@ -174,7 +174,7 @@ const CreatePageBranch = () => {
                             <label className="block text-sm font-medium text-gray-700">Kecamatan</label>
                             <select
                                 {...register("kecamatanId")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                             >
                                 <option value="">Select Kecamatan</option>
                                 {kecamatans
@@ -192,7 +192,7 @@ const CreatePageBranch = () => {
                             <input
                                 type="text"
                                 {...register("branchLocation")}
-                                className="mt-1 p-2 border w-full rounded-md"
+                                className="mt-1 p-2 border w-full rounded-md border-[#202BA5]"
                                 placeholder="Enter Branch Address"
                             />
                             {errors.branchLocation && <p className="text-red-500 text-xs mt-2">{errors.branchLocation.message?.toString()}</p>}
@@ -203,7 +203,7 @@ const CreatePageBranch = () => {
 
                     <button 
                         type="submit" 
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+                        className="mt-4 px-4 py-2 bg-[#202B51] text-white rounded-md"
                         onClick={() => console.log("Submit Button Clicked")}
                     >
                         Submit
