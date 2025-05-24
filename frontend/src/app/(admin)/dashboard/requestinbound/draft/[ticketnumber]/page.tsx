@@ -119,6 +119,7 @@ const DraftUpdateRequestInbound = () => {
                     throw new Error("Ticket Not Found");
                 }
                 setTicket(data);
+                setSelectedOriginBranch(data.branchOrigin); // 👈 This enables auto-fetching assets
             })
             .catch((error) => {
                 setError("Ticket Not Found");
