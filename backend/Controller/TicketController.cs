@@ -140,9 +140,9 @@ namespace qrmanagement.backend.Controllers{
 
         [HttpPost("publish")]
         public async Task<IActionResult> PublishTicket([FromBody] PublishTicketDTO ticket){
-            bool success = await _ticketService.PublishTicket(ticket);
+            var (success, err) = await _ticketService.PublishTicket(ticket);
             if(!success){
-                return BadRequest(new {statusCode = 400, message = "Failed while publishing ticket"});
+                return BadRequest(new {statusCode = 400, message = err});
             }
             return Ok(new {statusCode = 200, message = "Ticket published successfully"});
         }

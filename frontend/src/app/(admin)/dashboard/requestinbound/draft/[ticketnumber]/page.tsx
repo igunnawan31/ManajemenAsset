@@ -256,12 +256,20 @@ const DraftUpdateRequestInbound = () => {
                 status: "Pending"
             };
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/approval`, {
+            const testing = {
+                ticketNumber: ticket.ticketNumber,
+                branchOrigin: ticket.branchOrigin,
+                branchDestination: ticket.branchDestination,
+                requestedBy: ticket.requestedBy,
+                receivedBy: ticket.receivedBy,
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/publish`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify(testing),
             });
 
             if (!response.ok) {
