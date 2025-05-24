@@ -279,7 +279,7 @@ namespace qrmanagement.backend.Repositories{
                                     ROW_NUMBER() OVER (PARTITION BY AssetNumber ORDER BY updatedOn DESC) AS rn
                                 FROM AssetMoves
                             ) AS ranked
-                            WHERE rn = 1 AND (moveStatus = 'Arrived' OR moveStatus = 'Draft')
+                            WHERE rn = 1 AND (moveStatus = 'Arrived' OR moveStatus = 'Draft' OR moveStatus = 'Rejected')
                         ) AS am ON a.id = am.AssetNumber
                         WHERE a.itemStatus = 'Active' AND a.locationId = @id
                     ";

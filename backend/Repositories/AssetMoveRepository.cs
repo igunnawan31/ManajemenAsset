@@ -6,13 +6,16 @@ using qrmanagement.backend.DTO.Asset;
 using qrmanagement.backend.DTO.AssetMove;
 using qrmanagement.backend.Models;
 
-namespace qrmanagement.backend.Repositories{
-    public class AssetMoveRepository : IAssetMoveRepository{
+namespace qrmanagement.backend.Repositories
+{
+    public class AssetMoveRepository : IAssetMoveRepository
+    {
         private readonly AppDBContext _context;
         private readonly ILogger<AssetMoveRepository> _logger;
         private readonly IConfiguration _configuration;
         private const string UploadsFolder = "uploads/asset";
-        public AssetMoveRepository(AppDBContext context, ILogger<AssetMoveRepository> logger, IConfiguration configuration){
+        public AssetMoveRepository(AppDBContext context, ILogger<AssetMoveRepository> logger, IConfiguration configuration)
+        {
             _context = context;
             _logger = logger;
             _configuration = configuration;
@@ -20,12 +23,14 @@ namespace qrmanagement.backend.Repositories{
 
         public async Task<IEnumerable<AssetMoveResponseDTO>> GetAllAssetMove()
         {
-            try{
+            try
+            {
                 var assetMoveList = new List<AssetMoveResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -40,12 +45,16 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO
+                                {
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
@@ -59,11 +68,13 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return assetMoveList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving assetmove data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
@@ -71,12 +82,14 @@ namespace qrmanagement.backend.Repositories{
 
         public async Task<IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByTN(string ticketNumber)
         {
-            try{
+            try
+            {
                 var assetMoveList = new List<AssetMoveResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -93,13 +106,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@ticketNumber", ticketNumber);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO
+                                {
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
@@ -112,24 +129,28 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return assetMoveList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving assetmove data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
-            }        
+            }
         }
 
         public async Task<IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByAN(string assetNumber)
         {
-            try{
+            try
+            {
                 var assetMoveList = new List<AssetMoveResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -146,13 +167,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@assetNumber", assetNumber);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO
+                                {
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
@@ -165,11 +190,13 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return assetMoveList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving assetmove data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
@@ -177,12 +204,14 @@ namespace qrmanagement.backend.Repositories{
 
         public async Task<IEnumerable<AssetMoveResponseDTO>> GetAssetMoveByStatus(string status)
         {
-            try{
+            try
+            {
                 var assetMoveList = new List<AssetMoveResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -199,13 +228,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@moveStatus", status);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                AssetMoveResponseDTO asset = new AssetMoveResponseDTO
+                                {
                                     id = reader.GetInt32(0),
                                     ticketNumber = reader.GetString(1),
                                     assetNumber = reader.GetString(2),
@@ -218,11 +251,13 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return assetMoveList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving assetmove data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
@@ -287,24 +322,30 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> AddAssetMoveLog(string assetNumber){
+        public async Task<int> AddAssetMoveLog(string assetNumber)
+        {
             _logger.LogDebug("Adding assetMoveLog to the database.");
 
-            int rowsAffected=0;
-            try{
+            int rowsAffected = 0;
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){
-                        try{
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
+                        try
+                        {
                             string insertAssetMove = @"
                                 INSERT INTO AssetMoves 
                                     (ticketNumber, assetNumber, moveStatus, createdOn, updatedOn)
                                 VALUES
                                     (@ticketNumber, @assetNumber, @moveStatus, @createdOn, @updatedOn);
                             ";
-                            using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
+                            using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction))
+                            {
                                 assetMoveCommand.Parameters.AddWithValue("@ticketNumber", "DEFAULTSTATUS");
                                 assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
                                 assetMoveCommand.Parameters.AddWithValue("@moveStatus", "Arrived");
@@ -312,7 +353,7 @@ namespace qrmanagement.backend.Repositories{
                                 assetMoveCommand.Parameters.AddWithValue("updatedOn", DateTime.Now);
 
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
-                                
+
                                 _logger.LogDebug("Successfully added assetmove.");
                             }
                             await transaction.CommitAsync();
@@ -339,25 +380,32 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber, string ticketType){
+        public async Task<int> AddAssetMove(IEnumerable<string> assetNumbers, string ticketNumber, string ticketType)
+        {
             _logger.LogDebug("Adding assetMove to the database.");
 
-            int rowsAffected=0;
-            try{
+            int rowsAffected = 0;
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){
-                        try{
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
+                        try
+                        {
                             string insertAssetMove = @"
                                 INSERT INTO AssetMoves 
                                     (ticketNumber, assetNumber, moveStatus, createdOn, updatedOn)
                                 VALUES
                                     (@ticketNumber, @assetNumber, @moveStatus, @createdOn, @updatedOn);
                             ";
-                            foreach (var assetNumber in assetNumbers){
-                                using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction)){
+                            foreach (var assetNumber in assetNumbers)
+                            {
+                                using (var assetMoveCommand = new SqlCommand(insertAssetMove, connection, (SqlTransaction)transaction))
+                                {
                                     assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@assetNumber", assetNumber);
                                     assetMoveCommand.Parameters.AddWithValue("@moveStatus", ticketType);
@@ -365,7 +413,7 @@ namespace qrmanagement.backend.Repositories{
                                     assetMoveCommand.Parameters.AddWithValue("updatedOn", DateTime.Now);
 
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
-                                    
+
                                     _logger.LogDebug("Successfully added assetmove.");
                                 }
                             }
@@ -393,16 +441,20 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> UpdateAssetMoveStatuses(IEnumerable<UpdateAssetMoveStatusDTO> assets){
+        public async Task<int> UpdateAssetMoveStatuses(IEnumerable<UpdateAssetMoveStatusDTO> assets)
+        {
             _logger.LogDebug("Updating assetmove status");
 
             int rowsAffected = 0;
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = connection.BeginTransaction())
+                    {
                         try
                         {
                             string updateQuery = @"
@@ -414,15 +466,17 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     id = @assetMoveId
                             ";
-                            foreach (var asset in assets){
-                                using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            foreach (var asset in assets)
+                            {
+                                using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction))
+                                {
                                     assetMoveCommand.Parameters.AddWithValue("@moveStatus", asset.status);
                                     assetMoveCommand.Parameters.AddWithValue("@assetMoveId", asset.assetMoveId);
                                     assetMoveCommand.Parameters.AddWithValue("@updatedOn", DateTime.Now);
-                                    
+
                                     rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                                 }
-                                
+
                             }
                             _logger.LogDebug("Successfuly updated assetMove");
                             transaction.Commit();
@@ -434,16 +488,18 @@ namespace qrmanagement.backend.Repositories{
                             throw;
                         }
                     }
-                }     
+                }
 
                 _logger.LogDebug("Assetmove successfully updated");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while updating Assetmove");    
+                throw new Exception("An error occured while updating Assetmove");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while updating Assetmove.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -452,16 +508,20 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task<int> UpdateAssetMoveStatus(UpdateAssetMoveStatusDTO asset){
+        public async Task<int> UpdateAssetMoveStatus(UpdateAssetMoveStatusDTO asset)
+        {
             _logger.LogDebug("Updating assetmove status");
 
             int rowsAffected = 0;
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = connection.BeginTransaction())
+                    {
                         try
                         {
                             string updateQuery = @"
@@ -473,11 +533,12 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     id = @assetMoveId
                             ";
-                            using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            using (var assetMoveCommand = new SqlCommand(updateQuery, connection, transaction))
+                            {
                                 assetMoveCommand.Parameters.AddWithValue("@moveStatus", asset.status);
                                 assetMoveCommand.Parameters.AddWithValue("@assetMoveId", asset.assetMoveId);
                                 assetMoveCommand.Parameters.AddWithValue("@updatedOn", DateTime.Now);
-                                
+
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                             }
                             _logger.LogDebug("Successfuly updated assetMove");
@@ -490,16 +551,18 @@ namespace qrmanagement.backend.Repositories{
                             throw;
                         }
                     }
-                }     
+                }
 
                 _logger.LogDebug("Assetmove successfully updated");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while updating Assetmove");    
+                throw new Exception("An error occured while updating Assetmove");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while updating Assetmove.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -516,10 +579,12 @@ namespace qrmanagement.backend.Repositories{
             try
             {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){ // kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    { // kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
                         try
                         {
                             // string checkStatusQuery = @"
@@ -559,14 +624,15 @@ namespace qrmanagement.backend.Repositories{
                             ";
                             foreach (var id in ids)
                             {
-                                using (var ticketCommand = new SqlCommand(deleteAssetMoveQuery, connection, (SqlTransaction)transaction)){
+                                using (var ticketCommand = new SqlCommand(deleteAssetMoveQuery, connection, (SqlTransaction)transaction))
+                                {
                                     ticketCommand.Parameters.AddWithValue("@id", id);
 
                                     rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                                 }
                             }
                             _logger.LogDebug("Successfuly deleted AssetMove");
-                            transaction.Commit();    
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
@@ -578,19 +644,21 @@ namespace qrmanagement.backend.Repositories{
                 }
 
                 _logger.LogDebug("AssetMove successfully deleted.");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while deleting AssetMove");    
+                throw new Exception("An error occured while deleting AssetMove");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while deleting AssetMove.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
 
                 throw new Exception("Internal Server Error");
-            } 
+            }
         }
     }
 }

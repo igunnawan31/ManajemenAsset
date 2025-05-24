@@ -3,23 +3,29 @@ using Microsoft.Data.SqlClient;
 using qrmanagement.backend.Context;
 using qrmanagement.backend.DTO.Ticket;
 using qrmanagement.backend.Models;
-namespace qrmanagement.backend.Repositories{
-    public class TicketRepository : ITicketRepository{
+namespace qrmanagement.backend.Repositories
+{
+    public class TicketRepository : ITicketRepository
+    {
         private readonly AppDBContext _context;
         private readonly ILogger<TicketRepository> _logger;
         private readonly IConfiguration _configuration;
-        public TicketRepository(AppDBContext context, ILogger<TicketRepository> logger, IConfiguration configuration){
+        public TicketRepository(AppDBContext context, ILogger<TicketRepository> logger, IConfiguration configuration)
+        {
             _context = context;
             _logger = logger;
             _configuration = configuration;
         }
-        public async Task<IEnumerable<TicketResponseDTO>> GetAllTicket(){
-            try{
+        public async Task<IEnumerable<TicketResponseDTO>> GetAllTicket()
+        {
+            try
+            {
                 var ticketList = new List<TicketResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -43,12 +49,16 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                TicketResponseDTO asset = new TicketResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                TicketResponseDTO asset = new TicketResponseDTO
+                                {
                                     ticketNumber = reader.GetString(0),
                                     branchOrigin = reader.GetInt32(1),
                                     branchDestination = reader.GetInt32(2),
@@ -59,7 +69,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -69,21 +79,26 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return ticketList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving ticket data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
         }
-        public async Task <TicketResponseDTO> GetTicketById(string id){
-            try{
+        public async Task<TicketResponseDTO> GetTicketById(string id)
+        {
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -107,13 +122,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@id", id);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            if (await reader.ReadAsync()){
-                                TicketResponseDTO asset = new TicketResponseDTO{
+                            if (await reader.ReadAsync())
+                            {
+                                TicketResponseDTO asset = new TicketResponseDTO
+                                {
                                     ticketNumber = reader.GetString(0),
                                     branchOrigin = reader.GetInt32(1),
                                     branchDestination = reader.GetInt32(2),
@@ -124,12 +143,13 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10)
                                 };
                                 _logger.LogDebug("ticket fetched successfully");
                                 return asset;
                             }
-                            else{
+                            else
+                            {
                                 _logger.LogWarning("No ticket found with the given id: {ticketNumber}", id);
                                 return null!;
                             }
@@ -138,22 +158,27 @@ namespace qrmanagement.backend.Repositories{
 
                 }
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving ticket data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
         }
-        public async Task <IEnumerable<TicketResponseDTO>> GetTicketByOrigin(int locationId){
-            try{
+        public async Task<IEnumerable<TicketResponseDTO>> GetTicketByOrigin(int locationId)
+        {
+            try
+            {
                 var ticketList = new List<TicketResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -177,13 +202,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@locationId", locationId);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                TicketResponseDTO asset = new TicketResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                TicketResponseDTO asset = new TicketResponseDTO
+                                {
                                     ticketNumber = reader.GetString(0),
                                     branchOrigin = reader.GetInt32(1),
                                     branchDestination = reader.GetInt32(2),
@@ -194,7 +223,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -204,22 +233,27 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return ticketList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving ticket data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
         }
-        public async Task <IEnumerable<TicketResponseDTO>> GetTicketByMoveStatus(string status){
-            try{
+        public async Task<IEnumerable<TicketResponseDTO>> GetTicketByMoveStatus(string status)
+        {
+            try
+            {
                 var ticketList = new List<TicketResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -243,13 +277,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@status", status);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                TicketResponseDTO asset = new TicketResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                TicketResponseDTO asset = new TicketResponseDTO
+                                {
                                     ticketNumber = reader.GetString(0),
                                     branchOrigin = reader.GetInt32(1),
                                     branchDestination = reader.GetInt32(2),
@@ -260,7 +298,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -270,22 +308,27 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return ticketList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving ticket data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
         }
-        public async Task <IEnumerable<TicketResponseDTO>> GetTicketByApprovalStatus(string status){
-            try{
+        public async Task<IEnumerable<TicketResponseDTO>> GetTicketByApprovalStatus(string status)
+        {
+            try
+            {
                 var ticketList = new List<TicketResponseDTO>();
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
                 _logger.LogDebug("Connection string retrieved");
 
-                using (SqlConnection connection = new SqlConnection(connectionString)){
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
                     _logger.LogDebug("Database connection opened.");
 
@@ -309,13 +352,17 @@ namespace qrmanagement.backend.Repositories{
                     ";
 
                     _logger.LogDebug("Executing query");
-                    using (SqlCommand command = new SqlCommand(query, connection)){
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
                         command.Parameters.AddWithValue("@status", status);
-                        using (SqlDataReader reader = (SqlDataReader) await command.ExecuteReaderAsync()){
+                        using (SqlDataReader reader = (SqlDataReader)await command.ExecuteReaderAsync())
+                        {
                             _logger.LogDebug("Query executed successfully. Reading data...");
 
-                            while (await reader.ReadAsync()){
-                                TicketResponseDTO asset = new TicketResponseDTO{
+                            while (await reader.ReadAsync())
+                            {
+                                TicketResponseDTO asset = new TicketResponseDTO
+                                {
                                     ticketNumber = reader.GetString(0),
                                     branchOrigin = reader.GetInt32(1),
                                     branchDestination = reader.GetInt32(2),
@@ -326,7 +373,7 @@ namespace qrmanagement.backend.Repositories{
                                     moveStatus = reader.GetString(7),
                                     requestedBy = reader.GetInt32(8),
                                     receivedBy = reader.GetInt32(9),
-                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10) 
+                                    rejectReason = reader.IsDBNull(10) ? null : reader.GetString(10)
                                 };
                                 ticketList.Add(asset);
                             }
@@ -336,34 +383,42 @@ namespace qrmanagement.backend.Repositories{
                 }
                 return ticketList;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
                 throw new Exception("An error occured while retrieving ticket data from the database");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"An error occured: {ex.Message}");
                 throw new Exception("Internal server error");
             }
         }
 
-        public async Task<int> AddTicket(CreateTicketDTO ticket, string ticketNumber){
+        public async Task<int> AddTicket(CreateTicketDTO ticket, string ticketNumber)
+        {
             _logger.LogDebug("Adding ticket to the database.");
 
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){
-                        try{
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
+                        try
+                        {
                             string insertTicketQuery = @"
                                 INSERT INTO Tickets 
                                     (ticketNumber, requestedBy, receivedBy, branchOrigin, branchDestination, dateRequested, approvalStatus, moveStatus)
                                 VALUES
                                     (@ticketNumber, @requestedBy, @receivedBy, @branchOrigin, @branchDestination, @dateRequested, @approvalStatus, @moveStatus);
                             ";
-                             
-                            using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction)){
+
+                            using (var ticketCommand = new SqlCommand(insertTicketQuery, connection, (SqlTransaction)transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticketNumber);
                                 ticketCommand.Parameters.AddWithValue("@requestedBy", ticket.requestedBy);
                                 ticketCommand.Parameters.AddWithValue("@receivedBy", ticket.receivedBy);
@@ -374,13 +429,13 @@ namespace qrmanagement.backend.Repositories{
                                 ticketCommand.Parameters.AddWithValue("@moveStatus", ticketMoveStatus.Not_Started.ToString());
 
                                 int rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
-                                
+
                                 _logger.LogDebug("Successfully added ticket.");
 
                                 await transaction.CommitAsync();
                                 return rowsAffected;
                             }
-                            
+
                         }
                         catch (Exception ex)
                         {
@@ -403,16 +458,20 @@ namespace qrmanagement.backend.Repositories{
             }
         }
 
-        public async Task <int> UpdateTicket(UpdateTicketDTO ticket){
+        public async Task<int> UpdateTicket(UpdateTicketDTO ticket)
+        {
             _logger.LogDebug("Updating ticket data");
 
             int rowsAffected = 0;
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = connection.BeginTransaction())
+                    {
                         try
                         {
                             // TO DO: check status, cuma ticket dengan status draft yang bisa diupdate
@@ -425,12 +484,16 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     t.ticketNumber = @id
                             ";
-                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
+                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction))
+                            {
                                 checkMoveCommand.Parameters.AddWithValue("@id", ticket.ticketNumber);
-                                using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
-                                    if (await reader.ReadAsync()) 
+                                using (SqlDataReader reader = (SqlDataReader)await checkMoveCommand.ExecuteReaderAsync())
+                                {
+                                    if (await reader.ReadAsync())
                                     {
-                                        if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft)){
+                                        if (!Enum.TryParse(reader.GetString(0), out approvalStatus status) || status != approvalStatus.Draft)
+                                        {
+
                                             throw new Exception("Ticket has been sent. Cannot be updated");
                                         }
                                     }
@@ -445,24 +508,25 @@ namespace qrmanagement.backend.Repositories{
                                 UPDATE 
                                     Tickets
                                 SET
+                                    branchOrigin = @branchOrigin,
                                     branchDestination = @branchDestination,
-                                    outboundDate = @outboundDate,
-                                    inboundDate = @inboundDate
+                                    dateRequested = @dateRequested
                                 WHERE
                                     ticketNumber = @ticketNumber
                             ";
 
-                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
-                                ticketCommand.Parameters.AddWithValue("@outboundDate", ticket.outboundDate);
-                                ticketCommand.Parameters.AddWithValue("@inboundDate", ticket.inboundDate);
+                                ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
+                                ticketCommand.Parameters.AddWithValue("@dateRequested", ticket.dateRequested);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
 
                             _logger.LogDebug("Successfuly updated ticket");
-                            transaction.Commit();   
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
@@ -471,33 +535,39 @@ namespace qrmanagement.backend.Repositories{
                             throw;
                         }
                     }
-                }     
+                }
 
                 _logger.LogDebug("Ticket successfully updated");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while updating ticket");    
+                throw new Exception("An error occured while updating ticket");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
 
                 throw new Exception("Internal Server Error");
-            }  
+            }
         }
-        public async Task <int> UpdateTicketMoveStatus(UpdateTicketStatusDTO ticket){
+        public async Task<int> UpdateTicketMoveStatus(UpdateTicketStatusDTO ticket)
+        {
             _logger.LogDebug("Updating ticket data");
 
             int rowsAffected = 0;
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = connection.BeginTransaction())
+                    {
                         try
                         {
                             string updateQuery = @"
@@ -508,22 +578,24 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     ticketNumber = @ticketNumber
                             ";
-                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@moveStatus", ticket.status);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
-                            
+
                             // TO DO: query buat update semua move status assetmove yang terkait sama ticketnumbernya
                             // NOT NEEDED KARENA UPDATE MOVE STATUS ASSET MOVE HARUS PER ITEM
-                            
+
                             // TO DO: modify inbound & outbound date kalau move status berubah
                             // DONE
 
                             string updateDate;
                             DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                            if(ticket.status == "Completed"){
+                            if (ticket.status == "Completed")
+                            {
                                 updateDate = @"
                                     UPDATE
                                         Tickets
@@ -532,8 +604,9 @@ namespace qrmanagement.backend.Repositories{
                                     WHERE
                                         ticketNumber = @ticketNumber
                                 ";
-                            } 
-                            else{
+                            }
+                            else
+                            {
                                 updateDate = @"
                                     UPDATE
                                         Tickets
@@ -543,10 +616,11 @@ namespace qrmanagement.backend.Repositories{
                                         ticketNumber = @ticketNumber
                                 ";
                             }
-                            using(var assetMoveCommand = new SqlCommand(updateDate, connection, transaction)){
+                            using (var assetMoveCommand = new SqlCommand(updateDate, connection, transaction))
+                            {
                                 assetMoveCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
                                 assetMoveCommand.Parameters.AddWithValue("@date", date);
-                                
+
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
                             }
                             _logger.LogDebug("Successfuly updated ticket");
@@ -559,33 +633,39 @@ namespace qrmanagement.backend.Repositories{
                             throw;
                         }
                     }
-                }     
+                }
 
                 _logger.LogDebug("Ticket successfully updated");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while updating ticket");    
+                throw new Exception("An error occured while updating ticket");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
 
                 throw new Exception("Internal Server Error");
-            }  
+            }
         }
-        public async Task <int> UpdateTicketApprovalStatus(UpdateTicketStatusDTO ticket){
+        public async Task<int> UpdateTicketApprovalStatus(UpdateTicketStatusDTO ticket)
+        {
             _logger.LogDebug("Updating ticket data");
 
             int rowsAffected = 0;
-            try{
+            try
+            {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction()){
+                    using (var transaction = connection.BeginTransaction())
+                    {
                         try
                         {
                             string updateQuery;
@@ -600,19 +680,20 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     ticketNumber = @ticketNumber
                             ";
-                        
-                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction)){
+
+                            using (var ticketCommand = new SqlCommand(updateQuery, connection, transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@approvalStatus", ticket.status);
                                 ticketCommand.Parameters.AddWithValue("@rejectReason", ticket.rejectReason ?? (object)DBNull.Value);
                                 ticketCommand.Parameters.AddWithValue("@rejectClassification", ticket.rejectClassification ?? (object)DBNull.Value);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
                                 ticketCommand.Parameters.AddWithValue("@dateApproved", ticket.dateApproved ?? (object)DBNull.Value);
-                                
+
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
 
                             _logger.LogDebug("Successfuly updated ticket");
-                            transaction.Commit();   
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
@@ -621,16 +702,18 @@ namespace qrmanagement.backend.Repositories{
                             throw;
                         }
                     }
-                }     
+                }
 
                 _logger.LogDebug("Ticket successfully updated");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while updating ticket");    
+                throw new Exception("An error occured while updating ticket");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while updating ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
@@ -638,17 +721,20 @@ namespace qrmanagement.backend.Repositories{
                 throw new Exception("Internal Server Error");
             }
         }
-        public async Task <int> DeleteTicketWithValidation(string id){
+        public async Task<int> DeleteTicketWithValidation(string id)
+        {
             _logger.LogDebug("Deleting ticket from the database");
 
             int rowsAffected = 0;
             try
             {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){ 
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
                         try
                         {// kalo error, ganti jadi begintransaction dan hapus await setelah itu hapus cast di transaction sql command dst.
                             string checkStatusQuery = @"
@@ -659,12 +745,15 @@ namespace qrmanagement.backend.Repositories{
                                 WHERE
                                     t.ticketNumber = @id
                             ";
-                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction)){
+                            using (var checkMoveCommand = new SqlCommand(checkStatusQuery, connection, (SqlTransaction)transaction))
+                            {
                                 checkMoveCommand.Parameters.AddWithValue("@id", id);
-                                using (SqlDataReader reader = (SqlDataReader) await checkMoveCommand.ExecuteReaderAsync()){
+                                using (SqlDataReader reader = (SqlDataReader)await checkMoveCommand.ExecuteReaderAsync())
+                                {
                                     if (await reader.ReadAsync()) // Pastikan ada data sebelum memanggil reader.GetString(0)
                                     {
-                                        if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft)){
+                                        if (!(Enum.Parse<approvalStatus>(reader.GetString(0)) == approvalStatus.Draft))
+                                        {
                                             throw new Exception("Ticket has been sent. Cannot be deleted");
                                         }
                                     }
@@ -683,7 +772,8 @@ namespace qrmanagement.backend.Repositories{
                                     ticketNumber = @id
                             ";
 
-                            using (var assetMoveCommand = new SqlCommand(deleteAssetMoveQuery, connection, (SqlTransaction)transaction)){
+                            using (var assetMoveCommand = new SqlCommand(deleteAssetMoveQuery, connection, (SqlTransaction)transaction))
+                            {
                                 assetMoveCommand.Parameters.AddWithValue("@id", id);
 
                                 rowsAffected = await assetMoveCommand.ExecuteNonQueryAsync();
@@ -697,13 +787,14 @@ namespace qrmanagement.backend.Repositories{
                             ";
 
 
-                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
+                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@id", id);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
                             _logger.LogDebug("Successfuly deleted Ticket");
-                            transaction.Commit();    
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
@@ -715,32 +806,37 @@ namespace qrmanagement.backend.Repositories{
                 }
 
                 _logger.LogDebug("Ticket successfully deleted.");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while deleting ticket");    
+                throw new Exception("An error occured while deleting ticket");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while deleting ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
 
                 throw new Exception("Internal Server Error");
-            } 
+            }
         }
 
-        public async Task <int> DeleteWithoutValidation(string id){
+        public async Task<int> DeleteWithoutValidation(string id)
+        {
             _logger.LogDebug("Deleting ticket from the database");
 
             int rowsAffected = 0;
             try
             {
                 var connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-                using (var connection = new SqlConnection(connectionString)){
+                using (var connection = new SqlConnection(connectionString))
+                {
                     await connection.OpenAsync();
 
-                    using (var transaction = await connection.BeginTransactionAsync()){ 
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
                         try
                         {
                             string deleteTicketQuery = @"
@@ -751,13 +847,14 @@ namespace qrmanagement.backend.Repositories{
                             ";
 
 
-                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction)){
+                            using (var ticketCommand = new SqlCommand(deleteTicketQuery, connection, (SqlTransaction)transaction))
+                            {
                                 ticketCommand.Parameters.AddWithValue("@id", id);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();
                             }
                             _logger.LogDebug("Successfuly deleted Ticket");
-                            transaction.Commit();    
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
@@ -769,19 +866,21 @@ namespace qrmanagement.backend.Repositories{
                 }
 
                 _logger.LogDebug("Ticket successfully deleted.");
-                return rowsAffected;          
+                return rowsAffected;
             }
-            catch (SqlException sqlEx){
+            catch (SqlException sqlEx)
+            {
                 _logger.LogError($"An error occured: {sqlEx.Message}");
-                throw new Exception("An error occured while deleting ticket");    
+                throw new Exception("An error occured while deleting ticket");
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "An error occurred while deleting ticket.");
                 _logger.LogError("Stacktrace:");
                 _logger.LogError(ex.StackTrace);
 
                 throw new Exception("Internal Server Error");
-            } 
+            }
         }
     }
 }
