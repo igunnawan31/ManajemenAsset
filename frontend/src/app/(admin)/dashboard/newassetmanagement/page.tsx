@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 import PopUpModal from "../components/PopUpModal";
+import { routes } from "@/lib/routes";
 
 interface Asset {
     id: string;
@@ -199,12 +200,12 @@ const NewAssetManagement = () => {
                         actions={[
                             {
                                 label: <IoEyeSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/view/${row.id}`,
+                                href: (row) => routes.dashboard.newAssetManagement.view(row.id),
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
                                 label:  <IoReaderSharp className="text-[#202B51]" />,
-                                href: (row) => `/dashboard/newassetmanagement/edit/${row.id}`,
+                                href: (row) => routes.dashboard.newAssetManagement.edit(row.id),
                                 className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                             },
                             {
