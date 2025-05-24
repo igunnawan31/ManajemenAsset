@@ -430,6 +430,7 @@ const DraftUpdateRequestInbound = () => {
                 <div className="flex justify-end mt-6">
                     <button
                         type="submit"
+                                                                    onClick={() => handleRemoveAsset(asset.id)}
                         className="bg-[#20458A] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                         disabled={loading}
                     >

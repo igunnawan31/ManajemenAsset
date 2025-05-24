@@ -206,7 +206,9 @@ namespace qrmanagement.backend.Services
                 ticketNumber = ticket.ticketNumber,
                 branchOrigin = ticket.branchOrigin,
                 branchDestination = ticket.branchDestination,
-                dateRequested = DateOnly.FromDateTime(DateTime.UtcNow)
+                dateRequested = DateOnly.FromDateTime(DateTime.UtcNow),
+                receivedBy = ticket.receivedBy,
+                requestedBy = ticket.requestedBy
             };
 
             int rowsAffectedTicket;

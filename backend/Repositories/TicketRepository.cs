@@ -510,7 +510,9 @@ namespace qrmanagement.backend.Repositories
                                 SET
                                     branchOrigin = @branchOrigin,
                                     branchDestination = @branchDestination,
-                                    dateRequested = @dateRequested
+                                    dateRequested = @dateRequested,
+                                    receivedBy = @receivedBy,
+                                    requestedBy = @requestedBy
                                 WHERE
                                     ticketNumber = @ticketNumber
                             ";
@@ -520,6 +522,8 @@ namespace qrmanagement.backend.Repositories
                                 ticketCommand.Parameters.AddWithValue("@branchDestination", ticket.branchDestination);
                                 ticketCommand.Parameters.AddWithValue("@branchOrigin", ticket.branchOrigin);
                                 ticketCommand.Parameters.AddWithValue("@dateRequested", ticket.dateRequested);
+                                ticketCommand.Parameters.AddWithValue("@receivedBy", ticket.receivedBy);
+                                ticketCommand.Parameters.AddWithValue("@requestedBy", ticket.requestedBy);
                                 ticketCommand.Parameters.AddWithValue("@ticketNumber", ticket.ticketNumber);
 
                                 rowsAffected = await ticketCommand.ExecuteNonQueryAsync();

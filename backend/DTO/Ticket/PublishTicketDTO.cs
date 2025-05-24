@@ -3,8 +3,6 @@ namespace qrmanagement.backend.DTO.Ticket{
         public required string ticketNumber {get; set;}
         public required int branchOrigin {get; set;}
         public required int branchDestination {get; set;}
-        public required DateOnly dateRequested {get; set;}
-        public required string approvalStatus {get; set;}
         public required IEnumerable<string> assetNumbers {get; set;}
         public required int receivedBy {get; set;}
         public required int requestedBy {get; set;}
