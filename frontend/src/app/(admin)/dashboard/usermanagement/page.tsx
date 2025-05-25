@@ -108,14 +108,14 @@ const UserManagement = () => {
     
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Failed to delete branch. ${errorText}`);
+                throw new Error(`Failed to delete user. ${errorText}`);
             }
     
             setUsers(prev => prev.filter(user => user.userId !== userToDelete.userId));
             setFilteredUsers(prev => prev.filter(user => user.userId !== userToDelete.userId));
             setDeleteSuccess(`User "${userToDelete.userName}" deleted successfully.`);
         } catch (error) {
-            alert("Failed to delete the branch.");
+            alert("Failed to delete the user.");
         } finally {
             setShowDeletePopup(false);
             setUserToDelete(null);
@@ -214,7 +214,7 @@ const UserManagement = () => {
             {showDeletePopup && userToDelete && (
                 <PopUpModal
                     title="Confirm Delete"
-                    message={`Are you sure you want to delete branch "${userToDelete.userName}"?`}
+                    message={`Are you sure you want to delete user "${userToDelete.userName}"?`}
                     icon={<IoCloseCircleSharp className="text-red-500" />}
                     actions={
                         <>

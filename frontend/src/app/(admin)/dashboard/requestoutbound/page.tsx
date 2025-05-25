@@ -5,7 +5,8 @@ import Link from "next/link";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
 import Upper from "../components/Upper";
-import { IoEyeSharp, IoReaderSharp, IoTrash, IoCar } from "react-icons/io5";
+import { IoEyeSharp, IoReaderSharp, IoTrash, IoCar, IoCloseCircleSharp, IoCheckmarkCircle } from "react-icons/io5";
+import PopUpModal from "../components/PopUpModal";
 
 interface Ticket {
     ticketNumber: string;
@@ -60,6 +61,10 @@ const RequestOutboundPage = () => {
     const [userBranch, setUserBranch] = useState<string | null>(null);
     const [branches, setBranches] = useState<Branch[]>([]);
     const itemsPerPage = 5;
+
+    const [ticketToDelete, setTicketToDelete] = useState<Ticket | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
 
     const [currentPageCreate, setCurrentPageCreate] = useState<number>(1);
     const [currentPageDraft, setCurrentPageDraft] = useState<number>(1);
@@ -141,34 +146,34 @@ const RequestOutboundPage = () => {
         fetchBranches();
     }, []);
 
+    const fetchTickets = async () => {
+        if (!userBranch) return;
+        
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`);
+            if (!response.ok) {
+                return response.text().then((text) => {
+                    throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
+                });
+            }
+            const data: Ticket[] = await response.json();
+            const filteredData = data.filter(ticket => 
+                ticket.branchOrigin === userBranch
+            );
+            
+            setTickets(filteredData);
+            setDelivery(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.requestedBy === users?.userBranch));
+            setCreateRequest(filteredData.filter(ticket => ticket.requestedBy === users?.userBranch));
+            setDraft(filteredData.filter(ticket => ticket.approvalStatus === "Draft" && ticket.requestedBy === users?.userBranch));
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError('Failed to fetch data. Please try again later.');
+        }
+    };
+
     useEffect(() => {
         if (userBranch) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
-                .then((response) => {
-                    if (!response.ok) {
-                        return response.text().then((text) => {
-                            throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then((data: Ticket[]) => {
-                    const filteredData = data.filter(ticket => 
-                        ticket.branchOrigin === userBranch
-                    );
-                    
-                    console.log("Filtered Data:", filteredData);
-                    setTickets(filteredData);
-                    setDelivery(filteredData.filter(ticket => ticket.approvalStatus === "Approved" && ticket.requestedBy === users?.userBranch));
-                    setCreateRequest(filteredData.filter(ticket => ticket.requestedBy === users?.userBranch));
-                    setDraft(filteredData.filter(ticket => ticket.approvalStatus === "Draft" && ticket.requestedBy === users?.userBranch));
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                    setError('Failed to fetch data. Please try again later.');
-                    setLoading(false);
-                });
+            fetchTickets();
         }
     }, [userBranch]);
 
@@ -198,6 +203,38 @@ const RequestOutboundPage = () => {
 
     const handleFilterChange = (type: string, value: string | null) => {
         setSelectedFilters((prev) => ({ ...prev, [type]: value }));
+    };
+
+    const confirmDelete = (ticket: Ticket) => {
+        setTicketToDelete(ticket);
+        setShowDeletePopup(true);
+    };
+
+    const handleDeleteConfirmed = async () => {
+        if (!ticketToDelete) return;
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(ticketToDelete?.ticketNumber),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete branch. ${errorText}`);
+            }
+
+            setDeleteSuccess(`Ticket "${ticketToDelete.ticketNumber}" deleted successfully.`);
+            await fetchTickets();
+        } catch (error) {
+            alert("Failed to delete the ticket.");
+        } finally {
+            setShowDeletePopup(false);
+            setTicketToDelete(null);
+        }
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -322,7 +359,7 @@ const RequestOutboundPage = () => {
                                         },
                                         {
                                             label: <IoTrash className="text-red-700" />,
-                                            onClick: (row) => console.log("Delete user:", row.userId),
+                                            onClick: (row) => confirmDelete(row as Ticket),
                                             className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                         },
                                     ]}
@@ -361,6 +398,44 @@ const RequestOutboundPage = () => {
                             </>
                         ) : (
                             <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        )}
+                        {showDeletePopup && ticketToDelete && (
+                            <PopUpModal
+                                title="Confirm Delete"
+                                message={`Are you sure you want to delete ticket "${ticketToDelete.ticketNumber}"?`}
+                                icon={<IoCloseCircleSharp className="text-red-500" />}
+                                actions={
+                                    <>
+                                        <button
+                                            onClick={() => setShowDeletePopup(false)}
+                                            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteConfirmed}
+                                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                }
+                            />
+                        )}
+                        {deleteSuccess && (
+                            <PopUpModal
+                                title="Success"
+                                message={deleteSuccess}
+                                icon={<IoCheckmarkCircle className="text-green-500" />}
+                                actions={
+                                    <button
+                                        onClick={() => setDeleteSuccess(null)}
+                                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                    >
+                                        OK
+                                    </button>
+                                }
+                            />
                         )}
                     </div>
                 </div>
