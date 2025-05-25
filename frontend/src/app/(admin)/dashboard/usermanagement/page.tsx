@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 import PopUpModal from "../components/PopUpModal";
+import { routes } from "@/lib/routes";
 
 
 interface User {
@@ -159,12 +160,12 @@ const UserManagement = () => {
                             actions={[
                                 {
                                     label: <IoEyeSharp className="text-[#202B51]" />,
-                                    href: (row) => `/dashboard/usermanagement/view/${row.userId}`,
+                                    href: (row) => routes.dashboard.userManagement.view(row.userId),
                                     className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                 },
                                 {
                                     label: <IoReaderSharp className="text-[#202B51]" />,
-                                    href: (row) => `/dashboard/usermanagement/edit/${row.userId}`,
+                                    href: (row) => routes.dashboard.userManagement.edit(row.userId),
                                     className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                 },
                                 {

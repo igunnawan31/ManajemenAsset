@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { IoCheckmarkCircle, IoCloseCircleSharp, IoEyeSharp, IoReaderSharp, IoTrash } from "react-icons/io5";
 import PopUpModal from "../components/PopUpModal";
+import { routes } from "@/lib/routes";
 
 
 interface Branch {
@@ -153,12 +154,12 @@ const BranchManagement = () => {
                                 actions={[
                                     {
                                         label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/branchmanagement/view/${row.branchId}`,
+                                        href: (row) => routes.dashboard.userManagement.view(row.branchId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {
                                         label: <IoReaderSharp className="text-[#202B51]" />,
-                                        href: (row) => `/dashboard/branchmanagement/edit/${row.branchId}`,
+                                        href: (row) => routes.dashboard.userManagement.view(row.branchId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {

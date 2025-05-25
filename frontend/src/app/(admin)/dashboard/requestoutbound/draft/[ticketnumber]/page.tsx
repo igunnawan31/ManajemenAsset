@@ -234,23 +234,12 @@ const DraftUpdateRequestOutbound = () => {
                 ticketNumber: ticket.ticketNumber,
                 branchOrigin: ticket.branchOrigin,
                 branchDestination: ticket.branchDestination,
-                outboundDate: ticket.outboundDate,
-                inboundDate: ticket.inboundDate,
-                dateRequested: ticket.dateRequested,
-                approvalStatus: ticket.approvalStatus,
-                moveStatus: ticket.moveStatus,
                 requestedBy: ticket.requestedBy,
                 receivedBy: ticket.receivedBy,
-                rejectReason: ticket.rejectReason,
-                rejectClassification: ticket.rejectClassification,
-                requestReason: ticket.requestReason,
                 assetNumbers: confirmedAssets.map(asset => asset.id),
-                status: "Pending"
             };
 
-            console.log("Submitting payload:", payload);
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/approval`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/publish`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -266,8 +255,6 @@ const DraftUpdateRequestOutbound = () => {
             }
 
             const result = await response.json();
-            console.log("Success response:", result);
-            
             setModalType("success");
             setModalMessage(result.message || "Ticket and assets updated successfully!");
         } catch (err: any) {

@@ -119,7 +119,7 @@ const DraftUpdateRequestInbound = () => {
                     throw new Error("Ticket Not Found");
                 }
                 setTicket(data);
-                setSelectedOriginBranch(data.branchOrigin); // 👈 This enables auto-fetching assets
+                setSelectedOriginBranch(data.branchOrigin);
             })
             .catch((error) => {
                 setError("Ticket Not Found");
@@ -243,23 +243,12 @@ const DraftUpdateRequestInbound = () => {
                 ticketNumber: ticket.ticketNumber,
                 branchOrigin: ticket.branchOrigin,
                 branchDestination: ticket.branchDestination,
-                outboundDate: ticket.outboundDate,
-                inboundDate: ticket.inboundDate,
-                dateRequested: ticket.dateRequested,
-                approvalStatus: ticket.approvalStatus,
-                moveStatus: ticket.moveStatus,
                 requestedBy: ticket.requestedBy,
                 receivedBy: ticket.receivedBy,
-                rejectReason: ticket.rejectReason,
-                rejectClassification: ticket.rejectClassification,
-                requestReason: ticket.requestReason,
                 assetNumbers: confirmedAssets.map(asset => asset.id),
-                status: "Pending"
             };
-
-            console.log("Submitting payload:", payload);
             
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/approval`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/publish`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
