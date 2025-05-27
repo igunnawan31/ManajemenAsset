@@ -9,6 +9,7 @@ import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import PopUpModal from "../../components/PopUpModal";
 import { IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
+import ReactToPdf from 'react-to-pdf';
 
 const assetSchema = z.object({
     id: z.string().min(1, "Asset id is required"),
@@ -28,6 +29,7 @@ const CreatePageNewAsset = () => {
     const [modalMessage, setModalMessage] = useState<string>("");
     const router = useRouter();
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const pdfRef = useRef<HTMLDivElement>(null);
 
     const { 
         register, 
@@ -222,9 +224,15 @@ const CreatePageNewAsset = () => {
                                 Generate QR Code
                             </button>
                             {qrCode && (
-                                <div className="mt-4">
-                                    <img src={qrCode} alt="QR Code" className="w-1/2 h-1/2 border rounded-md shadow-md" />
-                                    <p className="text-xs mt-1">This QR code will be saved as the asset image</p>
+                                <div className="mt-4 block">
+                                    <div ref={pdfRef} className="border rounded-md p-4 shadow-md bg-white block">
+                                        <div className="flex justify-center">
+                                            <h2 className="text-lg font-semibold mb-2">Asset QR Code</h2>
+                                        </div>
+                                        <div className="flex justify-center">
+                                            <img src={qrCode} alt="QR Code" className="w-1/2 h-1/2 border rounded-md shadow-md" />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -248,22 +256,37 @@ const CreatePageNewAsset = () => {
                     icon={<IoCheckmarkCircleSharp className="text-green-500" />}
                     actions={
                     <>
-                        <button
-                            onClick={() => {
-                                setModalType(null);
-                                setQrCode("");
-                                reset();
-                        }}
-                        className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
-                        >
-                            Create Another Asset
-                        </button>
-                        <button
-                            onClick={() => router.push("/dashboard/newassetmanagement")}
-                            className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                        >
-                            Go to Asset Management
-                        </button>
+                        <div className="block space-y-2">
+                            <div className="flex justify-between space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setModalType(null);
+                                        setQrCode("");
+                                        reset();
+                                }}
+                                className="bg-transparent border-[#202B51] border-2 text-[#202B51] px-4 py-2 rounded-lg hover:bg-gray-100"
+                                >
+                                    Create Another Asset
+                                </button>
+                                <button
+                                    onClick={() => router.push("/dashboard/newassetmanagement")}
+                                    className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                >
+                                    Go to Asset Management
+                                </button>
+                            </div>
+                            <div className="">
+                                <ReactToPdf targetRef={pdfRef as React.RefObject<HTMLElement>} filename="example.pdf" scale={0.8}>
+                                    {({ toPdf }) => (
+                                        <button onClick={toPdf}
+                                            className="bg-[#202B51] w-full text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                        >
+                                            Download PDF
+                                        </button>
+                                    )}
+                                </ReactToPdf>
+                            </div>
+                        </div>
                     </>
                     }
                 />

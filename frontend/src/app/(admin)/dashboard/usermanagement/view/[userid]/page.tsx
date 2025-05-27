@@ -14,12 +14,18 @@ interface User {
     userSubRole: string;
 }
 
+interface Branch {
+    branchId: string;
+    branchName: string;
+}
+
 const UserView = () => {
     const { userid } = useParams();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [branches, setBranches] = useState<Branch[]>([]);
 
     useEffect(() => {
         console.log("Fetching user from:", `${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userid}`);
@@ -50,13 +56,20 @@ const UserView = () => {
                 setError("User not found.");
                 setLoading(false);
             });
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/branch/index`)
+            .then((res) => res.json())
+            .then((data) => setBranches(data))
+            .catch((err) => console.error("Error fetching branches:", err));
     }, [userid]);
+
+    const branchName = branches.find(b => b.branchId === user?.userBranch)?.branchName || "Unknown Branch";
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 w-full max-h-full mb-32">
             <Upper title="View User Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div>
@@ -93,7 +106,7 @@ const UserView = () => {
                     <label className="block text-sm font-medium text-gray-700">User Branch</label>
                     <input
                         type="text"
-                        defaultValue={user?.userBranch}
+                        defaultValue={branchName}
                         className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
                         disabled
                         readOnly

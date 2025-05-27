@@ -218,7 +218,7 @@ const NewAssetManagement = () => {
                 ) : (
                     <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                 )}
-                <div className="mt-5 flex justify-center items-center">
+                <div className="mt-5 flex justify-center items-center mb-32">
                     <button
                         className={`px-4 py-2 mx-1 rounded ${
                             currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#202B51] text-white hover:bg-blue-700"
