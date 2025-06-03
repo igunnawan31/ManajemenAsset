@@ -108,6 +108,11 @@ const EditAssetPage = () => {
             setLoading(false);
         }
     };
+
+    const getBranchName = (locationId: string) => {
+        const branch = branches.find(b => b.branchId === locationId);
+        return branch ? branch.branchName : "Unknown Branch";
+    };
     
 
     if (loading) return <div className="text-center mt-10">Loading...</div>;
@@ -133,41 +138,29 @@ const EditAssetPage = () => {
                         type="text"
                         name="name"
                         value={asset.name}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
+                        readOnly
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-slate-300"
                     />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Lokasi Aset</label>
-                    <select
-                        name="locationId"
-                        value={asset.locationId}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                    >
-                        <option value="">-- Select Branch --</option>
-                        {branches.map((branch) => (
-                            <option key={branch.branchId} value={branch.branchId}>
-                                {branch.branchName}
-                            </option>
-                        ))}
-                    </select>
+                    <input 
+                        type="text"
+                        name="name"
+                        value={getBranchName(asset.locationId || "")}
+                        readOnly
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-slate-300"
+                    />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Tipe Aset</label>
-                    <select
-                        name="assetType"
+                    <input 
+                        type="text"
+                        name="name"
                         value={asset.assetType}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md"
-                    >
-                        <option value="">-- Select Asset Type --</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Furniture">Furniture</option>
-                        <option value="Vehicles">Vehicles</option>
-                        <option value="Real Estate">Real Estate</option>
-                        <option value="Office Equipment">Office Equipment</option>
-                    </select>
+                        readOnly
+                        className="mt-1 p-2 border border-[#202BA5] w-full rounded-md bg-slate-300"
+                    />
                 </div>
 
                 <div>
@@ -208,7 +201,7 @@ const EditAssetPage = () => {
                     actions={
                     <>
                         <button
-                            onClick={() => router.push("/dashboard/newassetmanagement")}
+                            onClick={() => router.push("/dashboard/assetdashboard")}
                             className="bg-[#202B51] text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                         >
                             Go to Asset Management

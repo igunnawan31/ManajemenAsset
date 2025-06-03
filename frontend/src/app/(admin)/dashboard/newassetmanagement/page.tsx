@@ -188,7 +188,7 @@ const NewAssetManagement = () => {
                     >
                         <option value="All">All</option>
                         <option value="Active">Active</option>
-                        <option value="In-Active">In-Active</option>
+                        <option value="Inactive">In-Active</option>
                     </select>
                 </div>
             </div>

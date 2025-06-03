@@ -166,7 +166,7 @@ const AssetDashboardPage = () => {
     
     useEffect(() => {
         let filtered = newAssets;
-    
+
         if (searchQuery.trim()) {
             filtered = filtered.filter((asset) =>
                 asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -175,11 +175,13 @@ const AssetDashboardPage = () => {
                 asset.itemStatus.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-    
+
         if (statusFilter !== "All") {
-            filtered = filtered.filter((asset) => asset.itemStatus === statusFilter);
+            filtered = filtered.filter((asset) => 
+                asset.itemStatus?.toLowerCase() === statusFilter.toLowerCase()
+            );
         }
-    
+
         setFilteredAssets(filtered);
         setCurrentPage(1);
     }, [newAssets, searchQuery, statusFilter]);
@@ -209,7 +211,7 @@ const AssetDashboardPage = () => {
                     >
                         <option value="All">All</option>
                         <option value="Active">Active</option>
-                        <option value="In-Active">In-Active</option>
+                        <option value="Inactive">Inactive</option> {/* not "In-Active" */}
                     </select>
                 </div>
             </div>

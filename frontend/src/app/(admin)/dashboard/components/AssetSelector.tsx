@@ -105,7 +105,10 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
                         options: [
                         { label: "All", value: "" },
                         { label: "Electronics", value: "Electronics" },
-                        { label: "Barang", value: "Barang" },
+                        { label: "Furniture", value: "Furniture" },
+                        { label: "Vehicles", value: "Vehicles" },
+                        { label: "Real_Estate", value: "Real_Estate" },
+                        { label: "Office_Equipment", value: "Office_Equipment" },
                         ],
                     },
                 ]}
@@ -118,7 +121,7 @@ const AssetSelector: React.FC<AssetSelectorProps> = ({ isOpen, onClose, onConfir
             filteredAssets.map((asset) => (
               <div key={asset.id} className="p-3 border rounded-lg flex justify-between hover:bg-gray-100">
                 <div>
-                  <h3 className="font-semibold">{asset.id}</h3>
+                  <h3 className="font-semibold">{asset.name}</h3>
                   <p className="text-sm text-gray-500">{asset.assetType}</p>
                 </div>
                 <button

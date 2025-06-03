@@ -308,17 +308,26 @@ const CreateRequestOutboundPage = () => {
                         {confirmedAssets.length > 0 && (
                             <div className="mt-4 p-4 border rounded-lg bg-gray-50">
                                 <h3 className="font-semibold">Confirmed Assets</h3>
-                                {confirmedAssets.map((asset) => (
-                                    <div key={asset.id} className="flex justify-between items-center">
-                                        <p>{asset.name}</p>
-                                        <button
-                                            onClick={() => handleRemoveAsset(asset.id)}
-                                            className="text-red-500 hover:underline"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                ))}
+                                <div className="space-y-2 max-h-60 overflow-y-auto">
+                                    {confirmedAssets.map((asset) => (
+                                        <div key={asset.id} className="flex justify-between items-center p-3 bg-white rounded-lg border">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium truncate">ID: {asset.id}</p>
+                                                <p className="text-sm text-gray-600 truncate">Name: {asset.name}</p>
+                                                <p className="text-sm text-gray-600">Type: {asset.assetType}</p>
+                                                <p className="text-sm text-gray-600">Status: {asset.itemStatus}</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveAsset(asset.id)}
+                                                className="ml-4 text-red-500 hover:text-red-700 text-sm font-medium p-1"
+                                                title="Remove asset"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                         {fieldErrors.assets && (

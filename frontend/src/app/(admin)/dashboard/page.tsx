@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { BorderColor } from "@mui/icons-material";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -215,7 +216,7 @@ const Dashboard = () => {
             {
                 label: "Inbound",
                 data: inboundData,
-                backgroundColor: "rgba(54, 162, 235, 0.6)",
+                backgroundColor: "rgba(32, 43, 165)",
             },
         ],
     };
@@ -226,7 +227,9 @@ const Dashboard = () => {
             {
                 label: "Outbound",
                 data: outboundData,
-                backgroundColor: "rgba(255, 99, 132, 0.6)",
+                borderColor: "rgba(32, 43, 165)",
+                borderWidth: 2,
+                backgroundColor: "rgba(255,255,255)",
             },
         ],
     };
