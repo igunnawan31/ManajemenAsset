@@ -205,7 +205,7 @@ const PengecekanAssetMasukPage = () => {
     };
 
     return (
-        <div className="w-full max-h-full px-8 py-24">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
             <Upper title="Pengecekan Asset Masuk" />
             <div className="mt-5">
                 <div className="flex w-full mt-5 justify-between  text-xs">
