@@ -45,7 +45,7 @@ const AssetView = () => {
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
             <Upper title="View Asset Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-bold text-[#202B51]">{asset?.name}</h2>

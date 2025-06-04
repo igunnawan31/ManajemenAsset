@@ -278,7 +278,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="px-8 py-24 text-black mb-32 w-full">
+        <div className="px-8 py-24 text-[#202B51] mb-32 w-full">
             <Upper title="Dashboard Manajemen Aset" />
             <div className="my-10">
                 <div className="relative w-full h-64 md:h-80 bg-cover bg-center rounded-xl"

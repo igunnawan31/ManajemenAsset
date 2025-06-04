@@ -131,7 +131,7 @@ const CreatePageNewAsset = () => {
     };
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
             <Upper title="Create Asset Management" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
             {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>}

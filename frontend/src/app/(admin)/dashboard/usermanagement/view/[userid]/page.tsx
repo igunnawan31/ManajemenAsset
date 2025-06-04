@@ -69,7 +69,7 @@ const UserView = () => {
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full mb-32">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full mb-32">
             <Upper title="View User Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div>

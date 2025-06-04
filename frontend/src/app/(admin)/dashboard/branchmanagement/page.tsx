@@ -124,7 +124,7 @@ const BranchManagement = () => {
     };
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
             <Upper title="Branch Management" />
             <div className="mt-5">
                 <div className="flex justify-end items-end">

@@ -281,7 +281,7 @@ const DraftUpdateRequestInbound = () => {
     if (error || !ticket) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full  mb-24">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full  mb-24">
             <Upper title="Edit Detail Request Inbound" />
             <form onSubmit={handleSubmit} className="mt-5 bg-white p-6 rounded-lg shadow-md space-y-4">
                 <div className="mt-5">Detail Ticket</div>

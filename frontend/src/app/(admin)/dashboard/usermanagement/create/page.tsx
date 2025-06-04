@@ -109,7 +109,7 @@ const CreatePageUser = () => {
     };
 
     return (
-        <div className="px-8 py-24 text-black w-full max-h-full">
+        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
             <Upper title="Create User Management" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
