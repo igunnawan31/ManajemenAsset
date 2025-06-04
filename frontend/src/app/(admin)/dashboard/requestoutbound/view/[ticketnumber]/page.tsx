@@ -173,7 +173,7 @@ const ViewRequestOutbound = () => {
     
 
     return (
-        <div className="px-8 py-24 w-full max-h-full  mb-32">
+        <div className="px-8 py-24 text-black w-full max-h-full  mb-32">
             <Upper title="View Detail Request Outbound" />
             <form className="mt-5 bg-white p-6 rounded-lg shadow-md space-y-4">
                 <div className="">

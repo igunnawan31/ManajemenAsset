@@ -240,7 +240,7 @@ const CreateRequestInbound = () => {
     if (error) return <div>{error}</div>;
     
     return (
-        <div className="px-8 py-24 w-full max-h-full ">
+        <div className="px-8 py-24 text-black w-full max-h-full ">
             <Upper title="Create Request Inbound" />
 
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">

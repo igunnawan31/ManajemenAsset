@@ -133,7 +133,7 @@ const UserManagement = () => {
     };
 
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 text-black w-full max-h-full">
             <Upper title="User Management" />
             <div className="mt-5">
                 <div className="flex justify-end">

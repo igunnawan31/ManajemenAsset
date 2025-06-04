@@ -197,7 +197,7 @@ const AssetDashboardPage = () => {
     };
     
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 text-black w-full max-h-full">
             <Upper title="Asset Dashboard" />
             <div className="mt-5">
                 <Search placeholder="Cari Id Asset / Nama Asset / Type Asset / Status Asset / ..." onSearch={handleSearch} />

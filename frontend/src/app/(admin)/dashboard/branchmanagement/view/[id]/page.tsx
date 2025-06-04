@@ -82,7 +82,7 @@ const BranchView = () => {
     if (!branch) return <div className="text-center mt-10">Branch not found</div>;
 
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 text-black w-full max-h-full">
             <Upper title="View Branch Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div>

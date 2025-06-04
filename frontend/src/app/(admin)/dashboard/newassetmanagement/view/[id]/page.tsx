@@ -80,7 +80,7 @@ const AssetView = () => {
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 w-full max-h-full mb-32">
+        <div className="px-8 py-24 text-black w-full max-h-full mb-32">
             <Upper title="View Asset Details" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div className="flex flex-col items-center">

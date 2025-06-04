@@ -114,7 +114,7 @@ const CreatePageBranch = () => {
     };    
 
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 text-black w-full max-h-full">
             <Upper title="Create Branch" />
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">

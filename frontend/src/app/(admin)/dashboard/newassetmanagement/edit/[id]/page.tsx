@@ -114,7 +114,7 @@ const EditAssetPage = () => {
     if (error || !asset) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="px-8 py-24 w-full max-h-full">
+        <div className="px-8 py-24 text-black w-full max-h-full">
             <Upper title="Edit Asset" />
             <form onSubmit={handleSubmit} className="mt-5 bg-white p-6 rounded-lg shadow-lg space-y-4">
                 <div>
