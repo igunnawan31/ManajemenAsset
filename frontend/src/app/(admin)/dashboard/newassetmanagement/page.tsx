@@ -135,7 +135,7 @@ const NewAssetManagement = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(parseInt(assetToDelete.id)),
+                body: JSON.stringify(assetToDelete?.id),
             });
     
             if (!response.ok) {
@@ -165,7 +165,7 @@ const NewAssetManagement = () => {
     };
 
     return (
-        <div className="px-8 py-24 text-[#202B51] w-full max-h-full">
+        <div className="px-8 py-24 w-full max-h-full">
             <Upper title="Asset Management" />
             <div className="mt-5">
                 <div className="flex justify-end items-end">
@@ -216,7 +216,7 @@ const NewAssetManagement = () => {
                         ]}
                     />
                 ) : (
-                    <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
+                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
                 )}
                 <div className="mt-5 flex justify-center items-center mb-32">
                     <button
@@ -265,9 +265,12 @@ const NewAssetManagement = () => {
                             </button>
                             <button
                                 onClick={handleDeleteConfirmed}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                disabled={isDeleting}
+                                className={`px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 ${
+                                    isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
                             >
-                                Delete
+                                {isDeleting ? 'Deleting...' : 'Delete'}
                             </button>
                         </>
                     }

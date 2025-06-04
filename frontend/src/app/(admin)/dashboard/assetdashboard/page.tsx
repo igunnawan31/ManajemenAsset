@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Path from "../components/Path";
 import Upper from "../components/Upper";
 import Image from "next/image";
-import Link from "next/link";
 import Search from "../components/Search";
 import DataTable from "../components/DataTable";
 import { IoEyeSharp, IoReaderSharp } from "react-icons/io5";

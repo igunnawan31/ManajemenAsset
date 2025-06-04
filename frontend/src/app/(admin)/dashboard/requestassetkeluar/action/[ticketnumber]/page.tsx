@@ -208,10 +208,11 @@ const DetailRequestAssetKeluar = () => {
             key: "scanned",
             label: "Scanned",
             alwaysVisible: true,
-            render: (_: any, row: Record<string, any>) => {
+            render: (_: any, row?: Record<string, any>) => {
+                if (!row) return null;
                 const asset = row as AssetMoves;
                 return `${asset.scanned}/${asset.total}`;
-            },
+            }
         },
     ];
 

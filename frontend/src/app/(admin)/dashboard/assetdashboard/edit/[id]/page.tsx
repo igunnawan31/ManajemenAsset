@@ -29,7 +29,7 @@ const EditAssetPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [modalType, setModalType] = useState<"success" | "error" | null>(null);
     const [modalMessage, setModalMessage] = useState<string>("");
-    const [success, setSuccess] = useState<string | null>(null);
+    // const [success, setSuccess] = useState<string | null>(null);
 
     useEffect(() => {
         if (!id) {
@@ -71,14 +71,13 @@ const EditAssetPage = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSuccess(null);
-    
+
         if (!asset) {
             setError("Asset data is missing");
             setLoading(false);
             return;
         }
-    
+
         try {
             const formData = new FormData();
             formData.append("id", asset.id);
@@ -86,24 +85,26 @@ const EditAssetPage = () => {
             formData.append("locationId", asset.locationId);
             formData.append("assetType", asset.assetType);
             formData.append("itemStatus", asset.itemStatus);
-    
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/update`, {
                 method: "PUT",
                 body: formData,
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Failed to update asset");
             }
-    
+
             setModalType("success");
             setModalMessage("Asset updated successfully!");
-            setSuccess(null);
-            return;
-        } catch (err: any) {
+        } catch (err: unknown) {
             setModalType("error");
-            setModalMessage(err.message || "Error Updating Asset");
+            setModalMessage(
+                err instanceof Error 
+                    ? err.message 
+                    : "Error Updating Asset"
+            );
         } finally {
             setLoading(false);
         }
