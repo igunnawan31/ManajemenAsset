@@ -121,14 +121,8 @@ namespace qrmanagement.backend.Services
                 _logger.LogDebug("Ticket {ticketNumber} has no asset moves", ticket.ticketNumber);
                 return false;
             }
-            var list = assetmovelist!.Select(assetmove => new UpdateAssetMoveStatusDTO
-            {
-                assetMoveId = assetmove.id,
-                status = status
-            }).ToList();
-
-            int rowsAffectedTicket = await _moveRepo.UpdateAssetMoveStatuses(list);
-            rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
+            int rowsAffectedTicket;
+            List<UpdateAssetMoveStatusDTO> list;
             if (status == "Rejected")
             {
                 rowsAffectedTicket = await _ticketRepo.UpdateTicketMoveStatus(new UpdateTicketStatusDTO
@@ -137,15 +131,25 @@ namespace qrmanagement.backend.Services
                     status = "Completed"
                 });
             }
+            list = assetmovelist!.Select(assetmove => new UpdateAssetMoveStatusDTO
+            {
+                assetMoveId = assetmove.id,
+                status = status
+            }).ToList();
+        
+            rowsAffectedTicket = await _moveRepo.UpdateAssetMoveStatuses(list);
+            rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
+            
             return rowsAffectedTicket > 0;
         }
 
         public async Task<bool> TicketStatus(UpdateTicketStatusDTO ticket)
         {
-            int rowsAffectedTicket = await _ticketRepo.UpdateTicketMoveStatus(ticket);
+            int rowsAffectedTicket;
             var assetmovelist = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
             if (assetmovelist != null && assetmovelist.Any())
             {
+                List<UpdateAssetMoveStatusDTO> list;
                 if (ticket.status == "Completed")
                 {
                     foreach (var item in assetmovelist)
@@ -161,24 +165,37 @@ namespace qrmanagement.backend.Services
                     }).ToList();
 
                     await _assetRepo.UpdateLocations(newLocation);
-                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
                         assetMoveId = assetmove.id,
                         status = assetmove.moveStatus == "Arrived" ? assetmove.moveStatus : "Missing"
                     }).ToList();
-                    await _moveRepo.UpdateAssetMoveStatuses(list);
+                }
+                else if (ticket.status == "Rejected")
+                {
+                    foreach (var item in assetmovelist)
+                    {
+                        _logger.LogDebug("ID = \n" + item.id.ToString());
+                        _logger.LogDebug("Status = \n" + item.moveStatus);
+                    }
+                    list = assetmovelist!.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    {
+                        assetMoveId = assetmove.id,
+                        status = assetmove.moveStatus == "Arrived" ? assetmove.moveStatus : "Missing"
+                    }).ToList();
+                    rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
                 }
                 else
                 {
-                    var list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
+                    list = assetmovelist.Select(assetmove => new UpdateAssetMoveStatusDTO
                     {
                         assetMoveId = assetmove.id,
                         status = "Moving"
                     }).ToList();
-
-                    await _moveRepo.UpdateAssetMoveStatuses(list);
                 }
+                await _moveRepo.UpdateAssetMoveStatuses(list);
             }
+            rowsAffectedTicket = await _ticketRepo.UpdateTicketMoveStatus(ticket);
             return rowsAffectedTicket > 0;
         }
 

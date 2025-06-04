@@ -85,10 +85,39 @@ const DetailAcceptTicketPengecekanAssetMasuk = () => {
     
         setIsSubmitting(true);
     
+        const scannedAssets = assets.filter((asset) => asset.scanned > 0);
+        const missingAssets = assets.filter((asset) => asset.scanned === 0);
+
         setTimeout(async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/approval`, {
-                    method: "POST",
+                for (const asset of scannedAssets) {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/single-update`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            assetMoveId: parseInt(asset.id),
+                            status: "Arrived",
+                        }),
+                    });
+                }
+        
+                for (const asset of missingAssets) {
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset-move/single-update`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            assetMoveId: parseInt(asset.id),
+                            status: "Missing",
+                        }),
+                    });
+                }
+
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/update-move`, {
+                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                     },
