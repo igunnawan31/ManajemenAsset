@@ -154,7 +154,7 @@ const DetailRequestAssetMasuk = () => {
     if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
     return (
-        <div className="w-full max-h-full px-8 py-24">
+        <div className="w-full max-h-full px-8 py-24 text-[#202B51]">
             <Upper title="Request Asset Masuk" />
             <div className="mt-5">
                 <h2 className="text-xl font-bold text-[#202B51]">{ticket?.ticketNumber}</h2>
