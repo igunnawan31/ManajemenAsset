@@ -154,12 +154,12 @@ const BranchManagement = () => {
                                 actions={[
                                     {
                                         label: <IoEyeSharp className="text-[#202B51]" />,
-                                        href: (row) => routes.dashboard.userManagement.view(row.branchId),
+                                        href: (row) => routes.dashboard.branchManagement.view(row.branchId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {
                                         label: <IoReaderSharp className="text-[#202B51]" />,
-                                        href: (row) => routes.dashboard.userManagement.view(row.branchId),
+                                        href: (row) => routes.dashboard.branchManagement.view(row.branchId),
                                         className: "rounded-full hover:bg-blue-200 p-1 text-white text-md mx-2",
                                     },
                                     {

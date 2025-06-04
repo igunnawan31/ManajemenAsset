@@ -40,6 +40,7 @@ const CreatePageNewAsset = () => {
         reset
     } = useForm({
         resolver: zodResolver(assetSchema),
+        mode: "onChange"
     });
 
     const assetId = watch("id");
@@ -115,8 +116,7 @@ const CreatePageNewAsset = () => {
                 const errorData = await response.text();
                 throw new Error(errorData || "Failed to create asset");
             }
-    
-            const result = await response.json();
+
             setModalType("success");
             setModalMessage("Asset created successfully!");
             setSuccess(null);
@@ -148,7 +148,7 @@ const CreatePageNewAsset = () => {
                                 placeholder="Enter asset ID"
                             />
                             {errors.id?.message && (
-                                <p className="text-red-500 text-xs mt-2">{String(errors.id.message)}</p>
+                                <p className="text-red-500 text-xs mt-2">{String(errors.id.message.toString())}</p>
                             )} 
                         </div>
 
@@ -160,7 +160,7 @@ const CreatePageNewAsset = () => {
                                 className="mt-1 p-2 border border-[#202BA5] w-full rounded-md focus:ring-2 focus:ring-[#202BA5]"
                                 placeholder="Enter asset name"
                             />
-                            {errors.name?.message && <p className="text-red-500 text-xs mt-2">{String(errors.name.message)}</p>}
+                            {errors.name?.message && <p className="text-red-500 text-xs mt-2">{String(errors.name.message.toString())}</p>}
                         </div>
 
                         <div>
@@ -177,7 +177,7 @@ const CreatePageNewAsset = () => {
                                 <option value="Office Equipment">Office Equipment</option>
                             </select>
                             {errors.assetType?.message && (
-                                <p className="text-red-500 text-xs mt-2">{String(errors.assetType.message)}</p>
+                                <p className="text-red-500 text-xs mt-2">{String(errors.assetType.message.toString())}</p>
                             )}
                         </div>
 
@@ -195,7 +195,7 @@ const CreatePageNewAsset = () => {
                                 ))}
                             </select>
                             {errors.locationId?.message && (
-                                <p className="text-red-500 text-xs mt-2">{String(errors.locationId.message)}</p>
+                                <p className="text-red-500 text-xs mt-2">{String(errors.locationId.message.toString())}</p>
                             )}
                         </div>
 
@@ -210,7 +210,7 @@ const CreatePageNewAsset = () => {
                                 <option value="Inactive">Inactive</option>
                             </select>
                             {errors.itemStatus?.message && (
-                                <p className="text-red-500 text-xs mt-2">{String(errors.itemStatus.message)}</p>
+                                <p className="text-red-500 text-xs mt-2">{String(errors.itemStatus.message.toString())}</p>
                             )}
                         </div>
                         <div>
@@ -248,6 +248,8 @@ const CreatePageNewAsset = () => {
                         </button>
                     </div>
                 </form>
+                {error && <p className="text-red-500 mt-4">{error}</p>}
+                {success && <p className="text-green-500 mt-4">{success}</p>}
             </div>
             {modalType === "success" && (
                 <PopUpModal
