@@ -528,7 +528,7 @@ namespace qrmanagement.backend.Repositories
                                 UPDATE 
                                     AssetMoves
                                 SET
-                                    moveStatus = @moveStatus
+                                    moveStatus = @moveStatus,
                                     updatedOn = @updatedOn
                                 WHERE
                                     id = @assetMoveId

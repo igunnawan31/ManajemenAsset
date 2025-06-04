@@ -40,7 +40,7 @@ const CreatePageNewAsset = () => {
         reset
     } = useForm({
         resolver: zodResolver(assetSchema),
-        mode: "onChange"
+        mode: "onSubmit"
     });
 
     const assetId = watch("id");

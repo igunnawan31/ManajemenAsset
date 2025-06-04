@@ -129,6 +129,14 @@ namespace qrmanagement.backend.Services
 
             int rowsAffectedTicket = await _moveRepo.UpdateAssetMoveStatuses(list);
             rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(ticket);
+            if (status == "Rejected")
+            {
+                rowsAffectedTicket = await _ticketRepo.UpdateTicketMoveStatus(new UpdateTicketStatusDTO
+                {
+                    ticketNumber = ticket.ticketNumber,
+                    status = "Completed"
+                });
+            }
             return rowsAffectedTicket > 0;
         }
 
@@ -226,20 +234,6 @@ namespace qrmanagement.backend.Services
                 return (false, ex.Message);
             }
 
-
-            UpdateTicketStatusDTO approval = new UpdateTicketStatusDTO
-            {
-                ticketNumber = ticket.ticketNumber,
-                status = "Pending"
-            };
-
-            rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(approval);
-
-            if (rowsAffectedTicket == 0)
-            {
-                return (false, "Failed while updating ticket approval");
-            }
-
             // Deleting old asset move (draft)
             var oldAssetMoves = await _moveRepo.GetAssetMoveByTN(ticket.ticketNumber);
             var ids = new List<string>();
@@ -284,6 +278,19 @@ namespace qrmanagement.backend.Services
             }
             _logger.LogDebug("All assets are available for ticket {ticketNumber}", ticket.ticketNumber);
             rowsAffectedTicket = await _moveRepo.AddAssetMove(ticket.assetNumbers, ticket.ticketNumber, "Pending");
+
+            UpdateTicketStatusDTO approval = new UpdateTicketStatusDTO
+            {
+                ticketNumber = ticket.ticketNumber,
+                status = "Pending"
+            };
+
+            rowsAffectedTicket = await _ticketRepo.UpdateTicketApprovalStatus(approval);
+
+            if (rowsAffectedTicket == 0)
+            {
+                return (false, "Failed while updating ticket approval");
+            }
             return (rowsAffectedTicket > 0, "Ticket published successfully");
         }
     }
