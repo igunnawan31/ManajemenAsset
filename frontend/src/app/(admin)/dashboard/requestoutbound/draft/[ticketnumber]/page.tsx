@@ -276,7 +276,7 @@ const DraftUpdateRequestOutbound = () => {
     
 
     return (
-        <div className="px-8 py-24 w-full max-h-full poppins mb-24">
+        <div className="px-8 py-24 w-full max-h-full  mb-24">
             <Upper title="Edit Detail Request Outbound" />
             <form onSubmit={handleSubmit} className="mt-5 bg-white p-6 rounded-lg shadow-md space-y-4">
                 <div className="mt-5">

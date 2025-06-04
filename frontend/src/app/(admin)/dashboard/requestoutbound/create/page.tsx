@@ -237,7 +237,7 @@ const CreateRequestOutboundPage = () => {
     if (error) return <div>{error}</div>;
     
     return (
-        <div className="px-8 py-24 w-full max-h-full poppins">
+        <div className="px-8 py-24 w-full max-h-full ">
             <Upper title="Create Request Outbound" />
 
             <div className="mt-5 bg-white p-6 rounded-lg shadow-md">

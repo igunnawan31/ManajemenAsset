@@ -14,7 +14,7 @@ const Path = () => {
                     const href = "/" + pathSegments.slice(0, index + 1).join("/");
                     return (
                         <span key={index} className="flex items-center">
-                            <Link href={href} className="hover:underline poppins capitalize text-blue-500">
+                            <Link href={href} className="hover:underline  capitalize text-blue-500">
                                 {decodeURIComponent(segment)}
                             </Link>
                             {index < pathSegments.length - 1 && <span className="mx-2">/</span>}

@@ -35,7 +35,7 @@ const QRAssetIdView = () => {
     }
 
     return (
-        <div className="w-full flex flex-col items-center poppins">
+        <div className="w-full flex flex-col items-center ">
             <h2 className="text-lg font-bold mb-4">Scan QR Code</h2>
             <div id="qr-reader" className="w-full max-w-xs"></div>
             {scannedResult && (

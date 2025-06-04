@@ -25,7 +25,7 @@ export default function RestrictedArea() {
           <div className="flex flex-wrap">
             <div className="w-full px-2 flex flex-col items-center">
               <div className="relative mb-10">
-                <span className="poppins text-white text-2xl font-bold">
+                <span className=" text-white text-2xl font-bold">
                   You do not have permission to access this area
                 </span>
               </div>

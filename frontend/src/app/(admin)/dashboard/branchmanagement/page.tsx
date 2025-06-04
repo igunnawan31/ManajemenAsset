@@ -143,9 +143,9 @@ const BranchManagement = () => {
             </div>
             <div className="mt-5">
                 {loading ? (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">Loading...</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">Loading...</div>
                     ) : error ? (
-                        <div className="text-center text-red-500 font-poppins text-lg mt-5">{error}</div>
+                        <div className="text-center text-red-500  text-lg mt-5">{error}</div>
                     ) : filteredBranches.length > 0 ? (
                         <>
                             <DataTable
@@ -202,7 +202,7 @@ const BranchManagement = () => {
                             </div>
                         </>
                     ) : (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                     )}
             </div>
             {showDeletePopup && branchToDelete && (

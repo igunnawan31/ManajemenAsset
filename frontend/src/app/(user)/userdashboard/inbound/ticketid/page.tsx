@@ -72,7 +72,7 @@ const ticketInboundView = () => {
     };
 
     return (
-        <div className="mt-5 px-6 w-full h-full poppins">
+        <div className="mt-5 px-6 w-full h-full ">
             <button onClick={back} className="text-white cursor-pointer px-5 bg-[#20458A] hover:bg-opacity-80 p-5 rounded-lg">&lt; Back</button>
             <div className="w-full mt-10 flex justify-start items-center">
                 <div className="text-gray-400">
@@ -151,7 +151,7 @@ const ticketInboundView = () => {
                 {filteredUsers.length > 0 ? (
                         <TableUser columns={columns} data={filteredUsers} />
                     ) : (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                     )
                 }
             </div>

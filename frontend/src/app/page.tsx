@@ -54,14 +54,14 @@ export default function Home() {
           <div className="flex flex-wrap">
             <div className="w-full px-2 flex justify-center">
               <div className="relative mb-10">
-                <span className="font-poppins text-white text-4xl font-bold">
+                <span className="text-white text-4xl font-bold">
                   Welcome to Sistem Manajamen Asset
                 </span>
               </div>
             </div>
             <div className="w-full px-2 flex items-center justify-center mb-10">
               <div className="text-center">
-                <span className="text-gray-100 font-poppins text-center text-lg">
+                <span className="text-gray-100 text-center text-lg">
                   Sistem Manajemen Asset Astra International berbasis QR Code untuk Karyawan Astra  
                 </span>
               </div>

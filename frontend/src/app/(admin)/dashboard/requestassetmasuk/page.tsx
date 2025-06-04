@@ -231,7 +231,7 @@ const RequestAssetMasukPage = () => {
         <div className="w-full max-h-full px-8 py-24">
             <Upper title="Request Asset Masuk" />
             <div className="mt-5">
-                <div className="flex w-full mt-5 justify-between poppins text-xs">
+                <div className="flex w-full mt-5 justify-between  text-xs">
                     {["tiketmasuk", "ditolak", "diterima"].map((tab) => (
                         <button
                             key={tab}
@@ -293,7 +293,7 @@ const RequestAssetMasukPage = () => {
                                     </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                <div className="text-center text-gray-500  text-lg mt-5">
                                     {searchQuery || Object.keys(selectedFilters).length > 0 
                                     ? "No available data at this moment" 
                                     : "No data available"}
@@ -356,7 +356,7 @@ const RequestAssetMasukPage = () => {
                                 </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                <div className="text-center text-gray-500  text-lg mt-5">
                                     {searchQuery || Object.keys(selectedFilters).length > 0 
                                     ? "No available data at this moment" 
                                     : "No data available"}
@@ -419,7 +419,7 @@ const RequestAssetMasukPage = () => {
                                 </div>
                                 </>
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">
+                                <div className="text-center text-gray-500  text-lg mt-5">
                                     {searchQuery || Object.keys(selectedFilters).length > 0 
                                     ? "No available data at this moment" 
                                     : "No data available"}

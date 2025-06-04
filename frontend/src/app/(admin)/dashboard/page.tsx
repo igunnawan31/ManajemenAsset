@@ -14,6 +14,9 @@ import {
   Legend,
 } from "chart.js";
 import { BorderColor } from "@mui/icons-material";
+import DataTable from "./components/DataTable";
+import { IoArrowForwardCircle } from "react-icons/io5";
+import Link from "next/link";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -66,6 +69,10 @@ const Dashboard = () => {
     const [outboundData, setOutboundData] = useState<number[]>([]);
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
     const [yearOptions, setYearOptions] = useState<number[]>([]);
+    const [tiketMasuk, setTiketMasuk] = useState<Ticket[]>([]);
+    const [tiketKeluar, setTiketKeluar] = useState<Ticket[]>([]);
+    const [inboundTickets, setInboundTickets] = useState<Ticket[]>([]);
+    const [outboundTickets, setOutboundTickets] = useState<Ticket[]>([]);
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -85,71 +92,71 @@ const Dashboard = () => {
         },
     };
 
-    const optionsAsset = {
-        responsive: true,
-        plugins: {
-        legend: {
-            position: "top" as const,
-        },
-        title: {
-            display: true,
-            text: "Asset Overview",
-        },
-        },
-    };
+    const columns = [
+        { key: "ticketNumber", label: "ticketNumber", alwaysVisible: true },
+        { key: "branchOrigin", label: "Branch Origin", alwaysVisible: true },
+        { key: "branchDestination", label: "Branch Destination", alwaysVisible: true },
+        { key: "outboundDate", label: "Outbound Date" },
+        { key: "inboundDate", label: "Inbound Date" },
+        { key: "dateRequested", label: "Date Requested" },
+        { key: "approvalStatus", label: "Approval Status" },
+        { key: "moveStatus", label: "Move Status" },
+        { key: "receivedBy", label: "Received By" },
+        { key: "requestedBy", label: "Requested By" },
+    ];
 
     const countByMonth = (filteredTickets: Ticket[]) => {
         return months.map((_, monthIndex) => {
-            return filteredTickets.filter((ticket) => {
-                const date = new Date(ticket.dateRequested);
-                return (
-                    date.getFullYear() === selectedYear &&
-                    date.getMonth() === monthIndex
-                );
-            }).length;
+        return filteredTickets.filter((ticket) => {
+            const date = new Date(ticket.dateRequested);
+            return (
+            date.getFullYear() === selectedYear &&
+            date.getMonth() === monthIndex
+            );
+        }).length;
         });
     };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-            const userId = localStorage.getItem("userId");
-            if (!userId) {
-                setError("No user ID found. Please log in.");
-                setLoading(false);
-                return;
-            }
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`);
-                if (!response.ok) throw new Error("Failed to fetch user data");
-                const data = await response.json();
-                setUsers(data);
-                setUserBranch(data.userBranch);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred");
-            }
+    useEffect(() => {
+        const fetchUserData = async () => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            setError("No user ID found. Please log in.");
+            setLoading(false);
+            return;
+        }
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/by-id/${userId}`);
+            if (!response.ok) throw new Error("Failed to fetch user data");
+            const data = await response.json();
+            setUsers(data);
+            setUserBranch(data.userBranch);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unknown error occurred");
+        }
         };
         fetchUserData();
     }, []);
 
     useEffect(() => {
         if (userBranch) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
             .then((res) => {
-                if (!res.ok) {
-                    return res.text().then((text) => {
-                        throw new Error(`Status: ${res.status}, ${text}`);
-                    });
-                }
-                return res.json();
+            if (!res.ok) {
+                return res.text().then((text) => {
+                throw new Error(`Status: ${res.status}, ${text}`);
+                });
+            }
+            return res.json();
             })
             .then((data: Ticket[]) => {
-                setTickets(data);
-                const years = Array.from(new Set(data.map((t) => new Date(t.dateRequested).getFullYear())));
-                setYearOptions(years.sort((a, b) => b - a));
+            setTickets(data);
+            const years = Array.from(new Set(data.map((t) => new Date(t.dateRequested).getFullYear())));
+            setYearOptions(years.sort((a, b) => b - a));
             })
             .catch((err) => {
-                console.error("Error fetching tickets:", err);
-                setError("Failed to fetch ticket data.");
+            console.error("Error fetching tickets:", err);
+            setError("Failed to fetch ticket data.");
             })
             .finally(() => setLoading(false));
         }
@@ -157,25 +164,55 @@ const Dashboard = () => {
 
     useEffect(() => {
         if (userBranch) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/asset/index`)
-            .then((res) => {
-                if (!res.ok) {
-                    return res.text().then((text) => {
-                        throw new Error(`Status: ${res.status}, ${text}`);
+            console.log("branch user", userBranch);
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/ticket/index`)
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(`Network response was not ok. Status: ${response.status}, ${text}`);
                     });
                 }
-                return res.json();
+                return response.json();
             })
-            .then((data: Asset[]) => {
-                setAssets(data);
+            .then((data: Ticket[]) => {
+                const relevantTickets = data.filter(ticket => 
+                    ticket.branchDestination === userBranch || 
+                    ticket.branchOrigin === userBranch
+                );
+
+                console.log("All relevant tickets:", relevantTickets);
+                setTickets(relevantTickets);
+                
+                const masuk = relevantTickets.filter(ticket => 
+                    ticket.branchDestination === userBranch &&
+                    ticket.approvalStatus === "Pending" && 
+                    ticket.moveStatus === "Not_Started"
+                );
+                setTiketMasuk(masuk);
+                console.log("Inbound tickets:", masuk);
+
+                const keluar = relevantTickets.filter(ticket => 
+                    ticket.branchOrigin === userBranch &&
+                    ticket.approvalStatus === "Pending" && 
+                    ticket.moveStatus === "Not_Started"
+                );
+                setTiketKeluar(keluar);
+                console.log("Outbound tickets:", keluar);
+
+                const years = Array.from(
+                    new Set(relevantTickets.map(t => new Date(t.dateRequested).getFullYear()))
+                );
+                setYearOptions(years.sort((a, b) => b - a));
+                setLoading(false);
             })
-            .catch((err) => {
-                console.error("Error fetching assets:", err);
-                setError("Failed to fetch asset data.");
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setError('Failed to fetch data. Please try again later.');
+                setLoading(false);
             });
         }
     }, [userBranch]);
-    
+
     useEffect(() => {
         const inbound = tickets.filter(
             (ticket) =>
@@ -194,18 +231,6 @@ const Dashboard = () => {
         setInboundData(countByMonth(inbound));
         setOutboundData(countByMonth(outbound));
     }, [tickets, selectedYear, userBranch]);
-
-    useEffect(() => {
-        if (assets.length > 0) {
-            const activeAssets = assets.filter((asset) => asset.itemStatus === "Active");
-            const inactiveAssets = assets.filter((asset) => asset.itemStatus === "InActive");
-            const missingAssets = assets.filter((asset) => asset.itemStatus === "Missing");
-
-            setAsetData([activeAssets.length, inactiveAssets.length, missingAssets.length]);
-        }
-    }, [assets]);
-    
-    const [asetData, setAsetData] = useState<number[]>([0, 0, 0]);
     
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -234,24 +259,33 @@ const Dashboard = () => {
         ],
     };
 
-    const asetChartData = {
-        labels: ["Active", "Inactive", "Missing"],
-        datasets: [
-            {
-                label: "Assets",
-                data: asetData,
-                backgroundColor: [
-                    "rgba(54, 162, 235, 0.6)",
-                    "rgba(255, 159, 64, 0.6)",
-                    "rgba(75, 192, 192, 0.6)",
-                ],
-            },
-        ],
+    const formatStatus = (status: string) => {
+        switch(status) {
+            case "Pending": return "Menunggu";
+            case "Approved": return "Disetujui";
+            case "Rejected": return "Ditolak";
+            default: return status;
+        }
+    };
+
+    const formatMoveStatus = (status: string) => {
+        switch(status) {
+            case "Not_Started": return "Belum Dimulai";
+            case "In_Progress": return "Dalam Proses";
+            case "Completed": return "Selesai";
+            default: return status;
+        }
     };
 
     return (
-        <div className="px-8 py-24 mb-32 w-full max-h-full poppins">
+        <div className="px-8 py-24 mb-32 w-full">
             <Upper title="Dashboard Manajemen Aset" />
+            <div className="my-10">
+                <div className="relative w-full h-64 md:h-80 bg-cover bg-center rounded-xl"
+                    style={{ backgroundImage: "url('/astra.jpeg')" }}>
+                    <div className="absolute inset-0 bg-[#202B51] bg-opacity-70 rounded-xl shadow-xl hover:bg-opacity-20 transition-all ease-in-out duration-300"></div>
+                </div>
+            </div>
             <div className="mb-6">
                 <label htmlFor="year-select" className="font-semibold text-sm mr-2">Pilih Tahun:</label>
                 <select
@@ -295,9 +329,65 @@ const Dashboard = () => {
             </div>
             <div className="mt-5 w-full">
                 <span className="text-[#202B51] font-bold border-b-2 border-b-[#202B51] mt-2">
-                    Asset
+                    Request Asset Masuk
                 </span>
-                <Bar data={asetChartData} options={optionsAsset} />
+                <div className="mt-5">  
+                    {tiketMasuk.length > 0 ? (
+                        <DataTable
+                            columns={columns}
+                            data={tiketMasuk.map(ticket => ({
+                                ...ticket,
+                                dateRequested: new Date(ticket.dateRequested).toLocaleDateString(),
+                                approvalStatus: formatStatus(ticket.approvalStatus),
+                                moveStatus: formatMoveStatus(ticket.moveStatus),
+                            }))}
+                        />
+                    ) : (
+                        <div className="text-center py-4 text-gray-500">
+                            Tidak ada data tiket masuk
+                        </div>
+                    )}
+                </div>
+                <div className="mt-5">
+                    <div className="flex justify-end">
+                        <Link href="/dashboard/requestassetmasuk">
+                            <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
+                                <span className="text-white font-sans font-bold">Go To Request Asset Masuk</span>
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+            <div className="mt-5 w-full">
+                <span className="text-[#202B51] font-bold border-b-2 border-b-[#202B51] mt-2">
+                    Request Asset Keluar
+                </span>
+                <div className="mt-5">  
+                    {tiketKeluar.length > 0 ? (
+                        <DataTable
+                            columns={columns}
+                            data={tiketKeluar.map(ticket => ({
+                                ...ticket,
+                                dateRequested: new Date(ticket.dateRequested).toLocaleDateString(),
+                                approvalStatus: formatStatus(ticket.approvalStatus),
+                                moveStatus: formatMoveStatus(ticket.moveStatus),
+                            }))}
+                        />
+                    ) : (
+                        <div className="text-center py-4 text-gray-500">
+                            Tidak ada data tiket masuk
+                        </div>
+                    )}
+                </div>
+                <div className="mt-5">
+                    <div className="flex justify-end">
+                        <Link href="/dashboard/requestassetkeluar">
+                            <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
+                                <span className="text-white font-sans font-bold">Go to Request Asset Keluar</span>
+                            </button>
+                        </Link>
+                    </div>
+                </div>
             </div>
         </div>
     );

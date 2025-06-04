@@ -260,7 +260,7 @@ const RequestInboundPage = () => {
                     </Link>
                 </div>
             </div>
-            <div className="flex w-full mt-5 justify-between poppins text-xs">
+            <div className="flex w-full mt-5 justify-between  text-xs">
                 {["createrequestinbound", "draft", "delivery"].map((tab) => (
                     <button
                         key={tab}
@@ -321,7 +321,7 @@ const RequestInboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>
@@ -388,7 +388,7 @@ const RequestInboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                         {showDeletePopup && ticketToDelete && (
                             <PopUpModal
@@ -483,7 +483,7 @@ const RequestInboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>

@@ -80,7 +80,7 @@ const UserNavbar = () => {
                     <div className="hidden md:flex space-x-6">
                         {["inbound", "outbound", "how-to-scan-qr"].map((item, index) => (
                             <Link key={index} href={`/userdashboard/${item}`} className="relative group">
-                                <span className="text-white poppins text-sm tracking-wide capitalize transition-all duration-300 ease-in-out">
+                                <span className="text-white  text-sm tracking-wide capitalize transition-all duration-300 ease-in-out">
                                     {item.replace(/-/g, " ")}
                                 </span>
                                 <div className="absolute left-0 w-0 h-[2px] bg-white transition-all duration-300 ease-in-out group-hover:w-full"></div>
@@ -98,8 +98,8 @@ const UserNavbar = () => {
                         >
                             <div className="w-8 h-8 bg-white rounded-full"></div>
                             <div>
-                                <span className="text-sm poppins block">Muhamad Gunawan</span>
-                                <span className="text-sm poppins block text-gray-300">Karyawan - Cabang Perum</span>
+                                <span className="text-sm  block">Muhamad Gunawan</span>
+                                <span className="text-sm  block text-gray-300">Karyawan - Cabang Perum</span>
                             </div>
                             <IoCaretDown className="text-white" />
                         </div>
@@ -132,7 +132,7 @@ const UserNavbar = () => {
                     </button>
 
                     {["inbound", "outbound", "how-to-scan-qr"].map((item, index) => (
-                        <Link key={index} href={`/${item}`} className="text-white text-lg poppins hover:underline" onClick={() => setMenuOpen(false)}>
+                        <Link key={index} href={`/${item}`} className="text-white text-lg  hover:underline" onClick={() => setMenuOpen(false)}>
                             {item.replace(/-/g, " ")}
                         </Link>
                     ))}
@@ -145,8 +145,8 @@ const UserNavbar = () => {
                         >
                             <div className="w-8 h-8 bg-white rounded-full"></div>
                             <div>
-                                <span className="text-sm poppins block">Muhamad Gunawan</span>
-                                <span className="text-sm poppins block text-gray-300">Karyawan - Cabang Perum</span>
+                                <span className="text-sm  block">Muhamad Gunawan</span>
+                                <span className="text-sm  block text-gray-300">Karyawan - Cabang Perum</span>
                             </div>
                             <IoCaretDown className="text-white" />
                         </div>

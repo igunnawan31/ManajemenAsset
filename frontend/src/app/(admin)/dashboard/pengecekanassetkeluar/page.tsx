@@ -208,7 +208,7 @@ const PengecekanAssetKeluarPage = () => {
         <div className="w-full max-h-full px-8 py-24">
             <Upper title="Pengecekan Asset Keluar" />
             <div className="mt-5">
-                <div className="flex w-full mt-5 justify-between poppins text-xs">
+                <div className="flex w-full mt-5 justify-between  text-xs">
                     {["notstarted", "inprogress", "completed"].map((tab) => (
                         <button
                             key={tab}
@@ -237,7 +237,7 @@ const PengecekanAssetKeluarPage = () => {
                                     ]}
                                 />
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                             )}
                         </div>
                     </div>
@@ -260,7 +260,7 @@ const PengecekanAssetKeluarPage = () => {
                                     ]}
                                 />
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                             )}
                         </div>
                     </div>
@@ -283,7 +283,7 @@ const PengecekanAssetKeluarPage = () => {
                                     ]}
                                 />
                             ) : (
-                                <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                                <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                             )}
                         </div>
                     </div>

@@ -173,7 +173,7 @@ const ViewRequestInbound = () => {
     
 
     return (
-        <div className="px-8 py-24 w-full max-h-full poppins">
+        <div className="px-8 py-24 w-full max-h-full ">
             <Upper title="View Detail Request Inbound" />
             <form className="mt-5 bg-white p-6 rounded-lg shadow-md space-y-4">
                 <div className="">

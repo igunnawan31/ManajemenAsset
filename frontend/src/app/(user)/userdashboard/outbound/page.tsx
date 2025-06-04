@@ -62,7 +62,7 @@ const OutboundPage = () => {
 
     return (
         <div className="w-full rounded-lg shadow-lg bg-white py-2">
-            <div className="flex w-full mt-5 justify-between px-6 poppins text-xs">
+            <div className="flex w-full mt-5 justify-between px-6  text-xs">
                 {["outbound", "pemeriksaan", "selesai"].map((tab) => (
                     <button
                         key={tab}
@@ -181,21 +181,21 @@ const OutboundPage = () => {
                     filteredUsers.length > 0 ? (
                         <TableUser columns={columns} data={filteredUsers} />
                     ) : (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                     )
                 )}
                 {activeTab === "pemeriksaan" && (
                     filteredUsers.length > 0 ? (
                         <TableUser columns={columns} data={filteredUsers} />
                     ) : (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                     )
                 )}
                 {activeTab === "selesai" && (
                     filteredUsers.length > 0 ? (
                         <TableUser columns={columns} data={filteredUsers} />
                     ) : (
-                        <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                        <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                     )
                 )}
             </div>

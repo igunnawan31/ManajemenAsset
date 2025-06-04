@@ -216,7 +216,7 @@ const NewAssetManagement = () => {
                         ]}
                     />
                 ) : (
-                    <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                    <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                 )}
                 <div className="mt-5 flex justify-center items-center mb-32">
                     <button

@@ -37,7 +37,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ filters, onSelect }) =>
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center justify-between w-36 h-14 px-4 py-2 border rounded-lg bg-[#20458A] shadow-md text-sm text-gray-700"
             >
-                <span className="truncate text-white poppins_ae14c56d-module__NZbT2q__className">{selectedText}</span>
+                <span className="truncate text-white _ae14c56d-module__NZbT2q__className">{selectedText}</span>
             </button>
 
             {isOpen && (

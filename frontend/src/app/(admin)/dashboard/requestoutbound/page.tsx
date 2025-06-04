@@ -264,12 +264,12 @@ const RequestOutboundPage = () => {
                 <div className="flex justify-end items-end">
                     <Link href="/dashboard/requestoutbound/create">
                         <button className="bg-[#202B51] p-4 rounded-lg hover:opacity-90">
-                            <span className="text-white font-poppins font-bold">Create New Request Outbound</span>
+                            <span className="text-white  font-bold">Create New Request Outbound</span>
                         </button>
                     </Link>
                 </div>
             </div>
-            <div className="flex w-full mt-5 justify-between poppins text-xs">
+            <div className="flex w-full mt-5 justify-between  text-xs">
                 {["createrequestoutbound", "draft", "delivery"].map((tab) => (
                     <button
                         key={tab}
@@ -330,7 +330,7 @@ const RequestOutboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>
@@ -397,7 +397,7 @@ const RequestOutboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                         {showDeletePopup && ticketToDelete && (
                             <PopUpModal
@@ -490,7 +490,7 @@ const RequestOutboundPage = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-gray-500 font-poppins text-lg mt-5">No data available</div>
+                            <div className="text-center text-gray-500  text-lg mt-5">No data available</div>
                         )}
                     </div>
                 </div>
